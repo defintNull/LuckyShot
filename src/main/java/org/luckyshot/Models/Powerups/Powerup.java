@@ -1,4 +1,13 @@
 package org.luckyshot.Models.Powerups;
 
-public class Powerup {
+public abstract class Powerup {
+    private int cost;
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
 }

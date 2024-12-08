@@ -1,4 +1,4 @@
 package org.luckyshot.Models.StateEffects;
 
-public abstract class StateEffect {
+public class Fog extends StateEffect{
 }
