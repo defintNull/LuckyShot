@@ -1,6 +1,7 @@
 package org.luckyshot.Facades;
 
 import org.luckyshot.Models.*;
+import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Views.SinglePlayerGameView;
 
@@ -33,6 +34,14 @@ public class SinglePlayerGameFacade {
         this.singlePlayerGame = new SinglePlayerGame(humanPlayer, botPlayer);
 
         showGameState();
+        boolean gameEnded = false;
+        while(!gameEnded) {
+            update();
+
+            if(singlePlayerGame.getRound().getRoundNumber() == 3 && humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0) {
+                gameEnded = true;
+            }
+        }
     }
 
     public void showGameState() {
@@ -53,7 +62,6 @@ public class SinglePlayerGameFacade {
 
         stateMap.put("turn", singlePlayerGame.getRound().getTurn().getPlayer().getClass().getSimpleName());
 
-        System.out.println(stateMap);
         SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
         singlePlayerGameView.showGameState(stateMap);
     }
@@ -96,7 +104,23 @@ public class SinglePlayerGameFacade {
     }
 
     public void consumableDrawPhase() {
+        int maxConsumablesNumber = 8;
         this.singlePlayerGame.getRound().getTurn().setPhase(0);
+        Random rand = new Random();
+        int r = rand.nextInt(2, 6);
+        int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
+        int numberOfConsumablesBotPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getBot().getConsumablesNumber());
+
+//        ArrayList<Consumable> consumables = new ArrayList<>();
+//        for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
+//            consumables.add()
+//        }
+//        singlePlayerGame.getHumanPlayer().setConsumables();
+//
+//        for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
+//
+//        }
+//        singlePlayerGame.getBot().setConsumables();
     }
 
     public void gunLoadingPhase() {

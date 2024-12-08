@@ -1,5 +1,9 @@
 package org.luckyshot.Models;
 
+import org.luckyshot.Models.Consumables.Consumable;
+
+import java.util.ArrayList;
+
 public class HumanPlayer extends Player{
     private int score;
     private double multiplier;
