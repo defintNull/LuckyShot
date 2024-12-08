@@ -50,6 +50,7 @@ public class Facade {
         SinglePlayerGameFacade singlePlayerGameFacade = SinglePlayerGameFacade.getInstance();
         // Ci va lo user come parametro.
         //User user = new User();
+
         singlePlayerGameFacade.start(user);
     }
 

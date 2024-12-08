@@ -22,8 +22,8 @@ public class User {
     @Column(name = "coins", nullable = false)
     private int coins;
 
-    //@Column(name = "powerups", nullable = false)
-    //private ArrayList<Powerup> powerups;
+    @Transient
+    private ArrayList<Powerup> powerups;
 
     @Column(name = "level", nullable = false)
     private int level;
@@ -35,15 +35,16 @@ public class User {
 
     }
 
-    //private HumanPlayer player;
+    @Transient
+    private HumanPlayer player;
 
-//    public HumanPlayer getPlayer() {
-//        return player;
-//    }
+    public HumanPlayer getPlayer() {
+        return player;
+    }
 
-//    public void setPlayer(HumanPlayer player) {
-//        this.player = player;
-//    }
+    public void setPlayer(HumanPlayer player) {
+        this.player = player;
+    }
 
     public Long getId() {
         return id;
@@ -73,13 +74,13 @@ public class User {
         this.coins = coins;
     }
 
-//    public ArrayList<Powerup> getPowerups() {
-//        return powerups;
-//    }
-//
-//    public void setPowerups(ArrayList<Powerup> powerups) {
-//        this.powerups = powerups;
-//    }
+    public ArrayList<Powerup> getPowerups() {
+        return powerups;
+    }
+
+    public void setPowerups(ArrayList<Powerup> powerups) {
+        this.powerups = powerups;
+    }
 
     public int getLevel() {
         return level;
