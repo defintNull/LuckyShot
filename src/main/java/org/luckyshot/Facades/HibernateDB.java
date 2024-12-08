@@ -1,10 +1,16 @@
 package org.luckyshot.Facades;
 
-public class Hibernate {
-    private static Hibernate instance;
-    private SessionFacto sessionFactory;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.tool.schema.Action;
+import org.luckyshot.Models.Prova;
 
-    private Hibernate() {
+public class HibernateDB {
+    private static HibernateDB instance;
+    private SessionFactory sessionFactory;
+
+    private HibernateDB() {
         this.sessionFactory = new Configuration()
                 .configure("hibernate.cfg.xml")
                 //Annotated classes
@@ -16,9 +22,9 @@ public class Hibernate {
                 .buildSessionFactory();
     }
 
-    public static Hibernate getInstance() {
+    public static HibernateDB getInstance() {
         if(instance == null) {
-            instance = new Hibernate();
+            instance = new HibernateDB();
         }
         return instance;
     }

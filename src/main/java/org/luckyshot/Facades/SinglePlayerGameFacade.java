@@ -1,6 +1,7 @@
 package org.luckyshot.Facades;
 
-import org.luckyshot.Models.SinglePlayerGame;
+import org.luckyshot.Models.*;
+import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Views.SinglePlayerGameView;
 
 import java.util.ArrayList;

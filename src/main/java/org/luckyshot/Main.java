@@ -1,17 +1,44 @@
 package org.luckyshot;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.luckyshot.Facades.HibernateDB;
+import org.luckyshot.Models.Prova;
+
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        //Facade facade = Facade.getInstance();
+        //facade.menu();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        HibernateDB hibernatedb = HibernateDB.getInstance();
+        Prova prova = new Prova("prova", 456);
+
+        Session session = hibernatedb.getSessionFactory().openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.getTransaction();
+            transaction.begin();
+
+            session.persist(prova);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if(transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
+
+        session = hibernatedb.getSessionFactory().openSession();
+        Prova prova2 = session.find(Prova.class, 1);
+        session.close();
+
+        System.out.println(prova2.getString());
+        Scanner scanner = new Scanner(System.in);
+        int s = scanner.nextInt();
     }
 }
