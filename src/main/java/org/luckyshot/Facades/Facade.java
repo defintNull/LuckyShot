@@ -49,7 +49,7 @@ public class Facade {
     private void startSinglePlayerMatch() {
         SinglePlayerGameFacade singlePlayerGameFacade = SinglePlayerGameFacade.getInstance();
         // Ci va lo user come parametro.
-        User user = new User();
+        //User user = new User();
         singlePlayerGameFacade.start(user);
     }
 
