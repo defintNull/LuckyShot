@@ -8,7 +8,6 @@ import java.util.ArrayList;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,23 +23,27 @@ public class User {
     private int coins;
 
     //@Column(name = "powerups", nullable = false)
-    private ArrayList<Powerup> powerups;
+    //private ArrayList<Powerup> powerups;
 
     @Column(name = "level", nullable = false)
     private int level;
 
-    @Column(name = "total_score")
+    @Column(name = "total_score", nullable = false)
     private long totalScore;
 
-    private HumanPlayer player;
+    public User() {
 
-    public HumanPlayer getPlayer() {
-        return player;
     }
 
-    public void setPlayer(HumanPlayer player) {
-        this.player = player;
-    }
+    //private HumanPlayer player;
+
+//    public HumanPlayer getPlayer() {
+//        return player;
+//    }
+
+//    public void setPlayer(HumanPlayer player) {
+//        this.player = player;
+//    }
 
     public Long getId() {
         return id;
@@ -70,13 +73,13 @@ public class User {
         this.coins = coins;
     }
 
-    public ArrayList<Powerup> getPowerups() {
-        return powerups;
-    }
-
-    public void setPowerups(ArrayList<Powerup> powerups) {
-        this.powerups = powerups;
-    }
+//    public ArrayList<Powerup> getPowerups() {
+//        return powerups;
+//    }
+//
+//    public void setPowerups(ArrayList<Powerup> powerups) {
+//        this.powerups = powerups;
+//    }
 
     public int getLevel() {
         return level;

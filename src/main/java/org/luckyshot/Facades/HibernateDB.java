@@ -4,7 +4,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.schema.Action;
-import org.luckyshot.Models.Prova;
+import org.luckyshot.Models.User;
+
+import java.util.logging.Level;
 
 public class HibernateDB {
     private static HibernateDB instance;
@@ -14,10 +16,9 @@ public class HibernateDB {
         this.sessionFactory = new Configuration()
                 .configure("hibernate.cfg.xml")
                 //Annotated classes
-                //.addAnnotatedClass(User.class)
-                .addAnnotatedClass(Prova.class)
+//                .addAnnotatedClass(User.class)
                 //Auto table generator
-                .setProperty(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION, Action.SPEC_ACTION_DROP_AND_CREATE)
+                //.setProperty(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION, Action.SPEC_ACTION_DROP_AND_CREATE)
                 //Build
                 .buildSessionFactory();
     }
