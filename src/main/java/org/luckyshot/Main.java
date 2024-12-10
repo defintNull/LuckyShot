@@ -1,19 +1,17 @@
 package org.luckyshot;
 
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.luckyshot.Facades.Facade;
-import org.luckyshot.Facades.HibernateDB;
+import org.luckyshot.Facades.HibernateService;
+import org.luckyshot.Facades.LoginFacade;
 import org.luckyshot.Models.User;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Facade facade = Facade.getInstance();
-        facade.menu();
+
+        // Login
+        LoginFacade loginFacade = LoginFacade.getInstance();
+        loginFacade.start();
 
 //        HibernateDB hibernatedb = HibernateDB.getInstance();
 //        User user;

@@ -35,6 +35,18 @@ public class User {
 
     }
 
+    public User(String username, String password, int coins, int level, long totalScore) {
+        this.username = username;
+        this.password = password;
+        this.coins = coins;
+        this.level = level;
+        this.totalScore = totalScore;
+    }
+
+    public User(String username, String password) {
+        this(username, password, 0, 0, 0);
+    }
+
     @Transient
     private HumanPlayer player;
 

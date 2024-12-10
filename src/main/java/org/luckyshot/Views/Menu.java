@@ -20,6 +20,19 @@ public class Menu extends View{
         System.out.println("5. Quit");
     }
 
+    public void showLoginMenu() {
+        try {
+            clearScreen();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("!!! Error while cleaning the console !!!");
+        }
+        displayHeader();
+
+        System.out.println("\nLogin menu\n");
+        System.out.println("1. Login");
+        System.out.println("2. Register");
+    }
+
     public int getUserInput() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Select an option:");

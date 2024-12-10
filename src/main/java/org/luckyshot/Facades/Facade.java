@@ -7,13 +7,13 @@ public class Facade {
     private static Facade instance;
     private User user;
 
-    private Facade() {
-
+    private Facade(User user) {
+        this.user = user;
     }
 
-    public static Facade getInstance() {
+    public static Facade getInstance(User user) {
         if(instance == null) {
-            instance = new Facade();
+            instance = new Facade(user);
         }
         return instance;
     }
