@@ -54,6 +54,7 @@ public class LoginFacade {
                         .getSingleResult();
             } catch (Exception e) {
                 user = null;
+                loginView.displayLoginRetry();
             }
             if(user != null) {
                 if(!encoder.matches(credentials[1], user.getPassword())) {
