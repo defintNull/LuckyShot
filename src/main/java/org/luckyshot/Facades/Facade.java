@@ -37,7 +37,7 @@ public class Facade {
                 try {
                     this.quitGame();
                 } catch (Exception e) {
-                    System.out.println("Error");
+                    System.out.println("Error while quitting the game.");
                     System.exit(1);
                 }
             } else {
@@ -48,9 +48,6 @@ public class Facade {
 
     private void startSinglePlayerMatch() {
         SinglePlayerGameFacade singlePlayerGameFacade = SinglePlayerGameFacade.getInstance();
-        // Ci va lo user come parametro.
-        //User user = new User();
-
         singlePlayerGameFacade.start(user);
     }
 

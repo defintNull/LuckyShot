@@ -3,10 +3,15 @@ package org.luckyshot.Models;
 import org.luckyshot.Models.Consumables.Consumable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class Player {
     private int lives;
     private ArrayList<Consumable> consumables;
+
+    public Player() {
+        consumables = new ArrayList<>();
+    }
 
     public int getLives() {
         return lives;

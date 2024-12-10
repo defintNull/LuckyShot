@@ -9,7 +9,7 @@ public class Gun {
     private static Gun instance;
 
     private Gun() {
-
+        bullets = new ArrayList<>();
     }
 
     public static Gun getInstance() {

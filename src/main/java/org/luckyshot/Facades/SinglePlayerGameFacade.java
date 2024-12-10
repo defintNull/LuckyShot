@@ -27,17 +27,18 @@ public class SinglePlayerGameFacade {
     public void start(User user) {
         // QUANDO IL FACADE PARTE DEVE AVVIARE LA PARTITA E TERMINA A PARTITA FINITA
         // DEVE CREARE LA PARTITA, DEVE MOSTRARE IL TAVOLO, DEVE RICEVERE L'INPUT, DEVE AGGIORNARE LA PARTITA, DEVE MOSTRARE IL TAVOLO E COSì VIA
-        //HumanPlayer humanPlayer = user.getPlayer();
-        HumanPlayer humanPlayer = new HumanPlayer();
+        HumanPlayer humanPlayer = user.getPlayer();
         BotPlayer botPlayer = new BotPlayer();
 
         this.singlePlayerGame = new SinglePlayerGame(humanPlayer, botPlayer);
 
         showGameState();
+
         boolean gameEnded = false;
         while(!gameEnded) {
             update();
 
+            // DA RIVEDERE LA CONDIZIONE DI FINE GIOCO
             if(singlePlayerGame.getRound().getRoundNumber() == 3 && humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0) {
                 gameEnded = true;
             }
@@ -89,6 +90,9 @@ public class SinglePlayerGameFacade {
         if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
             powerupUsePhase();
             showGameState();
+
+            consumableUsePhase();
+            showGameState();
         }
 
         if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == BotPlayer.class) {
@@ -111,16 +115,21 @@ public class SinglePlayerGameFacade {
         int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
         int numberOfConsumablesBotPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getBot().getConsumablesNumber());
 
-//        ArrayList<Consumable> consumables = new ArrayList<>();
-//        for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
-//            consumables.add()
-//        }
-//        singlePlayerGame.getHumanPlayer().setConsumables();
-//
-//        for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
-//
-//        }
-//        singlePlayerGame.getBot().setConsumables();
+        ArrayList<Consumable> consumables = new ArrayList<>();
+        for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
+            Consumable randomConsumable = (Consumable) Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
+            consumables.add(randomConsumable);
+        }
+        singlePlayerGame.getHumanPlayer().setConsumables(consumables);
+
+        consumables = new ArrayList<>();
+        for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
+            Consumable randomConsumable = (Consumable) Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
+            consumables.add(randomConsumable);
+        }
+        singlePlayerGame.getBot().setConsumables(consumables);
+
+        System.out.println(singlePlayerGame.getHumanPlayer().getConsumables());
     }
 
     public void gunLoadingPhase() {
