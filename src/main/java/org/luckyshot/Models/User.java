@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.luckyshot.Models.Powerups.Powerup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Entity
 @Table(name = "users")
@@ -23,7 +24,7 @@ public class User {
     private int coins;
 
     @Transient
-    private ArrayList<Powerup> powerups;
+    private HashMap<Powerup, Integer> powerups;
 
     @Column(name = "level", nullable = false)
     private int level;
@@ -86,11 +87,11 @@ public class User {
         this.coins = coins;
     }
 
-    public ArrayList<Powerup> getPowerups() {
+    public HashMap<Powerup, Integer> getPowerups() {
         return powerups;
     }
 
-    public void setPowerups(ArrayList<Powerup> powerups) {
+    public void setPowerups(HashMap<Powerup, Integer> powerups) {
         this.powerups = powerups;
     }
 

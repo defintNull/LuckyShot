@@ -1,13 +1,15 @@
 package org.luckyshot.Models;
 
 import org.luckyshot.Models.Consumables.Consumable;
+import org.luckyshot.Models.Powerups.Powerup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class Player {
     private int lives;
-    private ArrayList<Consumable> consumables;
+    private ArrayList<Class<? extends Consumable>> consumables;
+
 
     public Player() {
         consumables = new ArrayList<>();
@@ -21,11 +23,11 @@ public abstract class Player {
         this.lives = lives;
     }
 
-    public ArrayList<Consumable> getConsumables() {
+    public ArrayList<Class<? extends Consumable>> getConsumables() {
         return consumables;
     }
 
-    public void setConsumables(ArrayList<Consumable> consumables) {
+    public void setConsumables(ArrayList<Class<? extends Consumable>> consumables) {
         this.consumables = consumables;
     }
 

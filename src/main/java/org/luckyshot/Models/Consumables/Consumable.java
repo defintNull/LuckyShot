@@ -2,7 +2,7 @@ package org.luckyshot.Models.Consumables;
 
 import java.util.ArrayList;
 
-public abstract class Consumable {
+public abstract class Consumable implements ConsumableInterface {
     private String name;
     private double probability;
 
@@ -22,8 +22,8 @@ public abstract class Consumable {
         this.probability = probability;
     }
 
-    public static ArrayList<Object> getConsumableList() {
-        ArrayList<Object> list = new ArrayList<Object>();
+    public static ArrayList<Class<? extends Consumable>> getConsumableList() {
+        ArrayList<Class<? extends Consumable>> list = new ArrayList<Class<? extends Consumable>>();
         list.add(CrystalBall.class);
         list.add(EnergyDrink.class);
         list.add(GhostGun.class);

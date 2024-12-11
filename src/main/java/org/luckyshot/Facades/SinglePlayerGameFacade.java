@@ -27,10 +27,13 @@ public class SinglePlayerGameFacade {
     public void start(User user) {
         // QUANDO IL FACADE PARTE DEVE AVVIARE LA PARTITA E TERMINA A PARTITA FINITA
         // DEVE CREARE LA PARTITA, DEVE MOSTRARE IL TAVOLO, DEVE RICEVERE L'INPUT, DEVE AGGIORNARE LA PARTITA, DEVE MOSTRARE IL TAVOLO E COSì VIA
-        HumanPlayer humanPlayer = user.getPlayer();
+
+        HumanPlayer humanPlayer = new HumanPlayer(user.getPowerups());
         BotPlayer botPlayer = new BotPlayer();
 
-        this.singlePlayerGame = new SinglePlayerGame(humanPlayer, botPlayer);
+        user.setPlayer(humanPlayer);
+
+        this.singlePlayerGame = new SinglePlayerGame(user.getPlayer(), botPlayer);
 
         showGameState();
 
@@ -51,6 +54,30 @@ public class SinglePlayerGameFacade {
 
         stateMap.put("botLives", Integer.toString(((BotPlayer)objectStateMap.get("bot")).getLives()));
         stateMap.put("humanPlayerLives", Integer.toString(((HumanPlayer)objectStateMap.get("humanPlayer")).getLives()));
+
+        ArrayList<Class<? extends Consumable>> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
+        botConsumables.forEach(consumable -> {
+            stateMap.put("bot" + consumable.toString(), "0");
+        });
+
+        botConsumables.forEach(consumable -> {
+            if(consumable.toString().equals(stateMap.get(consumable.toString()))) {
+                stateMap.put("bot" + consumable.toString(), Integer.toString(Integer.parseInt(consumable.toString()) + 1));
+            }
+        });
+
+        ArrayList<Class<? extends Consumable>> humanConsumables = (((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables());
+        humanConsumables.forEach(consumable -> {
+            stateMap.put("human" + consumable.toString(), "0");
+        });
+
+        humanConsumables.forEach(consumable -> {
+            if(consumable.toString().equals(stateMap.get(consumable.toString()))) {
+                stateMap.put("human" + consumable.toString(), Integer.toString(Integer.parseInt(consumable.toString()) + 1));
+            }
+        });
+
+        stateMap.put("humanPlayerConsumables", ((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables().toString());
 
         Round round = (Round)objectStateMap.get("round");
         stateMap.put("roundNumber", Integer.toString(round.getRoundNumber()));
@@ -115,21 +142,23 @@ public class SinglePlayerGameFacade {
         int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
         int numberOfConsumablesBotPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getBot().getConsumablesNumber());
 
-        ArrayList<Consumable> consumables = new ArrayList<>();
+        ArrayList<Class<? extends Consumable>> consumables = new ArrayList<>();
         for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
-            Consumable randomConsumable = (Consumable) Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
+            Class<? extends Consumable> randomConsumable = Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
             consumables.add(randomConsumable);
         }
+
         singlePlayerGame.getHumanPlayer().setConsumables(consumables);
 
         consumables = new ArrayList<>();
         for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
-            Consumable randomConsumable = (Consumable) Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
+            Class<? extends Consumable> randomConsumable = Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
             consumables.add(randomConsumable);
         }
         singlePlayerGame.getBot().setConsumables(consumables);
 
         System.out.println(singlePlayerGame.getHumanPlayer().getConsumables());
+        System.out.println(singlePlayerGame.getBot().getConsumables());
     }
 
     public void gunLoadingPhase() {
