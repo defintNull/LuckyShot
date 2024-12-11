@@ -2,6 +2,8 @@ package org.luckyshot.Views;
 
 import java.io.IOException;
 
+
+//DA FARE ASTRATTA
 public class View {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";

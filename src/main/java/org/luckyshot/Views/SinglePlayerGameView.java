@@ -19,19 +19,19 @@ public class SinglePlayerGameView extends GameView{
         System.out.println("Round number: " + stateMap.get("roundNumber"));
 
         System.out.println("Bot has: ");
-        for(int i = 0; i < Consumable.getConsumableList().size(); i++){
-            if(stateMap.get("bot" + Consumable.getConsumableList().get(i).toString()) != null) {
-                System.out.print(Consumable.getConsumableList().get(i).getSimpleName() + ": x");
-                System.out.println(stateMap.get("bot" + Consumable.getConsumableList().get(i).getSimpleName()));
+        for(int i = 0; i < Consumable.getConsumableStringList().size(); i++){
+            if(stateMap.get("bot" + Consumable.getConsumableStringList().get(i)) != null) {
+                System.out.print(Consumable.getConsumableStringList().get(i) + ": x");
+                System.out.println(stateMap.get("bot" + Consumable.getConsumableStringList().get(i)));
             }
         }
         System.out.println();
 
         System.out.println("Human has: ");
-        for(int i = 0; i < Consumable.getConsumableList().size(); i++){
-            if(stateMap.get("human" + Consumable.getConsumableList().get(i).toString()) != null) {
-                System.out.print(Consumable.getConsumableList().get(i).getSimpleName() + ": x");
-                System.out.println(stateMap.get("human" + Consumable.getConsumableList().get(i).getSimpleName()));
+        for(int i = 0; i < Consumable.getConsumableStringList().size(); i++){
+            if(stateMap.get("human" + Consumable.getConsumableStringList().get(i)) != null) {
+                System.out.print(Consumable.getConsumableStringList().get(i) + ": x");
+                System.out.println(stateMap.get("human" + Consumable.getConsumableStringList().get(i)));
             }
         }
 

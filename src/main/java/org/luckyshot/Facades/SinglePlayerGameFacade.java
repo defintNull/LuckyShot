@@ -4,7 +4,9 @@ import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Views.SinglePlayerGameView;
+import org.luckyshot.Views.View;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -55,29 +57,21 @@ public class SinglePlayerGameFacade {
         stateMap.put("botLives", Integer.toString(((BotPlayer)objectStateMap.get("bot")).getLives()));
         stateMap.put("humanPlayerLives", Integer.toString(((HumanPlayer)objectStateMap.get("humanPlayer")).getLives()));
 
-        ArrayList<Class<? extends Consumable>> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
+        ArrayList<String> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
         botConsumables.forEach(consumable -> {
-            stateMap.put("bot" + consumable.toString(), "0");
-        });
-
-        botConsumables.forEach(consumable -> {
-            if(consumable.toString().equals(stateMap.get(consumable.toString()))) {
-                stateMap.put("bot" + consumable.toString(), Integer.toString(Integer.parseInt(consumable.toString()) + 1));
+            if(!stateMap.containsKey("bot" + consumable)) {
+                stateMap.put("bot" + consumable, "0");
             }
+            stateMap.put("bot" + consumable, Integer.toString(Integer.parseInt(stateMap.get("bot" + consumable)) + 1));
         });
 
-        ArrayList<Class<? extends Consumable>> humanConsumables = (((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables());
+        ArrayList<String> humanConsumables = (((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables());
         humanConsumables.forEach(consumable -> {
-            stateMap.put("human" + consumable.toString(), "0");
-        });
-
-        humanConsumables.forEach(consumable -> {
-            if(consumable.toString().equals(stateMap.get(consumable.toString()))) {
-                stateMap.put("human" + consumable.toString(), Integer.toString(Integer.parseInt(consumable.toString()) + 1));
+            if(!stateMap.containsKey("human" + consumable)) {
+                stateMap.put("human" + consumable, "0");
             }
+            stateMap.put("human" + consumable, Integer.toString(Integer.parseInt(stateMap.get("human" + consumable)) + 1));
         });
-
-        stateMap.put("humanPlayerConsumables", ((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables().toString());
 
         Round round = (Round)objectStateMap.get("round");
         stateMap.put("roundNumber", Integer.toString(round.getRoundNumber()));
@@ -89,6 +83,8 @@ public class SinglePlayerGameFacade {
         }
 
         stateMap.put("turn", singlePlayerGame.getRound().getTurn().getPlayer().getClass().getSimpleName());
+
+        System.out.println(stateMap);
 
         SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
         singlePlayerGameView.showGameState(stateMap);
@@ -134,6 +130,25 @@ public class SinglePlayerGameFacade {
         showGameState();
     }
 
+
+    private String getRandomConsumable() {
+        HashMap consumableProb = new HashMap<>();
+
+        for(Class<? extends Consumable> c : Consumable.getConsumableClassList()) {
+            try {
+                Class<?> cls = Class.forName(c.getName());
+                Method m = cls.getMethod("getInstance");
+                Object consumable = m.invoke(null);
+                System.out.println(((Consumable)consumable).getProbability());
+            } catch (Exception e) {
+                View view = new View();
+                view.systemError();
+            }
+        }
+
+        return "";
+    }
+
     public void consumableDrawPhase() {
         int maxConsumablesNumber = 8;
         this.singlePlayerGame.getRound().getTurn().setPhase(0);
@@ -142,9 +157,11 @@ public class SinglePlayerGameFacade {
         int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
         int numberOfConsumablesBotPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getBot().getConsumablesNumber());
 
-        ArrayList<Class<? extends Consumable>> consumables = new ArrayList<>();
+        getRandomConsumable();
+
+        ArrayList<String> consumables = new ArrayList<>();
         for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
-            Class<? extends Consumable> randomConsumable = Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
+            String randomConsumable = Consumable.getConsumableStringList().get(rand.nextInt(0, Consumable.getConsumableStringList().size()));
             consumables.add(randomConsumable);
         }
 
@@ -152,13 +169,10 @@ public class SinglePlayerGameFacade {
 
         consumables = new ArrayList<>();
         for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
-            Class<? extends Consumable> randomConsumable = Consumable.getConsumableList().get(rand.nextInt(0, Consumable.getConsumableList().size()));
+            String randomConsumable = Consumable.getConsumableStringList().get(rand.nextInt(0, Consumable.getConsumableStringList().size()));
             consumables.add(randomConsumable);
         }
         singlePlayerGame.getBot().setConsumables(consumables);
-
-        System.out.println(singlePlayerGame.getHumanPlayer().getConsumables());
-        System.out.println(singlePlayerGame.getBot().getConsumables());
     }
 
     public void gunLoadingPhase() {

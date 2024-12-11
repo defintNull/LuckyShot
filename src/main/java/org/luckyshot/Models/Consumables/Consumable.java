@@ -22,7 +22,21 @@ public abstract class Consumable implements ConsumableInterface {
         this.probability = probability;
     }
 
-    public static ArrayList<Class<? extends Consumable>> getConsumableList() {
+    public static ArrayList<String> getConsumableStringList() {
+        ArrayList<String> list = new ArrayList<String>();
+        list.add(CrystalBall.class.getSimpleName());
+        list.add(EnergyDrink.class.getSimpleName());
+        list.add(GhostGun.class.getSimpleName());
+        list.add(Glasses.class.getSimpleName());
+        list.add(Handcuffs.class.getSimpleName());
+        list.add(HealthPotion.class.getSimpleName());
+        list.add(Inverter.class.getSimpleName());
+        list.add(Magnet.class.getSimpleName());
+        list.add(MisteryPotion.class.getSimpleName());
+        return list;
+    }
+
+    public static ArrayList<Class<? extends Consumable>> getConsumableClassList() {
         ArrayList<Class<? extends Consumable>> list = new ArrayList<Class<? extends Consumable>>();
         list.add(CrystalBall.class);
         list.add(EnergyDrink.class);

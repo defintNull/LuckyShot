@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public abstract class Player {
     private int lives;
-    private ArrayList<Class<? extends Consumable>> consumables;
+    private ArrayList<String> consumables;
 
 
     public Player() {
@@ -23,11 +23,11 @@ public abstract class Player {
         this.lives = lives;
     }
 
-    public ArrayList<Class<? extends Consumable>> getConsumables() {
+    public ArrayList<String> getConsumables() {
         return consumables;
     }
 
-    public void setConsumables(ArrayList<Class<? extends Consumable>> consumables) {
+    public void setConsumables(ArrayList<String> consumables) {
         this.consumables = consumables;
     }
 
