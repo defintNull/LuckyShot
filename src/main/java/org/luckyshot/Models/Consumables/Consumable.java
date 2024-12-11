@@ -2,7 +2,7 @@ package org.luckyshot.Models.Consumables;
 
 import java.util.ArrayList;
 
-public abstract class Consumable implements ConsumableInterface {
+public abstract class Consumable {
     private String name;
     private double probability;
 
@@ -48,5 +48,9 @@ public abstract class Consumable implements ConsumableInterface {
         list.add(Magnet.class);
         list.add(MisteryPotion.class);
         return list;
+    }
+
+    public String toString() {
+        return this.getName();
     }
 }

@@ -139,7 +139,7 @@ public class SinglePlayerGameFacade {
                 Class<?> cls = Class.forName(c.getName());
                 Method m = cls.getMethod("getInstance");
                 Object consumable = m.invoke(null);
-                System.out.println(((Consumable)consumable).getProbability());
+                System.out.println(((Consumable) consumable).getProbability());
             } catch (Exception e) {
                 View view = new View();
                 view.systemError();
