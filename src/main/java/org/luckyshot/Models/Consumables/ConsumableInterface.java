@@ -1,8 +1,20 @@
 package org.luckyshot.Models.Consumables;
 
+import org.luckyshot.Models.Enums.Probability;
+
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 public interface ConsumableInterface {
+
+    EnumMap<Probability, Double> probabiityRange = new EnumMap<>(Probability.class) {{
+        put(Probability.BASSA, 1.0);
+        put(Probability.MEDIO_BASSA, 1.0);
+        put(Probability.MEDIA, 1.0);
+        put(Probability.MEDIO_ALTA, 1.0);
+        put(Probability.ALTA, 1.0);
+    }};
+
     static ArrayList<String> getConsumableStringList() {
         ArrayList<String> list = new ArrayList<String>();
         list.add(CrystalBall.class.getSimpleName());
