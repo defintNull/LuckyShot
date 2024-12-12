@@ -53,17 +53,26 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showBullets(ArrayList<String> bullets) {
+        slowPrint("Here are the bullets: ");
+
         for (String bullet : bullets) {
             if(bullet.equals("0")) {
                 System.out.print(ANSI_CYAN);
             } else if(bullet.equals("1")) {
                 System.out.print(ANSI_RED);
             }
-            System.out.print("[] " + ANSI_RESET);
+            System.out.print("█ " + ANSI_RESET);
         }
         System.out.println();
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println("Error while sleep");
+        }
+
+        slowPrint("I'm loading the gun...");
+        try {
+            Thread.sleep(1000);
         } catch (Exception e) {
             System.out.println("Error while sleep");
         }

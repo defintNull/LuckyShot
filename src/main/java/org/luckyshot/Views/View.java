@@ -31,6 +31,29 @@ public class View {
         // CON GRADLE QUESTO PULISCE LA CONSOLE MA IL RUN RIMANE (PROVA AD ESEGUIRE gradle run DA TERMINALE)
     }
 
+    protected void slowPrintln(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            System.out.print(s.charAt(i));
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                systemError();
+            }
+        }
+        System.out.println();
+    }
+
+    protected void slowPrint(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            System.out.print(s.charAt(i));
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                systemError();
+            }
+        }
+    }
+
     public void systemError() {
         System.out.println(ANSI_RED + "System error!" + ANSI_RESET);
     }
