@@ -10,7 +10,7 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = "org.luckyshot.Main"
     }
-    configurations["compileClasspath"].forEach { file: File ->
+    configurations["runtimeClasspath"].forEach { file: File ->
         from(zipTree(file.absoluteFile))
     }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
