@@ -10,7 +10,9 @@ import org.luckyshot.Views.View;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class SinglePlayerGameFacade {
     private static SinglePlayerGameFacade instance;
@@ -131,23 +133,38 @@ public class SinglePlayerGameFacade {
         showGameState();
     }
 
-
     private String getRandomConsumable() {
-        HashMap consumableProb = new HashMap<>();
+        HashMap<String, Integer> consumableProb = new HashMap<>();
 
         for(Class<? extends Consumable> c : ConsumableInterface.getConsumableClassList()) {
             try {
                 Class<?> cls = Class.forName(c.getName());
                 Method m = cls.getMethod("getInstance");
                 Object consumable = m.invoke(null);
-                System.out.println(((Consumable) consumable).getProbability());
+                consumableProb.put(c.getSimpleName(), ((Consumable) consumable).getProbability());
             } catch (Exception e) {
                 View view = new View();
                 view.systemError();
             }
         }
 
-        return "";
+        Random rand = new Random();
+        String consumable = "";
+        int tries = 0;
+        int maxTries = 100;
+        boolean found = false;
+        while(!found && tries < maxTries) {
+            ArrayList<String> consumableList = new ArrayList<>(consumableProb.keySet());
+            String randomConsumable = consumableList.get(rand.nextInt(consumableList.size()));
+            int r = rand.nextInt(100);
+            if (r < consumableProb.get(randomConsumable) || tries == maxTries - 1) {
+                found = true;
+                consumable = randomConsumable;
+            }
+            tries++;
+        }
+
+        return consumable;
     }
 
     public void consumableDrawPhase() {
@@ -158,19 +175,16 @@ public class SinglePlayerGameFacade {
         int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
         int numberOfConsumablesBotPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getBot().getConsumablesNumber());
 
-        getRandomConsumable();
-
-        ArrayList<String> consumables = new ArrayList<>();
+        ArrayList<String> consumables = singlePlayerGame.getHumanPlayer().getConsumables();
         for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
-            String randomConsumable = ConsumableInterface.getConsumableStringList().get(rand.nextInt(0, ConsumableInterface.getConsumableStringList().size()));
+            String randomConsumable = getRandomConsumable();
             consumables.add(randomConsumable);
         }
-
         singlePlayerGame.getHumanPlayer().setConsumables(consumables);
 
-        consumables = new ArrayList<>();
+        consumables = singlePlayerGame.getBot().getConsumables();
         for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
-            String randomConsumable = ConsumableInterface.getConsumableStringList().get(rand.nextInt(0, ConsumableInterface.getConsumableStringList().size()));
+            String randomConsumable = getRandomConsumable();
             consumables.add(randomConsumable);
         }
         singlePlayerGame.getBot().setConsumables(consumables);

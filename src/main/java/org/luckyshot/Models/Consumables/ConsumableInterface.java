@@ -7,7 +7,7 @@ import java.util.EnumMap;
 
 public interface ConsumableInterface {
 
-    EnumMap<Probability, Integer> probabiityRange = new EnumMap<>(Probability.class) {{
+    EnumMap<Probability, Integer> probabilityRange = new EnumMap<>(Probability.class) {{
         put(Probability.LOW, 5);
         put(Probability.MEDIUM_LOW, 13);
         put(Probability.MEDIUM, 20);

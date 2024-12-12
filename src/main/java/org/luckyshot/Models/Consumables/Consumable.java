@@ -5,13 +5,13 @@ import org.luckyshot.Models.Enums.Probability;
 import java.util.ArrayList;
 
 public abstract class Consumable implements ConsumableInterface{
-    private Probability probability;
+    private int probability;
 
     public Consumable(Probability probability) {
-        this.probability = probability;
+        this.probability = probabilityRange.get(probability);
     }
 
-    public Probability getProbability() {
+    public int getProbability() {
         return probability;
     }
 
