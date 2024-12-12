@@ -1,9 +1,11 @@
 package org.luckyshot.Views;
 
-import org.luckyshot.Models.Consumables.Consumable;
+import org.checkerframework.checker.units.qual.A;
+import org.luckyshot.Models.Bullet;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SinglePlayerGameView extends GameView{
@@ -48,5 +50,22 @@ public class SinglePlayerGameView extends GameView{
             System.out.println("It's your opponent's turn.");
         }
 
+    }
+
+    public void showBullets(ArrayList<String> bullets) {
+        for (String bullet : bullets) {
+            if(bullet.equals("0")) {
+                System.out.print(ANSI_CYAN);
+            } else if(bullet.equals("1")) {
+                System.out.print(ANSI_RED);
+            }
+            System.out.print("[] " + ANSI_RESET);
+        }
+        System.out.println();
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            System.out.println("Error while sleep");
+        }
     }
 }

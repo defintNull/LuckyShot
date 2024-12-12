@@ -193,7 +193,17 @@ public class SinglePlayerGameFacade {
     public void gunLoadingPhase() {
         this.singlePlayerGame.getRound().getTurn().setPhase(1);
         ArrayList<Bullet> b = Gun.getInstance().generateBulletSequence();
+        showBullets(b);
         Gun.getInstance().setBullets(b);
+    }
+
+    public void showBullets(ArrayList<Bullet> bullets) {
+        SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
+        ArrayList<String> b = new ArrayList<>();
+        for (Bullet bullet : bullets) {
+            b.add(Integer.toString(bullet.getType()));
+        }
+        singlePlayerGameView.showBullets(b);
     }
 
     public void powerupUsePhase() {

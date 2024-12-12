@@ -5,32 +5,33 @@ import java.io.IOException;
 
 //DA FARE ASTRATTA
 public class View {
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_BLACK = "\u001B[30m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
-    private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String ANSI_WHITE = "\u001B[37m";
+    protected static final String ANSI_RESET = "\u001B[0m";
+    protected static final String ANSI_BLACK = "\u001B[30m";
+    protected static final String ANSI_RED = "\u001B[31m";
+    protected static final String ANSI_GREEN = "\u001B[32m";
+    protected static final String ANSI_YELLOW = "\u001B[33m";
+    protected static final String ANSI_BLUE = "\u001B[34m";
+    protected static final String ANSI_PURPLE = "\u001B[35m";
+    protected static final String ANSI_CYAN = "\u001B[36m";
+    protected static final String ANSI_WHITE = "\u001B[37m";
 
     protected void displayHeader() {
         System.out.println("=".repeat(20) + ANSI_PURPLE + "\n     Lucky Shot\n" + ANSI_RESET + "=".repeat(20));
     }
 
     protected void clearScreen() throws IOException, InterruptedException {
-//        final String os = System.getProperty("os.name").toLowerCase();
-//        if (os.contains("windows"))
-//            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-//        else
-//            new ProcessBuilder("clear").inheritIO().start().waitFor();
+        final String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("windows 10"))
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        else if(os.contains("windows 11")) {
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+        } else
+            new ProcessBuilder("clear").inheritIO().start().waitFor();
         // CON GRADLE QUESTO PULISCE LA CONSOLE MA IL RUN RIMANE (PROVA AD ESEGUIRE gradle run DA TERMINALE)
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 
     public void systemError() {
-        System.out.println("System error!");
+        System.out.println(ANSI_RED + "System error!" + ANSI_RESET);
     }
 }
