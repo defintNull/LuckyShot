@@ -1,6 +1,7 @@
 package org.luckyshot.Views;
 
 import org.luckyshot.Models.Consumables.Consumable;
+import org.luckyshot.Models.Consumables.ConsumableInterface;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,19 +20,19 @@ public class SinglePlayerGameView extends GameView{
         System.out.println("Round number: " + stateMap.get("roundNumber"));
 
         System.out.println("Bot has: ");
-        for(int i = 0; i < Consumable.getConsumableStringList().size(); i++){
-            if(stateMap.get("bot" + Consumable.getConsumableStringList().get(i)) != null) {
-                System.out.print(Consumable.getConsumableStringList().get(i) + ": x");
-                System.out.println(stateMap.get("bot" + Consumable.getConsumableStringList().get(i)));
+        for(int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++){
+            if(stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
+                System.out.print(ConsumableInterface.getConsumableStringList().get(i) + ": x");
+                System.out.println(stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)));
             }
         }
         System.out.println();
 
         System.out.println("Human has: ");
-        for(int i = 0; i < Consumable.getConsumableStringList().size(); i++){
-            if(stateMap.get("human" + Consumable.getConsumableStringList().get(i)) != null) {
-                System.out.print(Consumable.getConsumableStringList().get(i) + ": x");
-                System.out.println(stateMap.get("human" + Consumable.getConsumableStringList().get(i)));
+        for(int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++){
+            if(stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
+                System.out.print(ConsumableInterface.getConsumableStringList().get(i) + ": x");
+                System.out.println(stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)));
             }
         }
 

@@ -1,9 +1,11 @@
 package org.luckyshot.Models.Consumables;
 
+import org.luckyshot.Models.Enums.Probability;
+
 public class CrystalBall extends Consumable {
     private static CrystalBall instance;
     private CrystalBall() {
-
+        super(Probability.MEDIA);
     }
 
     public static CrystalBall getInstance() {

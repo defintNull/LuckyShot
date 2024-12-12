@@ -2,6 +2,7 @@ package org.luckyshot.Facades;
 
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.Consumable;
+import org.luckyshot.Models.Consumables.ConsumableInterface;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
@@ -134,7 +135,7 @@ public class SinglePlayerGameFacade {
     private String getRandomConsumable() {
         HashMap consumableProb = new HashMap<>();
 
-        for(Class<? extends Consumable> c : Consumable.getConsumableClassList()) {
+        for(Class<? extends Consumable> c : ConsumableInterface.getConsumableClassList()) {
             try {
                 Class<?> cls = Class.forName(c.getName());
                 Method m = cls.getMethod("getInstance");
@@ -161,7 +162,7 @@ public class SinglePlayerGameFacade {
 
         ArrayList<String> consumables = new ArrayList<>();
         for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
-            String randomConsumable = Consumable.getConsumableStringList().get(rand.nextInt(0, Consumable.getConsumableStringList().size()));
+            String randomConsumable = ConsumableInterface.getConsumableStringList().get(rand.nextInt(0, ConsumableInterface.getConsumableStringList().size()));
             consumables.add(randomConsumable);
         }
 
@@ -169,7 +170,7 @@ public class SinglePlayerGameFacade {
 
         consumables = new ArrayList<>();
         for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
-            String randomConsumable = Consumable.getConsumableStringList().get(rand.nextInt(0, Consumable.getConsumableStringList().size()));
+            String randomConsumable = ConsumableInterface.getConsumableStringList().get(rand.nextInt(0, ConsumableInterface.getConsumableStringList().size()));
             consumables.add(randomConsumable);
         }
         singlePlayerGame.getBot().setConsumables(consumables);
