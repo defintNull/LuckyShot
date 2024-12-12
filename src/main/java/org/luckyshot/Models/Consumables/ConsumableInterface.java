@@ -7,12 +7,12 @@ import java.util.EnumMap;
 
 public interface ConsumableInterface {
 
-    EnumMap<Probability, Double> probabiityRange = new EnumMap<>(Probability.class) {{
-        put(Probability.LOW, 1.0);
-        put(Probability.MEDIUM_LOW, 1.0);
-        put(Probability.MEDIUM, 1.0);
-        put(Probability.MEDIUM_HIGH, 1.0);
-        put(Probability.HIGH, 1.0);
+    EnumMap<Probability, Integer> probabiityRange = new EnumMap<>(Probability.class) {{
+        put(Probability.LOW, 5);
+        put(Probability.MEDIUM_LOW, 13);
+        put(Probability.MEDIUM, 20);
+        put(Probability.MEDIUM_HIGH, 27);
+        put(Probability.HIGH, 35);
     }};
 
     static ArrayList<String> getConsumableStringList() {

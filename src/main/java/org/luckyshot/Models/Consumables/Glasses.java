@@ -1,9 +1,11 @@
 package org.luckyshot.Models.Consumables;
 
+import org.luckyshot.Models.Enums.Probability;
+
 public class Glasses extends Consumable{
     private static Glasses instance;
     private Glasses() {
-
+        super(Probability.MEDIUM_LOW);
     }
 
     public static Glasses getInstance() {

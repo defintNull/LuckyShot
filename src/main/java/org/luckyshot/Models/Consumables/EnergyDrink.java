@@ -1,9 +1,11 @@
 package org.luckyshot.Models.Consumables;
 
+import org.luckyshot.Models.Enums.Probability;
+
 public class EnergyDrink extends Consumable{
     private static EnergyDrink instance;
     private EnergyDrink() {
-
+        super(Probability.MEDIUM);
     }
 
     public static EnergyDrink getInstance() {
