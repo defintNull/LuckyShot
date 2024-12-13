@@ -17,26 +17,47 @@ public class SinglePlayerGameView extends GameView{
         }
         displayHeader();
 
-        System.out.println("Bot lives: " + stateMap.get("botLives"));
-        System.out.println("Your lives: " + stateMap.get("humanPlayerLives"));
-        System.out.println("Round number: " + stateMap.get("roundNumber"));
+        System.out.println("Round " + stateMap.get("roundNumber"));
 
-        System.out.println("Bot has: ");
-        for(int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++){
-            if(stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
+        System.out.print("Bot: ");
+        for(int i = 0; i < Integer.parseInt(stateMap.get("botLives")); i++) {
+            System.out.print("♥");
+        }
+        System.out.print("\t\t\t");
+        System.out.print("You: ");
+        for(int i = 0; i < Integer.parseInt(stateMap.get("humanPlayerLives")); i++) {
+            System.out.print("♥");
+        }
+        System.out.println("\t\t\t");
+
+
+        int c = 0;
+        System.out.print("Bot has: ");
+        for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
+            if (stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
                 System.out.print(ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.println(stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)));
+                c += 1;
             }
+        }
+        if(c == 0) {
+            System.out.println("no consumables");
         }
         System.out.println();
 
-        System.out.println("Human has: ");
-        for(int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++){
-            if(stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
+        System.out.print("Human has: ");
+        c = 0;
+        for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
+            if (stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
                 System.out.print(ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.println(stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)));
+                c += 1;
             }
         }
+        if(c == 0) {
+            System.out.println("no consumables");
+        }
+
 
         if(stateMap.get("stateEffect").equals("none")) {
             System.out.println("State effect " + stateMap.get("stateEffect"));

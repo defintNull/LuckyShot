@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import org.luckyshot.Models.Powerups.Powerup;
+import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
 
 import java.lang.reflect.Method;
@@ -30,7 +31,7 @@ public class PowerupConverter implements AttributeConverter<HashMap<Powerup, Int
             ObjectMapper mapper = new ObjectMapper();
             json = mapper.writeValueAsString(matrice);
         } catch (Exception e) {
-            View view = new View();
+            SinglePlayerGameView view = new SinglePlayerGameView();
             view.systemError();
         }
 
@@ -54,12 +55,12 @@ public class PowerupConverter implements AttributeConverter<HashMap<Powerup, Int
                     Object obj = method.invoke(null);
                     hashMap.put((Powerup) obj, Integer.valueOf(convert.get(1)));
                 } catch (Exception e) {
-                    View view = new View();
+                    SinglePlayerGameView view = new SinglePlayerGameView();
                     view.systemError();
                 }
             }
         } catch (Exception e) {
-            View view = new View();
+            SinglePlayerGameView view = new SinglePlayerGameView();
             view.systemError();
         }
         return hashMap;

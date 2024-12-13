@@ -138,8 +138,7 @@ public class SinglePlayerGameFacade {
                 Object consumable = m.invoke(null);
                 consumableProb.put(c.getSimpleName(), ((Consumable) consumable).getProbability());
             } catch (Exception e) {
-                View view = new View();
-                view.systemError();
+                singlePlayerGameView.systemError();
             }
         }
 

@@ -4,7 +4,9 @@ import java.io.IOException;
 
 
 //DA FARE ASTRATTA
-public class View {
+// PER FAR VEDERE CARATTERI UNICODE SU POWERSHELL (almeno):
+// $OutputEncoding = [Console]::InputEncoding = [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding
+public abstract class View {
     protected static final String ANSI_RESET = "\u001B[0m";
     protected static final String ANSI_BLACK = "\u001B[30m";
     protected static final String ANSI_RED = "\u001B[31m";
@@ -28,7 +30,6 @@ public class View {
                     System.out.flush();
         } else
             new ProcessBuilder("clear").inheritIO().start().waitFor();
-        // CON GRADLE QUESTO PULISCE LA CONSOLE MA IL RUN RIMANE (PROVA AD ESEGUIRE gradle run DA TERMINALE)
     }
 
     protected void slowPrintln(String s) {

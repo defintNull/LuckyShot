@@ -7,6 +7,7 @@ import org.hibernate.type.SqlTypes;
 import org.luckyshot.Facades.Services.Converters.PowerupConverter;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
+import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
 
 import java.lang.reflect.Method;
@@ -57,7 +58,8 @@ public class User {
                 Object obj = method.invoke(null);
                 this.powerups.put(((Powerup) obj), 0);
             } catch (Exception e) {
-                View view = new View();
+                // PER ORA HO MESSO QUESTA DI VIEW
+                SinglePlayerGameView view = new SinglePlayerGameView();
                 view.systemError();
             }
         }
