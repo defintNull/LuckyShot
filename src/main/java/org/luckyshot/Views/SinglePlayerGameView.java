@@ -86,7 +86,7 @@ public class SinglePlayerGameView extends GameView{
     public void showPowerups(ArrayList<HashMap<String, String>> powerups) {
         System.out.println("Powerups:");
         for(HashMap<String, String> element : powerups) {
-            System.out.println(element.get("name") + ": " + element.get("occurences"));
+            System.out.println(element.get("name") + ": " + element.get("occurrences"));
         }
     }
 }
