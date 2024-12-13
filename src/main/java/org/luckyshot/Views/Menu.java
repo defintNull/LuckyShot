@@ -46,4 +46,9 @@ public class Menu extends View{
     public void quitGame() {
         System.out.println("Goodbye, thanks for playing!");
     }
+
+    public void showLoading() {
+        displayHeader();
+        System.out.println("Loading...");
+    }
 }

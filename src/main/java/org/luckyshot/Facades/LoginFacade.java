@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class LoginFacade {
     private static LoginFacade instance;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private HibernateService hibernateService;
 
     private LoginFacade() {
 
@@ -24,6 +25,9 @@ public class LoginFacade {
 
     public void start() {
         Menu menu = new Menu();
+        menu.showLoading();
+        hibernateService = HibernateService.getInstance();
+
         menu.showLoginMenu();
 
         int choice;
@@ -43,7 +47,6 @@ public class LoginFacade {
         LoginView loginView = new LoginView();
         loginView.displayLogin();
 
-        HibernateService hibernateService = HibernateService.getInstance();
         Session session = hibernateService.getSessionFactory().openSession();
         User user = null;
         while (user == null) {
