@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HumanPlayer extends Player{
+    private long userId;
     private int score;
     private double multiplier;
     private int comboCounter;
     private HashMap<Powerup, Integer> powerups;
     private int xp;
 
-    public HumanPlayer(HashMap<Powerup, Integer> powerups) {
-        setPowerups(powerups);
+    public HumanPlayer(long userId, HashMap<Powerup, Integer> powerups) {
+        this.userId = userId;
+        this.powerups = powerups;
         this.xp = 0;
     }
 
@@ -40,10 +42,6 @@ public class HumanPlayer extends Player{
 
     public void setComboCounter(int comboCounter) {
         this.comboCounter = comboCounter;
-    }
-
-    public void setPowerups(HashMap<Powerup, Integer> powerups) {
-        this.powerups = powerups;
     }
 
     public HashMap<Powerup, Integer> getPowerups() {

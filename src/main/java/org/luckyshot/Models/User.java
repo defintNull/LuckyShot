@@ -1,8 +1,15 @@
 package org.luckyshot.Models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.luckyshot.Facades.Services.Converters.PowerupConverter;
 import org.luckyshot.Models.Powerups.Powerup;
+import org.luckyshot.Models.Powerups.PowerupInterface;
+import org.luckyshot.Views.View;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,8 +30,9 @@ public class User {
     @Column(name = "coins", nullable = false)
     private int coins;
 
-    @Transient
-    private HashMap<Powerup, Integer> powerups;
+    @Column(name = "powerups", nullable = false)
+    @Convert(converter = PowerupConverter.class)
+    private HashMap<Powerup, Integer> powerups = new HashMap<Powerup, Integer>();
 
     @Column(name = "level", nullable = false)
     private int level;
@@ -42,6 +50,17 @@ public class User {
         this.coins = coins;
         this.level = level;
         this.totalScore = totalScore;
+
+        for(Class<? extends Powerup> powerup : PowerupInterface.getConsumableClassList()) {
+            try {
+                Method method = Class.forName(powerup.getName()).getMethod("getInstance");
+                Object obj = method.invoke(null);
+                this.powerups.put(((Powerup) obj), 0);
+            } catch (Exception e) {
+                View view = new View();
+                view.systemError();
+            }
+        }
     }
 
     public User(String username, String password) {
@@ -89,10 +108,6 @@ public class User {
 
     public HashMap<Powerup, Integer> getPowerups() {
         return powerups;
-    }
-
-    public void setPowerups(HashMap<Powerup, Integer> powerups) {
-        this.powerups = powerups;
     }
 
     public int getLevel() {

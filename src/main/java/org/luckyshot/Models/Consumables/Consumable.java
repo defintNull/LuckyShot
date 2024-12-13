@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public abstract class Consumable implements ConsumableInterface{
     private int probability;
 
-    public Consumable(Probability probability) {
+    protected Consumable(Probability probability) {
         this.probability = probabilityRange.get(probability);
     }
 

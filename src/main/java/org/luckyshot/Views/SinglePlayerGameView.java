@@ -77,4 +77,16 @@ public class SinglePlayerGameView extends GameView{
             System.out.println("Error while sleep");
         }
     }
+
+    public int askPowerup() {
+        System.out.println("Do you want to use any powerups?");
+        return getUserInput();
+    }
+
+    public void showPowerups(ArrayList<HashMap<String, String>> powerups) {
+        System.out.println("Powerups:");
+        for(HashMap<String, String> element : powerups) {
+            System.out.println(element.get("name") + ": " + element.get("occurences"));
+        }
+    }
 }

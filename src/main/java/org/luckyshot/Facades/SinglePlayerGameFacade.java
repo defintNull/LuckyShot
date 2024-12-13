@@ -3,15 +3,13 @@ package org.luckyshot.Facades;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
+import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SinglePlayerGameFacade {
@@ -33,7 +31,7 @@ public class SinglePlayerGameFacade {
         // QUANDO IL FACADE PARTE DEVE AVVIARE LA PARTITA E TERMINA A PARTITA FINITA
         // DEVE CREARE LA PARTITA, DEVE MOSTRARE IL TAVOLO, DEVE RICEVERE L'INPUT, DEVE AGGIORNARE LA PARTITA, DEVE MOSTRARE IL TAVOLO E COSì VIA
 
-        HumanPlayer humanPlayer = new HumanPlayer(user.getPowerups());
+        HumanPlayer humanPlayer = new HumanPlayer(user.getId(), user.getPowerups());
         BotPlayer botPlayer = new BotPlayer();
 
         user.setPlayer(humanPlayer);
@@ -208,6 +206,21 @@ public class SinglePlayerGameFacade {
 
     public void powerupUsePhase() {
         this.singlePlayerGame.getRound().getTurn().setPhase(2);
+
+        ArrayList<HashMap<String, String>> array = new ArrayList<HashMap<String, String>>();
+        HashMap<Powerup, Integer> powerups = this.singlePlayerGame.getHumanPlayer().getPowerups();
+
+        for(Map.Entry<Powerup, Integer> entry : powerups.entrySet()) {
+            HashMap<String, String> hashMap = new HashMap<String, String>();
+            hashMap.put("name", entry.getKey().toString());
+            hashMap.put("occurrences", Integer.toString(entry.getValue()));
+            array.add(hashMap);
+        }
+
+
+        SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
+        singlePlayerGameView.showPowerups(array);
+
         //AGGIUNGERE CONTROLLO POWERUP
         //if(this.singlePlayerGame.getHumanPlayer().)
         int userInput = getUserInput();
