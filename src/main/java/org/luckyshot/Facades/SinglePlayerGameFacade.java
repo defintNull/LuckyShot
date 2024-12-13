@@ -15,9 +15,10 @@ import java.util.stream.Collectors;
 public class SinglePlayerGameFacade {
     private static SinglePlayerGameFacade instance;
     private SinglePlayerGame singlePlayerGame;
+    private final SinglePlayerGameView singlePlayerGameView;
 
     private SinglePlayerGameFacade() {
-
+        singlePlayerGameView = new SinglePlayerGameView();
     }
 
     public static SinglePlayerGameFacade getInstance() {
@@ -85,15 +86,11 @@ public class SinglePlayerGameFacade {
 
         stateMap.put("turn", singlePlayerGame.getRound().getTurn().getPlayer().getClass().getSimpleName());
 
-        System.out.println(stateMap);
-
-        SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
         singlePlayerGameView.showGameState(stateMap);
     }
 
     public int getUserInput() {
         if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
-            SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
             return singlePlayerGameView.getUserInput();
         }
 
@@ -196,7 +193,6 @@ public class SinglePlayerGameFacade {
     }
 
     public void showBullets(ArrayList<Bullet> bullets) {
-        SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
         ArrayList<String> b = new ArrayList<>();
         for (Bullet bullet : bullets) {
             b.add(Integer.toString(bullet.getType()));
@@ -217,8 +213,6 @@ public class SinglePlayerGameFacade {
             array.add(hashMap);
         }
 
-
-        SinglePlayerGameView singlePlayerGameView = new SinglePlayerGameView();
         singlePlayerGameView.showPowerups(array);
 
         //AGGIUNGERE CONTROLLO POWERUP
