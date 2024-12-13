@@ -54,6 +54,16 @@ public class View {
         }
     }
 
+    public void showLoading() {
+        try {
+            clearScreen();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("!!! Error while cleaning the console !!!");
+        }
+        displayHeader();
+        System.out.println("Loading...");
+    }
+
     public void systemError() {
         System.out.println(ANSI_RED + "System error!" + ANSI_RESET);
     }
