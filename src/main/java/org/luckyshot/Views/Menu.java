@@ -12,7 +12,8 @@ public class Menu extends View{
         }
         displayHeader();
 
-        System.out.println("\nMain menu\n");
+        setCursorPos(5, 1);
+        System.out.println("Main menu\n");
         System.out.println("1. Single player");
         System.out.println("2. Multiplayer");
         System.out.println("3. Shop");
@@ -28,9 +29,12 @@ public class Menu extends View{
         }
         displayHeader();
 
-        System.out.println("\nLogin menu\n");
+        setCursorPos(5, 1);
+        System.out.println("Login menu");
         System.out.println("1. Login");
         System.out.println("2. Register");
+        System.out.println("3. Quit");
+        setCursorPos(10, 1);
     }
 
     public int getUserInput() {
@@ -44,6 +48,6 @@ public class Menu extends View{
     }
 
     public void quitGame() {
-        System.out.println("Goodbye, thanks for playing!");
+        System.out.println("Goodbye, hope to see you again!");
     }
 }

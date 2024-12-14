@@ -37,10 +37,23 @@ public class LoginFacade {
                 this.login();
             } else if (choice == 2) {
                 this.register();
-            } else {
+            } else if(choice == 3) {
+                try {
+                    this.quitGame();
+                } catch (Exception e) {
+                    System.exit(0);
+                }
+            }else {
                 menu.showInvalidChoice();
             }
-        } while(choice < 1 || choice > 2);
+        } while(choice < 1 || choice > 3);
+    }
+
+    private void quitGame() throws InterruptedException {
+        Menu menu = new Menu();
+        menu.quitGame();
+        Thread.sleep(1000);
+        System.exit(0);
     }
 
     public void login() {

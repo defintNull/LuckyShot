@@ -12,8 +12,8 @@ public class LoginView extends View{
             System.out.println("!!! Error while cleaning the console !!!");
         }
         displayHeader();
-
-        System.out.println("\nLogin\n");
+        setCursorPos(5, 1);
+        System.out.println("Login\n");
     }
 
     public void displayRegistration() {
@@ -24,7 +24,8 @@ public class LoginView extends View{
         }
         displayHeader();
 
-        System.out.println("\nRegistration\n");
+        setCursorPos(5, 1);
+        System.out.println("Registration\n");
         System.out.println("To register enter username and password");
     }
 

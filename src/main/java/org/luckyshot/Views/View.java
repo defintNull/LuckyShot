@@ -18,17 +18,23 @@ public abstract class View {
     protected static final String ANSI_WHITE = "\u001B[37m";
 
     protected void displayHeader() {
-        System.out.println("=".repeat(20) + ANSI_PURPLE + "\n     Lucky Shot\n" + ANSI_RESET + "=".repeat(20));
+        setCursorPos(1, 1);
+        System.out.print("╔" + "═".repeat(98) + "╗");
+        setCursorPos(2, 1);
+        System.out.print("║");
+        setCursorPos(2, 46);
+        System.out.println(ANSI_PURPLE + "Lucky Shot\n" + ANSI_RESET);
+        setCursorPos(2, 100);
+        System.out.print("║");
+        setCursorPos(3, 1);
+        System.out.print("╚"+ "═".repeat(98) + "╝");
     }
 
     protected void clearScreen() throws IOException, InterruptedException {
         final String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows 10"))
+        if (os.contains("windows"))
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-        else if(os.contains("windows 11")) {
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
-        } else
+        else
             new ProcessBuilder("clear").inheritIO().start().waitFor();
     }
 
@@ -62,10 +68,16 @@ public abstract class View {
             System.out.println("!!! Error while cleaning the console !!!");
         }
         displayHeader();
+        setCursorPos(5, 1);
         System.out.println("Loading...");
     }
 
     public void systemError() {
         System.out.println(ANSI_RED + "System error!" + ANSI_RESET);
+    }
+
+    protected void setCursorPos(int row, int column) {
+        char escCode = 0x1B;
+        System.out.printf("%c[%d;%df",escCode,row,column);
     }
 }

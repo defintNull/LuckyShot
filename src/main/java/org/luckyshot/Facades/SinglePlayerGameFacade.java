@@ -104,6 +104,7 @@ public class SinglePlayerGameFacade {
         Gun gun = Gun.getInstance();
         if(gun.isEmpty()) {
             consumableDrawPhase();
+            showGameState();
             gunLoadingPhase();
             showGameState();
         }
