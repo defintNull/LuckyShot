@@ -24,6 +24,14 @@ public class LoginFacade {
     }
 
     public void start() {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd", "/c", "chcp 65001");
+            Process process = processBuilder.start();
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Menu menu = new Menu();
         menu.showLoading();
         hibernateService = HibernateService.getInstance();
