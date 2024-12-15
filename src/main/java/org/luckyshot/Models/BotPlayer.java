@@ -3,13 +3,17 @@ package org.luckyshot.Models;
 import java.util.Random;
 
 public class BotPlayer extends Player{
-    public int getConsumableInput() {
+    public String getConsumableInput() {
         Random rand = new Random();
-        return rand.nextInt(1,9);
+        return "use " + rand.nextInt(1,9);
     }
 
-    public int getShootingInput() {
+    public String getShootingInput() {
         Random rand = new Random();
-        return rand.nextInt(2);
+        return "shoot " + rand.nextInt(2);
+    }
+
+    public boolean isShieldActive() {
+        return false;
     }
 }

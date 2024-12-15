@@ -1,7 +1,10 @@
 package org.luckyshot.Models;
 
 import org.luckyshot.Models.Consumables.Consumable;
+import org.luckyshot.Models.Powerups.Bomb;
+import org.luckyshot.Models.Powerups.PoisonBullet;
 import org.luckyshot.Models.Powerups.Powerup;
+import org.luckyshot.Models.Powerups.Shield;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +19,14 @@ public class HumanPlayer extends Player{
 
     public HumanPlayer(long userId, HashMap<Powerup, Integer> powerups) {
         this.userId = userId;
-        this.powerups = powerups;
+        //this.powerups = powerups;
+        this.powerups = new HashMap<>();
+        Bomb b = Bomb.getInstance();
+        this.powerups.put(b, 2);
+        Shield s = Shield.getInstance();
+        this.powerups.put(s, 2);
+        PoisonBullet pb = PoisonBullet.getInstance();
+        this.powerups.put(pb, 2);
         this.xp = 0;
     }
 

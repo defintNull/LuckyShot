@@ -4,6 +4,7 @@ import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
 import org.luckyshot.Models.Powerups.Powerup;
+import org.luckyshot.Models.Powerups.PowerupInterface;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Models.StateEffects.StateEffectInterface;
 import org.luckyshot.Views.SinglePlayerGameView;
@@ -40,8 +41,6 @@ public class SinglePlayerGameFacade {
 
         this.singlePlayerGame = new SinglePlayerGame(user.getPlayer(), botPlayer);
 
-        showGameState();
-
         boolean gameEnded = false;
         boolean roundEnded = false;
         int roundNumber = 1;
@@ -50,6 +49,7 @@ public class SinglePlayerGameFacade {
         while(!gameEnded) {
             //Inizio di un round
             Round round = new Round(roundNumber, getRandomStateEffect());
+            singlePlayerGameView.addMessage("Starting new round...", "slow");
             this.singlePlayerGame.setRound(round);
             Random rnd = new Random();
             int randomLives = rnd.nextInt(2, 5);
@@ -66,7 +66,6 @@ public class SinglePlayerGameFacade {
                 }
 
                 Turn currentTurn = new Turn(currentPlayer);
-
                 this.singlePlayerGame.getRound().setTurn(currentTurn);
 
                 update();
@@ -77,15 +76,16 @@ public class SinglePlayerGameFacade {
                     roundNumber += 1;
                 }
                 if(humanPlayer.getLives() <= 0) {
+                    roundEnded = true;
                     gameEnded = true;
                 }
 
                 turn = (turn + 1) % 2;
             }
 
-
             // DA RIVEDERE LA CONDIZIONE DI FINE GIOCO
-            if(singlePlayerGame.getRound().getRoundNumber() == 3 && humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0) {
+            if(singlePlayerGame.getRound().getRoundNumber() == 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
+                singlePlayerGameView.addMessage("End of game", "fast");
                 gameEnded = true;
             }
         }
@@ -95,9 +95,11 @@ public class SinglePlayerGameFacade {
         HashMap<String, Object> objectStateMap = singlePlayerGame.getStateMap();
         HashMap<String, String> stateMap = new HashMap<>();
 
+        // To show players lives on view
         stateMap.put("botLives", Integer.toString(((BotPlayer)objectStateMap.get("bot")).getLives()));
         stateMap.put("humanPlayerLives", Integer.toString(((HumanPlayer)objectStateMap.get("humanPlayer")).getLives()));
 
+        // To show bot consumables on view
         ArrayList<String> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
         botConsumables.forEach(consumable -> {
             if(!stateMap.containsKey("bot" + consumable)) {
@@ -106,6 +108,7 @@ public class SinglePlayerGameFacade {
             stateMap.put("bot" + consumable, Integer.toString(Integer.parseInt(stateMap.get("bot" + consumable)) + 1));
         });
 
+        // To show human consumables on view
         ArrayList<String> humanConsumables = (((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables());
         humanConsumables.forEach(consumable -> {
             if(!stateMap.containsKey("human" + consumable)) {
@@ -114,8 +117,17 @@ public class SinglePlayerGameFacade {
             stateMap.put("human" + consumable, Integer.toString(Integer.parseInt(stateMap.get("human" + consumable)) + 1));
         });
 
+        // To show human powerups on view
+        HashMap<Powerup, Integer> powerups = (((HumanPlayer) objectStateMap.get("humanPlayer")).getPowerups());
+        for(Powerup powerup : powerups.keySet()) {
+            stateMap.put(powerup.toString(), Integer.toString(powerups.get(powerup)));
+        }
+
+        // To show round number on view
         Round round = (Round)objectStateMap.get("round");
         stateMap.put("roundNumber", Integer.toString(round.getRoundNumber()));
+
+        // To show state effect on view
         StateEffect currentStateEffect = round.getStateEffect();
         if(currentStateEffect != null) {
             stateMap.put("stateEffect", round.getStateEffect().getClass().toString());
@@ -123,12 +135,18 @@ public class SinglePlayerGameFacade {
             stateMap.put("stateEffect", "none");
         }
 
+        // To show current player on view
         stateMap.put("turn", singlePlayerGame.getRound().getTurn().getPlayer().getClass().getSimpleName());
+
+        // To show powerups effects on view
+        stateMap.put("isBotPoisoned", Boolean.toString(singlePlayerGame.getBot().isPoisoned()));
+        stateMap.put("isHumanPoisoned", Boolean.toString(singlePlayerGame.getHumanPlayer().isPoisoned()));
+        stateMap.put("isHumanShielded", Boolean.toString(singlePlayerGame.getHumanPlayer().isShieldActive()));
 
         singlePlayerGameView.showGameState(stateMap);
     }
 
-    public int getUserInput() {
+    public String getUserInput() {
         if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
             return singlePlayerGameView.getUserInput();
         }
@@ -141,31 +159,90 @@ public class SinglePlayerGameFacade {
 
     public void update() {
         Gun gun = Gun.getInstance();
-        if(gun.isEmpty()) {
-            consumableDrawPhase();
-            showGameState();
-            gunLoadingPhase();
-            showGameState();
-        }
-
-        if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
-            powerupUsePhase();
-            showGameState();
-
-            consumableUsePhase();
-            showGameState();
-        }
-
-        if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == BotPlayer.class) {
-            Random rand = new Random();
-            if(rand.nextInt(100) < 66) {
-                consumableUsePhase();
+        while(true) {
+            singlePlayerGame.getRound().getTurn().getPlayer().setShieldActive(false);
+            if(gun.isEmpty()) {
+                consumableDrawPhase();
+                showGameState();
+                gunLoadingPhase();
                 showGameState();
             }
+
+            //Prendo l'input del giocatore
+            String[] userInput = getUserInput().split(" ");
+            String command = userInput[0].toLowerCase(); // use, shoot
+            String target = userInput[1].toLowerCase(); // 1, 2, ..., a, b, ...
+
+            if(command.equals("use")) {
+                useCommand(target);
+            } else if(command.equals("shoot")) {
+                boolean changeTurn = shootingPhase(target); // AGGIUNGERE CONTROLLO ERRORE
+                if(changeTurn) {
+                    if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
+                        singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
+                        singlePlayerGame.getRound().getTurn().getPlayer().setPoisoned(false);
+                    }
+                    break;
+                }
+                else {
+                    singlePlayerGameView.systemError();
+                }
+            }
+            //AGGIUNGERE ELSE
+
+            showGameState();
+
+//            if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
+//                boolean ok = false;
+//                for(Map.Entry<Powerup, Integer> entry : this.singlePlayerGame.getHumanPlayer().getPowerups().entrySet()){
+//                    if(entry.getValue() != 0) {
+//                        ok = true;
+//                        break;
+//                    }
+//                }
+//                if(ok) {
+//                    singlePlayerGameView.addMessage("Powerup use phase", "fast");
+//                    singlePlayerGameView.printMessages();
+//                    powerupUsePhase();
+//                    showGameState();
+//                }
+//
+//                singlePlayerGameView.addMessage("Consumable use phase", "fast");
+//                consumableUsePhase();
+//                showGameState();
+//            }
+
+//            if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == BotPlayer.class) {
+//                Random rand = new Random();
+//                if(rand.nextInt(100) < 66) {
+//                    consumableUsePhase();
+//                    showGameState();
+//                }
+//            }
+
+//            singlePlayerGameView.addMessage("Shooting phase", "fast");
+//            boolean changeTurn = shootingPhase();
+//            showGameState();
+//
         }
 
-        shootingPhase();
-        showGameState();
+    }
+
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch(NumberFormatException | NullPointerException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private void useCommand(String target) {
+        if(isInteger(target)) {
+            powerupUse(Integer.parseInt(target));
+        } else {
+            //consumableUse();
+        }
     }
 
     public StateEffect getRandomStateEffect() {
@@ -255,45 +332,80 @@ public class SinglePlayerGameFacade {
         singlePlayerGameView.showBullets(b);
     }
 
-    public void powerupUsePhase() {
+    public void powerupUse(int target) {
         this.singlePlayerGame.getRound().getTurn().setPhase(2);
 
-        ArrayList<HashMap<String, String>> array = new ArrayList<HashMap<String, String>>();
-        HashMap<Powerup, Integer> powerups = this.singlePlayerGame.getHumanPlayer().getPowerups();
+        String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
 
-        for(Map.Entry<Powerup, Integer> entry : powerups.entrySet()) {
-            HashMap<String, String> hashMap = new HashMap<String, String>();
-            hashMap.put("name", entry.getKey().toString());
-            hashMap.put("occurrences", Integer.toString(entry.getValue()));
-            array.add(hashMap);
+        try {
+            Method method = Class.forName(powerupName).getMethod("getInstance");
+            Object obj = method.invoke(null);
+            if(singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) != 0) {
+                ((Powerup) obj).use(singlePlayerGame);
+                singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
+                singlePlayerGameView.showPowerupActivation(((Powerup)obj).toString());
+            } else {
+                //VA MESSO IL MESSAGGIO DI ERRORE DI MANCANZA DI POWERUP
+
+            }
+        } catch (Exception e) {
+            singlePlayerGameView.systemError();
         }
 
-        singlePlayerGameView.showPowerups(array);
-
-        //AGGIUNGERE CONTROLLO POWERUP
-        //if(this.singlePlayerGame.getHumanPlayer().)
-        int userInput = getUserInput();
     }
+//
+//    public void consumableUsePhase() {
+//        this.singlePlayerGame.getRound().getTurn().setPhase(3);
+//        //AGGIUNGERE CONTROLLO CONSUMABILI
+//        int userInput = getUserInput();
+//    }
 
-    public void consumableUsePhase() {
-        this.singlePlayerGame.getRound().getTurn().setPhase(3);
-        //AGGIUNGERE CONTROLLO CONSUMABILI
-        int userInput = getUserInput();
-    }
+    public boolean shootingPhase(String target) {
+        //this.singlePlayerGame.getRound().getTurn().setPhase(4);
+        boolean changeTurn = true;
 
-    public boolean shootingPhase() {
-        this.singlePlayerGame.getRound().getTurn().setPhase(4);
-        int userInput = getUserInput();
+        Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
+        Bullet currentBullet = Gun.getInstance().popBullet();
+        // 1 = self
+        // 2 = other
+        if(target.equals("1")) {
+            if(currentBullet.getType() == 0) {
+                changeTurn = false;
+                singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
+            } else {
+                if(!currentPlayer.isShieldActive()) {
+                    currentPlayer.setLives(currentPlayer.getLives() - 1);
+                    if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
+                        currentPlayer.setPoisoned(true);
+                    }
+                } else {
+                    currentPlayer.setShieldActive(false);
+                }
+            }
+        } else if(target.equals("2")) {
+            if(currentBullet.getType() == 1) {
+                Player otherPlayer = null;
+                if(currentPlayer.getClass() == HumanPlayer.class) {
+                    otherPlayer = singlePlayerGame.getBot();
+                } else {
+                    otherPlayer = singlePlayerGame.getHumanPlayer();
+                }
 
-        // 1 = human
-        // 2 = bot
-        if(userInput == 1) {
-            Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
-            if(currentPlayer.getClass() == )
-        } else if(userInput == 2) {
-
+                if(!otherPlayer.isShieldActive()) {
+                    otherPlayer.setLives(otherPlayer.getLives() - 1);
+                    if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
+                        otherPlayer.setPoisoned(true);
+                    }
+                } else {
+                    otherPlayer.setShieldActive(false);
+                }
+            }
         } else {
             singlePlayerGameView.systemError();
         }
+        singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
+        singlePlayerGameView.showShootingResult(currentBullet.getType());
+
+        return changeTurn;
     }
 }

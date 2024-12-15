@@ -1,6 +1,7 @@
 package org.luckyshot.Models.Powerups;
 
 import org.luckyshot.Models.Consumables.CrystalBall;
+import org.luckyshot.Models.SinglePlayerGame;
 
 public class PoisonBullet extends Powerup{
     private static PoisonBullet instance;
@@ -8,6 +9,10 @@ public class PoisonBullet extends Powerup{
 
     private PoisonBullet() {
         super(COST);
+    }
+
+    public void use(SinglePlayerGame singlePlayerGame) {
+
     }
 
     public static PoisonBullet getInstance() {

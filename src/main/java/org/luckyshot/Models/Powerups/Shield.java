@@ -1,6 +1,7 @@
 package org.luckyshot.Models.Powerups;
 
 import org.luckyshot.Models.Consumables.CrystalBall;
+import org.luckyshot.Models.SinglePlayerGame;
 
 public class Shield extends Powerup{
     private static Shield instance;
@@ -8,6 +9,10 @@ public class Shield extends Powerup{
 
     private Shield() {
         super(COST);
+    }
+
+    public void use(SinglePlayerGame singlePlayerGame) {
+        singlePlayerGame.getHumanPlayer().setShieldActive(true);
     }
 
     public static Shield getInstance() {

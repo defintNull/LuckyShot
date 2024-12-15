@@ -15,11 +15,11 @@ public class GameView extends View{
         setCursorPos(3, 1);
         System.out.print("╠"+ "═".repeat(98) + "╣");
     }
-    public int getUserInput() {
+    public String getUserInput() {
         setCursorPos(34, 1);
         System.out.print("> ");
         Scanner scanner = new Scanner(System.in);
-        return scanner.nextInt();
+        return scanner.nextLine();
     }
 
 }
