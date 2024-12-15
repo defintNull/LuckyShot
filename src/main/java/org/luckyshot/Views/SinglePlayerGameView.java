@@ -67,11 +67,7 @@ public class SinglePlayerGameView extends GameView{
         System.out.println("Round " + stateMap.get("roundNumber"));
 
         setCursorPos(2, 40);
-        if(stateMap.get("stateEffect").equals("none")) {
-            System.out.println("State effect: " + stateMap.get("stateEffect"));
-        } else {
-            System.out.println("State effect: No state effect");
-        }
+        System.out.println("State effect: " + stateMap.get("stateEffect"));
 
         setCursorPos(4, 2);
         System.out.print("Bot: ");
