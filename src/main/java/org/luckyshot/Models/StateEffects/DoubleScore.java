@@ -13,4 +13,8 @@ public class DoubleScore extends StateEffect {
         }
         return instance;
     }
+
+    public String toString() {
+        return "Double score";
+    }
 }

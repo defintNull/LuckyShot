@@ -52,7 +52,7 @@ public class User {
         this.level = level;
         this.totalScore = totalScore;
 
-        for(Class<? extends Powerup> powerup : PowerupInterface.getConsumableClassList()) {
+        for(Class<? extends Powerup> powerup : PowerupInterface.getPowerupClassList()) {
             try {
                 Method method = Class.forName(powerup.getName()).getMethod("getInstance");
                 Object obj = method.invoke(null);

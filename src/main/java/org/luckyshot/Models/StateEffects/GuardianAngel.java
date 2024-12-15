@@ -13,4 +13,8 @@ public class GuardianAngel extends StateEffect{
         }
         return instance;
     }
+
+    public String toString() {
+        return "Guardian angel";
+    }
 }

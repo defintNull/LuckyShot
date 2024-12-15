@@ -13,4 +13,8 @@ public class Antidote extends StateEffect{
         }
         return instance;
     }
+
+    public String toString() {
+        return "Antidote";
+    }
 }

@@ -10,7 +10,6 @@ public class SinglePlayerGame {
     public SinglePlayerGame(HumanPlayer player, BotPlayer bot) {
         setHumanPlayer(player);
         setBot(bot);
-        this.round = new Round(1, player, bot);
     }
 
     public HashMap<String, Object> getStateMap() {

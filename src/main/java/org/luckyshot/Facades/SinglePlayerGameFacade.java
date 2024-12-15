@@ -5,6 +5,7 @@ import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.StateEffects.StateEffect;
+import org.luckyshot.Models.StateEffects.StateEffectInterface;
 import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
 
@@ -42,8 +43,46 @@ public class SinglePlayerGameFacade {
         showGameState();
 
         boolean gameEnded = false;
+        boolean roundEnded = false;
+        int roundNumber = 1;
+        int turn = 0;
+
         while(!gameEnded) {
-            update();
+            //Inizio di un round
+            Round round = new Round(roundNumber, getRandomStateEffect());
+            this.singlePlayerGame.setRound(round);
+            Random rnd = new Random();
+            int randomLives = rnd.nextInt(2, 5);
+            this.singlePlayerGame.getHumanPlayer().setLives(randomLives);
+            this.singlePlayerGame.getBot().setLives(randomLives);
+
+            while(!roundEnded) {
+                //Inizio di un turno
+                Player currentPlayer = null;
+                if(turn == 0) {
+                    currentPlayer = singlePlayerGame.getHumanPlayer();
+                } else if(turn == 1) {
+                    currentPlayer = singlePlayerGame.getBot();
+                }
+
+                Turn currentTurn = new Turn(currentPlayer);
+
+                this.singlePlayerGame.getRound().setTurn(currentTurn);
+
+                update();
+
+                // DA RIVEDERE LA CONDIZIONE DI FINE ROUND
+                if(botPlayer.getLives() <= 0) {
+                    roundEnded = true;
+                    roundNumber += 1;
+                }
+                if(humanPlayer.getLives() <= 0) {
+                    gameEnded = true;
+                }
+
+                turn = (turn + 1) % 2;
+            }
+
 
             // DA RIVEDERE LA CONDIZIONE DI FINE GIOCO
             if(singlePlayerGame.getRound().getRoundNumber() == 3 && humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0) {
@@ -127,6 +166,22 @@ public class SinglePlayerGameFacade {
 
         shootingPhase();
         showGameState();
+    }
+
+    public StateEffect getRandomStateEffect() {
+        ArrayList<Class<? extends StateEffect>> stateEffects = StateEffectInterface.getStateEffectClassList();
+        Random rand = new Random();
+        StateEffect stateEffect = null;
+        try {
+            Method method = Class.forName(stateEffects.get(rand.nextInt(0, stateEffects.size())).getName()).getMethod("getInstance");
+            Object obj = method.invoke(null);
+            stateEffect = (StateEffect) obj;
+        } catch (Exception e) {
+            SinglePlayerGameView view = new SinglePlayerGameView();
+            view.systemError();
+        }
+
+        return stateEffect;
     }
 
     private String getRandomConsumable() {
@@ -226,8 +281,19 @@ public class SinglePlayerGameFacade {
         int userInput = getUserInput();
     }
 
-    public void shootingPhase() {
+    public boolean shootingPhase() {
         this.singlePlayerGame.getRound().getTurn().setPhase(4);
         int userInput = getUserInput();
+
+        // 1 = human
+        // 2 = bot
+        if(userInput == 1) {
+            Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
+            if(currentPlayer.getClass() == )
+        } else if(userInput == 2) {
+
+        } else {
+            singlePlayerGameView.systemError();
+        }
     }
 }

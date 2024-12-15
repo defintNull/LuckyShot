@@ -1,7 +1,11 @@
 package org.luckyshot.Models.Consumables;
 
 import org.luckyshot.Models.Enums.Probability;
+import org.luckyshot.Views.GameView;
+import org.luckyshot.Views.SinglePlayerGameView;
+import org.luckyshot.Views.View;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -17,15 +21,17 @@ public interface ConsumableInterface {
 
     static ArrayList<String> getConsumableStringList() {
         ArrayList<String> list = new ArrayList<String>();
-        list.add(CrystalBall.class.getSimpleName());
-        list.add(EnergyDrink.class.getSimpleName());
-        list.add(GhostGun.class.getSimpleName());
-        list.add(Glasses.class.getSimpleName());
-        list.add(Handcuffs.class.getSimpleName());
-        list.add(HealthPotion.class.getSimpleName());
-        list.add(Inverter.class.getSimpleName());
-        list.add(Magnet.class.getSimpleName());
-        list.add(MisteryPotion.class.getSimpleName());
+        for(int i = 0; i < getConsumableClassList().size(); i++) {
+            try {
+                Method method = Class.forName(ConsumableInterface.getConsumableClassList().get(i).getName()).getMethod("getInstance");
+                Object obj = method.invoke(null);
+                String n = ((Consumable) obj).toString();
+                list.add(n);
+            } catch (Exception e) {
+                SinglePlayerGameView view = new SinglePlayerGameView();
+                view.systemError();
+            }
+        }
         return list;
     }
 

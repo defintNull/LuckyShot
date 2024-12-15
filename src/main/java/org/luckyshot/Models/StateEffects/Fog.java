@@ -13,4 +13,8 @@ public class Fog extends StateEffect{
         }
         return instance;
     }
+
+    public String toString() {
+        return "Fog";
+    }
 }

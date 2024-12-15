@@ -2,11 +2,14 @@ package org.luckyshot.Views;
 
 import org.checkerframework.checker.units.qual.A;
 import org.luckyshot.Models.Bullet;
+import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SinglePlayerGameView extends GameView{
     public void drawTable() {
@@ -80,8 +83,12 @@ public class SinglePlayerGameView extends GameView{
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
             setCursorPos(6+i, 2);
             if (stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
-                System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
-                System.out.println(stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)));
+                try {
+                    System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
+                    System.out.println(stateMap.get("bot" + ConsumableInterface.getConsumableStringList().get(i)));
+                } catch (Exception e) {
+                    System.out.print(e.getMessage());
+                }
                 c += 1;
             }
         }
@@ -97,9 +104,15 @@ public class SinglePlayerGameView extends GameView{
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
             setCursorPos(23+i, 2);
             if (stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)) != null) {
-                System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
-                System.out.println(stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)));
-                c += 1;
+                try {
+                    Method method = Class.forName(ConsumableInterface.getConsumableClassList().get(i).getName()).getMethod("getInstance");
+                    Object obj = method.invoke(null);
+                    String n = ((Consumable) obj).toString();
+                    System.out.print(letters.charAt(i) + ". " + n + ": x");
+                    System.out.println(stateMap.get("human" + ConsumableInterface.getConsumableStringList().get(i)));
+                } catch (Exception e) {
+                    System.out.print(e.getMessage());
+                }
             }
         }
 
