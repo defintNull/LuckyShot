@@ -42,6 +42,10 @@ public class Gun {
         return b;
     }
 
+    public void clearBullets() {
+        bullets.clear();
+    }
+
     public Bullet getBullet(int i) {
         return bullets.get(i);
     }

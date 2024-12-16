@@ -176,6 +176,7 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showBullets(ArrayList<String> bullets) {
+        lastAction = null;
         customPrint("Here are the bullets: ", "slow", 16, 52);
 
         String m = "";
