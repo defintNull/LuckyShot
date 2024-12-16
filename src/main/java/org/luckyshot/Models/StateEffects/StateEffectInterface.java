@@ -25,7 +25,7 @@ public interface StateEffectInterface {
     }
 
     static ArrayList<Class<? extends StateEffect>> getStateEffectClassList() {
-        ArrayList<Class<? extends StateEffect>> list = new ArrayList<Class<? extends StateEffect>>();
+        ArrayList<Class<? extends StateEffect>> list = new ArrayList<>();
         list.add(Antidote.class);
         list.add(DoubleScore.class);
         list.add(Fog.class);

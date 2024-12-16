@@ -49,7 +49,7 @@ public class SinglePlayerGameFacade {
         while(!gameEnded) {
             //Inizio di un round
             Round round = new Round(roundNumber, getRandomStateEffect());
-            singlePlayerGameView.addMessage("Starting new round...", "slow");
+
             this.singlePlayerGame.setRound(round);
             Random rnd = new Random();
             int randomLives = rnd.nextInt(2, 5);
@@ -85,7 +85,7 @@ public class SinglePlayerGameFacade {
 
             // DA RIVEDERE LA CONDIZIONE DI FINE GIOCO
             if(singlePlayerGame.getRound().getRoundNumber() == 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
-                singlePlayerGameView.addMessage("End of game", "fast");
+                singlePlayerGameView.showError("Game ended");
                 gameEnded = true;
             }
         }
@@ -130,7 +130,7 @@ public class SinglePlayerGameFacade {
         // To show state effect on view
         StateEffect currentStateEffect = round.getStateEffect();
         if(currentStateEffect != null) {
-            stateMap.put("stateEffect", round.getStateEffect().getClass().toString());
+            stateMap.put("stateEffect", round.getStateEffect().getClass().getSimpleName());
         } else {
             stateMap.put("stateEffect", "none");
         }
@@ -170,13 +170,19 @@ public class SinglePlayerGameFacade {
 
             //Prendo l'input del giocatore
             String[] userInput = getUserInput().split(" ");
+            singlePlayerGameView.debug(userInput[0] + " " + userInput[1]);
+            while(userInput.length != 2) {
+                singlePlayerGameView.showError("Command not recognized");
+                userInput = getUserInput().split(" ");
+            }
             String command = userInput[0].toLowerCase(); // use, shoot
             String target = userInput[1].toLowerCase(); // 1, 2, ..., a, b, ...
 
             if(command.equals("use")) {
                 useCommand(target);
             } else if(command.equals("shoot")) {
-                boolean changeTurn = shootingPhase(target); // AGGIUNGERE CONTROLLO ERRORE
+                boolean changeTurn = shootingPhase(target);
+                singlePlayerGameView.debug("shoot");
                 if(changeTurn) {
                     if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
                         singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
@@ -184,46 +190,11 @@ public class SinglePlayerGameFacade {
                     }
                     break;
                 }
-                else {
-                    singlePlayerGameView.systemError();
-                }
+            } else {
+                singlePlayerGameView.showError("Command not recognized");
             }
-            //AGGIUNGERE ELSE
 
             showGameState();
-
-//            if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
-//                boolean ok = false;
-//                for(Map.Entry<Powerup, Integer> entry : this.singlePlayerGame.getHumanPlayer().getPowerups().entrySet()){
-//                    if(entry.getValue() != 0) {
-//                        ok = true;
-//                        break;
-//                    }
-//                }
-//                if(ok) {
-//                    singlePlayerGameView.addMessage("Powerup use phase", "fast");
-//                    singlePlayerGameView.printMessages();
-//                    powerupUsePhase();
-//                    showGameState();
-//                }
-//
-//                singlePlayerGameView.addMessage("Consumable use phase", "fast");
-//                consumableUsePhase();
-//                showGameState();
-//            }
-
-//            if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == BotPlayer.class) {
-//                Random rand = new Random();
-//                if(rand.nextInt(100) < 66) {
-//                    consumableUsePhase();
-//                    showGameState();
-//                }
-//            }
-
-//            singlePlayerGameView.addMessage("Shooting phase", "fast");
-//            boolean changeTurn = shootingPhase();
-//            showGameState();
-//
         }
 
     }
@@ -239,9 +210,9 @@ public class SinglePlayerGameFacade {
 
     private void useCommand(String target) {
         if(isInteger(target)) {
-            powerupUse(Integer.parseInt(target));
+            usePowerup(Integer.parseInt(target)); //Aggiungere controllo numero
         } else {
-            //consumableUse();
+            //useConsumable(target);
         }
     }
 
@@ -254,8 +225,7 @@ public class SinglePlayerGameFacade {
             Object obj = method.invoke(null);
             stateEffect = (StateEffect) obj;
         } catch (Exception e) {
-            SinglePlayerGameView view = new SinglePlayerGameView();
-            view.systemError();
+            singlePlayerGameView.showError("Could not get state effect");
         }
 
         return stateEffect;
@@ -271,7 +241,7 @@ public class SinglePlayerGameFacade {
                 Object consumable = m.invoke(null);
                 consumableProb.put(c.getSimpleName(), ((Consumable) consumable).getProbability());
             } catch (Exception e) {
-                singlePlayerGameView.systemError();
+                singlePlayerGameView.showError("Error getting consumable probability");
             }
         }
 
@@ -318,7 +288,6 @@ public class SinglePlayerGameFacade {
     }
 
     public void gunLoadingPhase() {
-        this.singlePlayerGame.getRound().getTurn().setPhase(1);
         ArrayList<Bullet> b = Gun.getInstance().generateBulletSequence();
         showBullets(b);
         Gun.getInstance().setBullets(b);
@@ -332,11 +301,8 @@ public class SinglePlayerGameFacade {
         singlePlayerGameView.showBullets(b);
     }
 
-    public void powerupUse(int target) {
-        this.singlePlayerGame.getRound().getTurn().setPhase(2);
-
+    public void usePowerup(int target) {
         String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
-
         try {
             Method method = Class.forName(powerupName).getMethod("getInstance");
             Object obj = method.invoke(null);
@@ -345,23 +311,14 @@ public class SinglePlayerGameFacade {
                 singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
                 singlePlayerGameView.showPowerupActivation(((Powerup)obj).toString());
             } else {
-                //VA MESSO IL MESSAGGIO DI ERRORE DI MANCANZA DI POWERUP
-
+                singlePlayerGameView.showError("No such powerup");
             }
         } catch (Exception e) {
-            singlePlayerGameView.systemError();
+            singlePlayerGameView.showError("Could not use powerup");
         }
-
     }
-//
-//    public void consumableUsePhase() {
-//        this.singlePlayerGame.getRound().getTurn().setPhase(3);
-//        //AGGIUNGERE CONTROLLO CONSUMABILI
-//        int userInput = getUserInput();
-//    }
 
     public boolean shootingPhase(String target) {
-        //this.singlePlayerGame.getRound().getTurn().setPhase(4);
         boolean changeTurn = true;
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
@@ -401,7 +358,7 @@ public class SinglePlayerGameFacade {
                 }
             }
         } else {
-            singlePlayerGameView.systemError();
+            singlePlayerGameView.showError("Select 1 or 2");
         }
         singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
         singlePlayerGameView.showShootingResult(currentBullet.getType());

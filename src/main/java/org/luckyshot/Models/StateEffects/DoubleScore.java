@@ -7,7 +7,7 @@ public class DoubleScore extends StateEffect {
 
     }
 
-    public static DoubleScore getInstance(DoubleScore instance) {
+    public static DoubleScore getInstance() {
         if(instance == null) {
             instance = new DoubleScore();
         }

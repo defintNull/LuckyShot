@@ -7,7 +7,7 @@ public class Antidote extends StateEffect{
 
     }
 
-    public static Antidote getInstance(Antidote instance) {
+    public static Antidote getInstance() {
         if(instance == null) {
             instance = new Antidote();
         }

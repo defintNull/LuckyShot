@@ -14,8 +14,9 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class SinglePlayerGameView extends GameView{
-    ArrayList<ArrayList<String>> messages = new ArrayList<>();
+    //ArrayList<ArrayList<String>> messages = new ArrayList<>();
     HashMap<String, String> stateMap = new HashMap<>();
+    String lastAction;
 
     public void debugSleep() {
         try {
@@ -23,6 +24,16 @@ public class SinglePlayerGameView extends GameView{
         } catch (Exception e) {
             System.out.println("Errore debug");
         }
+    }
+
+    public void showError(String s) {
+        setCursorPos(27, 52);
+        System.out.print(ANSI_RED + "ERROR: " + s + ANSI_RESET);
+    }
+
+    public void debug(String s) {
+        setCursorPos(28, 52);
+        System.out.print(ANSI_CYAN + "DEBUG: " + s + ANSI_RESET);
     }
 
     public void drawTable() {
@@ -78,7 +89,6 @@ public class SinglePlayerGameView extends GameView{
         } catch (IOException | InterruptedException e) {
             System.out.println("Errore clear");
         }
-        //clearMessages();
 
         drawTable();
 
@@ -138,34 +148,32 @@ public class SinglePlayerGameView extends GameView{
             System.out.println(stateMap.get(PowerupInterface.getPowerupStringList().get(i)));
         }
 
+        setCursorPos(5, 52);
         if(stateMap.get("turn").equals("HumanPlayer")) {
-            addMessageOnTop("It's your turn.", "fast");
+            customPrint("It's your turn.", "fast");
         } else {
-            addMessageOnTop("It's your opponent's turn.", "fast");
+            customPrint("It's your opponent's turn.", "fast");
         }
 
-        printMessages();
+        printLastAction();
     }
 
-    public void showGame(HashMap<String, String> stateMap) {
-        showGameState(stateMap);
-        printMessages();
+    public void printLastAction() {
+        setCursorPos(4, 52);
+        System.out.print(lastAction);
     }
 
-    public void printMessages() {
-        for(int i = 0; i < messages.size(); i++) {
-            setCursorPos(4+i, 52);
-            if(messages.get(i).get(1).equals("fast")) {
-                System.out.print(messages.get(i).getFirst());
-            } else if(messages.get(i).get(1).equals("slow")) {
-                slowPrint(messages.get(i).getFirst());
-            }
+    public void customPrint(String message, String speed) {
+        if(speed.equals("fast")) {
+            System.out.print(message);
+        } else if(speed.equals("slow")) {
+            slowPrint(message);
         }
     }
 
     public void showBullets(ArrayList<String> bullets) {
         setCursorPos(4, 52);
-        addMessage("Here are the bullets: ", "slow");
+        lastAction = "Here are the bullets: ";
 
         String m = "";
         for (String bullet : bullets) {
@@ -176,57 +184,26 @@ public class SinglePlayerGameView extends GameView{
             }
             m += "█ " + ANSI_RESET;
         }
-        addMessage(m, "fast");
+        lastAction += m;
 
-        addMessage("I'm loading the gun...", "slow");
+        lastAction += "I'm loading the gun...";
 
-        printMessages();
         try {
             Thread.sleep(2000);
         } catch (Exception e) {
-            clearMessages();
-            setCursorPos(4, 52);
-            System.out.println("Error while sleep");
+            showError("sleep");
         }
-        clearMessages();
     }
 
     public void showShootingResult(int bulletType) {
         if(bulletType == 0) {
-            addMessage("The bullet was fake", "fast");
+            lastAction = "The bullet was fake";
         } else if(bulletType == 1) {
-            addMessage("The bullet was live", "fast");
+            lastAction = "The bullet was live";
         }
     }
 
     public void showPowerupActivation(String powerup) {
-        addMessage("A " + powerup.toLowerCase() + " has been used!", "fast");
-        printMessages();
-    }
-
-    public ArrayList<ArrayList<String>> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(ArrayList<ArrayList<String>> messages) {
-        this.messages = messages;
-    }
-
-    public void addMessage(String message, String speed) {
-        messages.add(new ArrayList<>(Arrays.asList(message, speed)));
-    }
-
-    public void addMessageOnTop(String message, String speed) {
-        messages.addFirst(new ArrayList<>(Arrays.asList(message, speed)));
-    }
-
-    public void clearMessages() {
-        messages.clear();
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("Errore clear");
-        }
-        showGameState(stateMap);
+        lastAction = "A " + powerup.toLowerCase() + " has been used!";
     }
 }

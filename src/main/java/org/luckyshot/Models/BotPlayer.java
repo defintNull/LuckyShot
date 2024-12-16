@@ -10,7 +10,7 @@ public class BotPlayer extends Player{
 
     public String getShootingInput() {
         Random rand = new Random();
-        return "shoot " + rand.nextInt(2);
+        return "shoot " + rand.nextInt(1, 3);
     }
 
     public boolean isShieldActive() {

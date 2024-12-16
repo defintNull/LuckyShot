@@ -7,7 +7,7 @@ public class GuardianAngel extends StateEffect{
 
     }
 
-    public static GuardianAngel getInstance(GuardianAngel instance) {
+    public static GuardianAngel getInstance() {
         if(instance == null) {
             instance = new GuardianAngel();
         }

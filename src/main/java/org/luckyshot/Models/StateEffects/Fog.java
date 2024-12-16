@@ -7,7 +7,7 @@ public class Fog extends StateEffect{
 
     }
 
-    public static Fog getInstance(Fog instance) {
+    public static Fog getInstance() {
         if(instance == null) {
             instance = new Fog();
         }
