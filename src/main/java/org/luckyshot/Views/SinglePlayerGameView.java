@@ -14,15 +14,14 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class SinglePlayerGameView extends GameView{
-    //ArrayList<ArrayList<String>> messages = new ArrayList<>();
     HashMap<String, String> stateMap = new HashMap<>();
     String lastAction;
 
-    public void debugSleep() {
+    public void debugSleep(int t) {
         try {
-            Thread.sleep(10000);
+            Thread.sleep(t);
         } catch (Exception e) {
-            System.out.println("Errore debug");
+            showError("debug sleep error");
         }
     }
 
@@ -36,31 +35,40 @@ public class SinglePlayerGameView extends GameView{
         System.out.print(ANSI_CYAN + "DEBUG: " + s + ANSI_RESET);
     }
 
+    public void customPrint(String message, String speed, int row, int col) {
+        setCursorPos(row, col);
+        if(speed.equals("fast")) {
+            System.out.print(message);
+        } else if(speed.equals("slow")) {
+            slowPrint(message);
+        }
+    }
+
     public void drawTable() {
         displayHeader();
 
         for(int i = 0; i < 29; i++) {
             setCursorPos(4+i, 1);
-            System.out.println("║");
+            System.out.print("║");
         }
         for(int i = 0; i < 29; i++) {
             setCursorPos(4+i, 100);
-            System.out.println("║");
+            System.out.print("║");
         }
 
         for(int i = 0; i < 29; i++) {
             setCursorPos(4+i, 51);
-            System.out.println("│");
+            System.out.print("│");
         }
 
         setCursorPos(5, 1);
-        System.out.println("╟" + "─".repeat(49) + "┤");
+        System.out.print("╟" + "─".repeat(49) + "┤");
 
         setCursorPos(22, 1);
-        System.out.println("╟" + "─".repeat(49) + "┤");
+        System.out.print("╟" + "─".repeat(49) + "┤");
 
         setCursorPos(15, 1);
-        System.out.println("╟" + "─".repeat(49) + "┤");
+        System.out.print("╟" + "─".repeat(49) + "┼" + "─".repeat(48) + "╢");
         setCursorPos(16, 22);
         System.out.print("__,_____");
         setCursorPos(17, 21);
@@ -71,34 +79,33 @@ public class SinglePlayerGameView extends GameView{
         System.out.print("`-'");
 
         setCursorPos(20, 1);
-        System.out.println("╟" + "─".repeat(49) + "┤");
+        System.out.print("╟" + "─".repeat(49) + "┼" + "─".repeat(48) + "╢");
         setCursorPos(33, 1);
-        System.out.println("╚" + "═".repeat(98) + "╝");
+        System.out.print("╚" + "═".repeat(98) + "╝");
 
         setCursorPos(3, 51);
         System.out.print("╤");
 
         setCursorPos(33, 51);
-        System.out.println("╧");
+        System.out.print("╧");
     }
 
     public void showGameState(HashMap<String, String> stateMap) {
         this.stateMap = stateMap;
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("Errore clear");
+
+        String letters = "abcdefghi"; // Da vedere perchè non scalabile
+        setCursorPos(2, 2);
+        System.out.print("Round " + stateMap.get("roundNumber") + ":");
+        if(stateMap.get("turn").equals("HumanPlayer")) {
+            customPrint("it's your turn.", "fast", 2, 11);
+        } else {
+            customPrint("it's your opponent's turn.", "fast", 2, 11);
         }
 
-        drawTable();
-
-        String letters = "abcdefghi";
-        setCursorPos(2, 2);
-        System.out.println("Round " + stateMap.get("roundNumber"));
-
         setCursorPos(2, 40);
-        System.out.println("State effect: " + stateMap.get("stateEffect"));
+        System.out.print("State effect: " + stateMap.get("stateEffect"));
 
+        // Showing bot lives and state (shield, poison)
         setCursorPos(4, 2);
         System.out.print("Bot: ");
         for(int i = 0; i < Integer.parseInt(stateMap.get("botLives")); i++) {
@@ -107,13 +114,13 @@ public class SinglePlayerGameView extends GameView{
         if(stateMap.get("isBotPoisoned").equals("true")) {
             System.out.print(" A");
         }
-        System.out.println();
 
+        // Showing bot consumables
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
             setCursorPos(6+i, 2);
             if (stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
-                System.out.println(stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
+                System.out.print(stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
             }
         }
 
@@ -135,45 +142,41 @@ public class SinglePlayerGameView extends GameView{
             setCursorPos(23+i, 2);
             if (stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
-                System.out.println(stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
+                System.out.print(stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
             }
         }
 
         // Showing powerups
         setCursorPos(23, 27);
-        System.out.println("Powerups:");
+        System.out.print("Powerups:");
         for (int i = 0; i < PowerupInterface.getPowerupStringList().size(); i++) {
             setCursorPos(24+i, 27);
             System.out.print(i + 1 + ". " + PowerupInterface.getPowerupStringList().get(i) + ": x");
-            System.out.println(stateMap.get(PowerupInterface.getPowerupStringList().get(i)));
+            System.out.print(stateMap.get(PowerupInterface.getPowerupStringList().get(i)));
         }
-
-        setCursorPos(5, 52);
-        if(stateMap.get("turn").equals("HumanPlayer")) {
-            customPrint("It's your turn.", "fast");
-        } else {
-            customPrint("It's your opponent's turn.", "fast");
-        }
-
-        printLastAction();
     }
 
     public void printLastAction() {
         setCursorPos(4, 52);
-        System.out.print(lastAction);
-    }
-
-    public void customPrint(String message, String speed) {
-        if(speed.equals("fast")) {
-            System.out.print(message);
-        } else if(speed.equals("slow")) {
-            slowPrint(message);
+        if(lastAction != null) {
+            System.out.print(lastAction);
         }
     }
 
+    public void showGame(HashMap<String, String> stateMap) {
+        try {
+            clearScreen();
+        } catch (IOException | InterruptedException e) {
+            showError("clear");
+        }
+
+        drawTable();
+        showGameState(stateMap);
+        printLastAction();
+    }
+
     public void showBullets(ArrayList<String> bullets) {
-        setCursorPos(4, 52);
-        lastAction = "Here are the bullets: ";
+        customPrint("Here are the bullets: ", "slow", 16, 52);
 
         String m = "";
         for (String bullet : bullets) {
@@ -184,9 +187,9 @@ public class SinglePlayerGameView extends GameView{
             }
             m += "█ " + ANSI_RESET;
         }
-        lastAction += m;
+        customPrint(m, "fast", 17, 52);
 
-        lastAction += "I'm loading the gun...";
+        customPrint("I'm loading the gun...", "slow", 19, 52);
 
         try {
             Thread.sleep(2000);

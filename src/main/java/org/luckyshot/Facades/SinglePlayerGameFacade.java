@@ -31,9 +31,6 @@ public class SinglePlayerGameFacade {
     }
 
     public void start(User user) {
-        // QUANDO IL FACADE PARTE DEVE AVVIARE LA PARTITA E TERMINA A PARTITA FINITA
-        // DEVE CREARE LA PARTITA, DEVE MOSTRARE IL TAVOLO, DEVE RICEVERE L'INPUT, DEVE AGGIORNARE LA PARTITA, DEVE MOSTRARE IL TAVOLO E COSì VIA
-
         HumanPlayer humanPlayer = new HumanPlayer(user.getId(), user.getPowerups());
         BotPlayer botPlayer = new BotPlayer();
 
@@ -45,6 +42,7 @@ public class SinglePlayerGameFacade {
         boolean roundEnded = false;
         int roundNumber = 1;
         int turn = 0;
+        Player[] players = {singlePlayerGame.getHumanPlayer(), singlePlayerGame.getBot()};
 
         while(!gameEnded) {
             //Inizio di un round
@@ -58,17 +56,14 @@ public class SinglePlayerGameFacade {
 
             while(!roundEnded) {
                 //Inizio di un turno
-                Player currentPlayer = null;
-                if(turn == 0) {
-                    currentPlayer = singlePlayerGame.getHumanPlayer();
-                } else if(turn == 1) {
-                    currentPlayer = singlePlayerGame.getBot();
-                }
+                Player currentPlayer = players[turn];
 
+                singlePlayerGameView.customPrint(currentPlayer.getClass().getSimpleName(), "fast", 35, 2);
+                singlePlayerGameView.debugSleep(1000);
                 Turn currentTurn = new Turn(currentPlayer);
                 this.singlePlayerGame.getRound().setTurn(currentTurn);
 
-                update();
+                processTurn();
 
                 // DA RIVEDERE LA CONDIZIONE DI FINE ROUND
                 if(botPlayer.getLives() <= 0) {
@@ -84,7 +79,7 @@ public class SinglePlayerGameFacade {
             }
 
             // DA RIVEDERE LA CONDIZIONE DI FINE GIOCO
-            if(singlePlayerGame.getRound().getRoundNumber() == 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
+            if(singlePlayerGame.getRound().getRoundNumber() >= 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
                 singlePlayerGameView.showError("Game ended");
                 gameEnded = true;
             }
@@ -143,7 +138,7 @@ public class SinglePlayerGameFacade {
         stateMap.put("isHumanPoisoned", Boolean.toString(singlePlayerGame.getHumanPlayer().isPoisoned()));
         stateMap.put("isHumanShielded", Boolean.toString(singlePlayerGame.getHumanPlayer().isShieldActive()));
 
-        singlePlayerGameView.showGameState(stateMap);
+        singlePlayerGameView.showGame(stateMap);
     }
 
     public String getUserInput() {
@@ -151,16 +146,23 @@ public class SinglePlayerGameFacade {
             return singlePlayerGameView.getUserInput();
         }
 
-        if(this.singlePlayerGame.getRound().getTurn().getPhase() == 3) {
-            return this.singlePlayerGame.getBot().getConsumableInput();
+        try{
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            singlePlayerGameView.showError("sleep error");
         }
-        return this.singlePlayerGame.getBot().getShootingInput();
+        return this.singlePlayerGame.getBot().getInput();
     }
 
-    public void update() {
+    public void processTurn() {
         Gun gun = Gun.getInstance();
-        while(true) {
+        boolean changeTurn = false;
+        while(!changeTurn) {
+
+            // Rimuovo lo scudo al giocatore corrente
             singlePlayerGame.getRound().getTurn().getPlayer().setShieldActive(false);
+
+            // Se la pistola è vuota, assegno i consumabili e la ricarico
             if(gun.isEmpty()) {
                 consumableDrawPhase();
                 showGameState();
@@ -168,27 +170,27 @@ public class SinglePlayerGameFacade {
                 showGameState();
             }
 
-            //Prendo l'input del giocatore
+            //Prendo l'input del giocatore corrente
             String[] userInput = getUserInput().split(" ");
-            singlePlayerGameView.debug(userInput[0] + " " + userInput[1]);
             while(userInput.length != 2) {
-                singlePlayerGameView.showError("Command not recognized");
+                singlePlayerGameView.showError("Wrong syntax, command not recognized");
                 userInput = getUserInput().split(" ");
             }
+            singlePlayerGameView.debug(userInput[0] + " " + userInput[1]);
             String command = userInput[0].toLowerCase(); // use, shoot
             String target = userInput[1].toLowerCase(); // 1, 2, ..., a, b, ...
 
             if(command.equals("use")) {
                 useCommand(target);
             } else if(command.equals("shoot")) {
-                boolean changeTurn = shootingPhase(target);
                 singlePlayerGameView.debug("shoot");
+                changeTurn = shootingPhase(target);
+
                 if(changeTurn) {
                     if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
                         singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
                         singlePlayerGame.getRound().getTurn().getPlayer().setPoisoned(false);
                     }
-                    break;
                 }
             } else {
                 singlePlayerGameView.showError("Command not recognized");
@@ -196,7 +198,6 @@ public class SinglePlayerGameFacade {
 
             showGameState();
         }
-
     }
 
     public static boolean isInteger(String s) {
@@ -266,7 +267,6 @@ public class SinglePlayerGameFacade {
 
     public void consumableDrawPhase() {
         int maxConsumablesNumber = 8;
-        this.singlePlayerGame.getRound().getTurn().setPhase(0);
         Random rand = new Random();
         int r = rand.nextInt(2, 6);
         int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
@@ -319,7 +319,8 @@ public class SinglePlayerGameFacade {
     }
 
     public boolean shootingPhase(String target) {
-        boolean changeTurn = true;
+        boolean changeTurn = false;
+        boolean shot = false;
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
         Bullet currentBullet = Gun.getInstance().popBullet();
@@ -327,9 +328,9 @@ public class SinglePlayerGameFacade {
         // 2 = other
         if(target.equals("1")) {
             if(currentBullet.getType() == 0) {
-                changeTurn = false;
                 singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
-            } else {
+            } else if(currentBullet.getType() == 1) {
+                changeTurn = true;
                 if(!currentPlayer.isShieldActive()) {
                     currentPlayer.setLives(currentPlayer.getLives() - 1);
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
@@ -339,6 +340,7 @@ public class SinglePlayerGameFacade {
                     currentPlayer.setShieldActive(false);
                 }
             }
+            shot = true;
         } else if(target.equals("2")) {
             if(currentBullet.getType() == 1) {
                 Player otherPlayer = null;
@@ -357,12 +359,16 @@ public class SinglePlayerGameFacade {
                     otherPlayer.setShieldActive(false);
                 }
             }
+            shot = true;
+            changeTurn = true;
         } else {
             singlePlayerGameView.showError("Select 1 or 2");
         }
-        singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
-        singlePlayerGameView.showShootingResult(currentBullet.getType());
 
+        if(shot) {
+            singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
+            singlePlayerGameView.showShootingResult(currentBullet.getType());
+        }
         return changeTurn;
     }
 }

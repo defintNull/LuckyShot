@@ -1,7 +1,6 @@
 package org.luckyshot.Models;
 
 public class Turn {
-    private int phase;
     private Gun gun;
     private Player player;
     private boolean isBulletPoisoned;
@@ -18,13 +17,6 @@ public class Turn {
 
     public void setPlayer(Player player) {
         this.player = player;
-    }
-
-    public int getPhase() {
-        return phase;
-    }
-    public void setPhase(int phase) {
-        this.phase = phase;
     }
 
     public boolean isBulletPoisoned() {
