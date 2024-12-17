@@ -23,7 +23,7 @@ public class PoisonBullet extends Powerup{
     }
 
     public String toString() {
-        return "Poison Bullet";
+        return "Poison bullet";
     }
 
     public String getEffect() {

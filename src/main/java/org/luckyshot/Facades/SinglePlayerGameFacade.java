@@ -55,6 +55,8 @@ public class SinglePlayerGameFacade {
             boolean roundEnded = false;
             int turn = 0;
 
+            singlePlayerGameView.showRoundStartingScreen(roundNumber);
+
             while(!roundEnded) {
                 //Inizio di un turno
                 Player currentPlayer = players[turn];
@@ -78,16 +80,13 @@ public class SinglePlayerGameFacade {
                 turn = (turn + 1) % 2;
             }
 
-            showGameState();
-            singlePlayerGameView.showError("Round ended");
-
             // Condizione di fine gioco
             if(singlePlayerGame.getRound().getRoundNumber() >= 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
                 gameEnded = true;
             }
         }
-        showGameState();
-        singlePlayerGameView.showError("Game ended");
+        singlePlayerGameView.showEndGameScreen(humanPlayer.getLives() != 0 ? "you" : "bot");
+        Facade.getInstance(user).menu();
     }
 
     public void showGameState() {
@@ -307,22 +306,26 @@ public class SinglePlayerGameFacade {
     }
 
     public void usePowerup(int target) {
-        String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
-        try {
-            Method method = Class.forName(powerupName).getMethod("getInstance");
-            Object obj = method.invoke(null);
-            if(singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) != 0) {
-                ((Powerup) obj).use(singlePlayerGame);
-                singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
-                singlePlayerGameView.showPowerupActivation(((Powerup)obj).toString());
-                if(obj.getClass() == Bomb.class) {
-                    singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
+        if(target >= 1 && target <= PowerupInterface.getPowerupClassList().size()) {
+            String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
+            try {
+                Method method = Class.forName(powerupName).getMethod("getInstance");
+                Object obj = method.invoke(null);
+                if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) != 0) {
+                    ((Powerup) obj).use(singlePlayerGame);
+                    singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
+                    singlePlayerGameView.showPowerupActivation(((Powerup) obj).toString());
+                    if (obj.getClass() == Bomb.class) {
+                        singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
+                    }
+                } else {
+                    singlePlayerGameView.showError("No such powerup.");
                 }
-            } else {
-                singlePlayerGameView.showError("No such powerup");
+            } catch (Exception e) {
+                singlePlayerGameView.showError("Could not use powerup...");
             }
-        } catch (Exception e) {
-            singlePlayerGameView.showError("Could not use powerup");
+        } else {
+            singlePlayerGameView.showError("No such powerup.");
         }
     }
 
@@ -333,6 +336,7 @@ public class SinglePlayerGameFacade {
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
         Bullet currentBullet = Gun.getInstance().popBullet();
+
         // 1 = self
         // 2 = other
         if(target.equals("1")) {
@@ -377,6 +381,9 @@ public class SinglePlayerGameFacade {
         if(shot) {
             singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
             singlePlayerGameView.showShootingResult(currentBullet.getType());
+            if(currentPlayer.getClass() == BotPlayer.class) {
+                singlePlayerGameView.showShootingTarget(target);
+            }
         }
         return changeTurn;
     }

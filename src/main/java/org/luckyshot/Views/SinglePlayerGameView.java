@@ -29,11 +29,13 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showError(String s) {
+        showGame(stateMap);
         setCursorPos(27, 52);
         System.out.print(ANSI_RED + "ERROR: " + s + ANSI_RESET);
     }
 
     public void debug(String s) {
+        showGame(stateMap);
         setCursorPos(28, 52);
         System.out.print(ANSI_CYAN + "DEBUG: " + s + ANSI_RESET);
     }
@@ -190,7 +192,6 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showBullets(ArrayList<String> bullets) {
-        showGame(this.stateMap);
         customPrint("Here are the bullets: ", "slow", 16, 52);
 
         String m = "";
@@ -213,11 +214,19 @@ public class SinglePlayerGameView extends GameView{
         }
     }
 
+    public void showShootingTarget(String target) {
+        if(target.equals("1")) {
+            lastAction.addFirst("The bot shot himself!");
+        } else {
+            lastAction.addFirst("The bot shoots you!");
+        }
+    }
+
     public void showShootingResult(int bulletType) {
         if(bulletType == 0) {
-            lastAction.addFirst("The bullet was fake");
+            lastAction.addFirst("The bullet was fake...");
         } else if(bulletType == 1) {
-            lastAction.addFirst("The bullet was live");
+            lastAction.addFirst("The bullet was live!");
         }
     }
 
@@ -227,5 +236,25 @@ public class SinglePlayerGameView extends GameView{
 
     public void showPowerupEffect(Powerup powerup) {
         lastAction.add(powerup.toString() + ": " + powerup.getEffect());
+    }
+
+    public void showEndGameScreen(String winner) {
+        lastAction.add("The game is over...");
+        lastAction.add("The winner is: " + winner + "!");
+        showGame(this.stateMap);
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            showError("sleep");
+        }
+    }
+
+    public void showRoundStartingScreen(int roundNumber) {
+        lastAction.add("Starting round " + roundNumber + "...");
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            showError("sleep");
+        }
     }
 }
