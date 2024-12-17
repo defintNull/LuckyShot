@@ -130,7 +130,7 @@ public class SinglePlayerGameFacade {
         // To show state effect on view
         StateEffect currentStateEffect = round.getStateEffect();
         if(currentStateEffect != null) {
-            stateMap.put("stateEffect", round.getStateEffect().getClass().getSimpleName());
+            stateMap.put("stateEffect", round.getStateEffect().toString());
         } else {
             stateMap.put("stateEffect", "none");
         }
@@ -186,6 +186,9 @@ public class SinglePlayerGameFacade {
 
             if(command.equals("use")) {
                 useCommand(target);
+                if(singlePlayerGame.getHumanPlayer().getLives() <= 0 || singlePlayerGame.getBot().getLives() <= 0) {
+                    changeTurn = true;
+                }
             } else if(command.equals("shoot")) {
                 changeTurn = shootingPhase(target);
 
