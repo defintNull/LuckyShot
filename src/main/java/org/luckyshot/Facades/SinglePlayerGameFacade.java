@@ -162,10 +162,12 @@ public class SinglePlayerGameFacade {
     public void processTurn() {
         Gun gun = Gun.getInstance();
         boolean changeTurn = false;
+
+        // Rimuovo lo scudo al giocatore corrente
+        singlePlayerGame.getRound().getTurn().getPlayer().setShieldActive(false);
+
         while(!changeTurn) {
             showGameState();
-            // Rimuovo lo scudo al giocatore corrente
-            singlePlayerGame.getRound().getTurn().getPlayer().setShieldActive(false);
 
             // Se la pistola è vuota, assegno i consumabili e la ricarico
             if(gun.isEmpty()) {
@@ -326,6 +328,7 @@ public class SinglePlayerGameFacade {
     public boolean shootingPhase(String target) {
         boolean changeTurn = false;
         boolean shot = false;
+        String user = null;
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
         Bullet currentBullet = Gun.getInstance().popBullet();

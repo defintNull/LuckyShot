@@ -4,6 +4,8 @@ import org.checkerframework.checker.units.qual.A;
 import org.luckyshot.Models.Bullet;
 import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
+import org.luckyshot.Models.HumanPlayer;
+import org.luckyshot.Models.Player;
 import org.luckyshot.Models.Powerups.PowerupInterface;
 
 import java.io.IOException;
@@ -15,7 +17,7 @@ import java.util.Objects;
 
 public class SinglePlayerGameView extends GameView{
     HashMap<String, String> stateMap = new HashMap<>();
-    String lastAction;
+    String lastAction = null;
 
     public void debugSleep(int t) {
         try {
@@ -95,12 +97,7 @@ public class SinglePlayerGameView extends GameView{
 
         String letters = "abcdefghi"; // Da vedere perchè non scalabile
         setCursorPos(2, 2);
-        System.out.print("Round " + stateMap.get("roundNumber") + ":");
-        if(stateMap.get("turn").equals("HumanPlayer")) {
-            customPrint("it's your turn.", "fast", 2, 11);
-        } else {
-            customPrint("it's your opponent's turn.", "fast", 2, 11);
-        }
+        System.out.print("Round " + stateMap.get("roundNumber"));
 
         setCursorPos(2, 40);
         System.out.print("State effect: " + stateMap.get("stateEffect"));
@@ -156,11 +153,25 @@ public class SinglePlayerGameView extends GameView{
         }
     }
 
-    public void printLastAction() {
+    public void printLastAction(String turn) {
         setCursorPos(4, 52);
-        if(lastAction != null) {
-            System.out.print(lastAction);
+
+        if(turn.equals("HumanPlayer")) {
+            customPrint("It's your turn.", "fast", 4, 52);
+        } else {
+            customPrint("It's Bot turn.", "fast", 4, 52);
         }
+
+        if(lastAction != null) {
+            customPrint(lastAction, "slow", 6, 52);
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                showError("sleep");
+            }
+        }
+
+        lastAction = null;
     }
 
     public void showGame(HashMap<String, String> stateMap) {
@@ -172,11 +183,10 @@ public class SinglePlayerGameView extends GameView{
 
         drawTable();
         showGameState(stateMap);
-        printLastAction();
+        printLastAction(stateMap.get("turn"));
     }
 
     public void showBullets(ArrayList<String> bullets) {
-        lastAction = null;
         showGame(this.stateMap);
         customPrint("Here are the bullets: ", "slow", 16, 52);
 
@@ -209,6 +219,6 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showPowerupActivation(String powerup) {
-        lastAction = "A " + powerup.toLowerCase() + " has been used!";
+        lastAction= "A " + powerup.toLowerCase() + " has been used!";
     }
 }
