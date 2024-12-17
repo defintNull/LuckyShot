@@ -192,13 +192,6 @@ public class SinglePlayerGameFacade {
                 }
             } else if(command.equals("shoot")) {
                 changeTurn = shootingPhase(target);
-
-                if(changeTurn) {
-                    if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
-                        singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
-                        singlePlayerGame.getRound().getTurn().getPlayer().setPoisoned(false);
-                    }
-                }
             } else {
                 singlePlayerGameView.showError("Command not recognized");
             }
@@ -206,6 +199,7 @@ public class SinglePlayerGameFacade {
         //Poison effect
         if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
             singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
+            singlePlayerGame.getRound().getTurn().getPlayer().setPoisoned(false);
             singlePlayerGameView.showPowerupEffect(PoisonBullet.getInstance());
         }
         showGameState();

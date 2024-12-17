@@ -39,6 +39,13 @@ public class Gun {
             b.add(new Bullet(rand.nextInt(0, 2)));
         }
 
+        b.clear();
+        b.add(new Bullet(1));
+        b.add(new Bullet(1));
+        b.add(new Bullet(1));
+        b.add(new Bullet(1));
+        b.add(new Bullet(1));
+        b.add(new Bullet(1));
         return b;
     }
 
