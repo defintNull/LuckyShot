@@ -154,10 +154,10 @@ public class SinglePlayerGameView extends GameView{
         }
     }
 
-    public void printLastAction(String turn) {
+    public void printLastAction() {
         setCursorPos(4, 52);
 
-        if(turn.equals("HumanPlayer")) {
+        if(stateMap.get("turn").equals("HumanPlayer")) {
             customPrint("It's your turn.", "fast", 4, 52);
         } else {
             customPrint("It's Bot turn.", "fast", 4, 52);
@@ -186,7 +186,7 @@ public class SinglePlayerGameView extends GameView{
 
         drawTable();
         showGameState(stateMap);
-        printLastAction(stateMap.get("turn"));
+        printLastAction();
     }
 
     public void showBullets(ArrayList<String> bullets) {
