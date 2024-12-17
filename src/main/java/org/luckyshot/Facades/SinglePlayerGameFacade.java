@@ -3,8 +3,7 @@ package org.luckyshot.Facades;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
-import org.luckyshot.Models.Powerups.Powerup;
-import org.luckyshot.Models.Powerups.PowerupInterface;
+import org.luckyshot.Models.Powerups.*;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Models.StateEffects.StateEffectInterface;
 import org.luckyshot.Views.SinglePlayerGameView;
@@ -204,6 +203,11 @@ public class SinglePlayerGameFacade {
                 singlePlayerGameView.showError("Command not recognized");
             }
         }
+        //Poison effect
+        if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
+            singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
+            singlePlayerGameView.showPowerupEffect(PoisonBullet.getInstance());
+        }
         showGameState();
     }
 
@@ -317,6 +321,9 @@ public class SinglePlayerGameFacade {
                 ((Powerup) obj).use(singlePlayerGame);
                 singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
                 singlePlayerGameView.showPowerupActivation(((Powerup)obj).toString());
+                if(obj.getClass() == Bomb.class) {
+                    singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
+                }
             } else {
                 singlePlayerGameView.showError("No such powerup");
             }
@@ -343,6 +350,7 @@ public class SinglePlayerGameFacade {
                         currentPlayer.setPoisoned(true);
                     }
                 } else {
+                    singlePlayerGameView.showPowerupEffect(Shield.getInstance());
                     currentPlayer.setShieldActive(false);
                 }
             }
@@ -362,6 +370,7 @@ public class SinglePlayerGameFacade {
                         otherPlayer.setPoisoned(true);
                     }
                 } else {
+                    singlePlayerGameView.showPowerupEffect(Shield.getInstance());
                     otherPlayer.setShieldActive(false);
                 }
             }

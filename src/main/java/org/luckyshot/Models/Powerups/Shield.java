@@ -25,4 +25,8 @@ public class Shield extends Powerup{
     public String toString() {
         return "Shield";
     }
+
+    public String getEffect() {
+        return "Shield saved your life!";
+    }
 }

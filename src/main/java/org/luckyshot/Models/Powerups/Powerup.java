@@ -24,4 +24,8 @@ public abstract class Powerup implements PowerupInterface{
     public String toString() {
         return this.getClass().getSimpleName();
     }
+
+    public String getEffect() {
+        return "no effect";
+    }
 }

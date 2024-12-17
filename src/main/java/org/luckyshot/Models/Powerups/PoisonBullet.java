@@ -12,7 +12,7 @@ public class PoisonBullet extends Powerup{
     }
 
     public void use(SinglePlayerGame singlePlayerGame) {
-
+        singlePlayerGame.getRound().getTurn().setBulletPoisoned(true);
     }
 
     public static PoisonBullet getInstance() {
@@ -24,5 +24,9 @@ public class PoisonBullet extends Powerup{
 
     public String toString() {
         return "Poison Bullet";
+    }
+
+    public String getEffect() {
+        return "Poison remove a life!";
     }
 }

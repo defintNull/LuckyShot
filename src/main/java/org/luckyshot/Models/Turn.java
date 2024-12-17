@@ -6,7 +6,7 @@ public class Turn {
     private boolean isBulletPoisoned;
 
     public Turn(Player currentPlayer) {
-        Gun gun = Gun.getInstance();
+        this.gun = Gun.getInstance();
         this.player = currentPlayer;
         isBulletPoisoned = false;
     }

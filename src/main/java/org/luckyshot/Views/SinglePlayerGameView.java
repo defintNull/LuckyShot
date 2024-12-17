@@ -6,6 +6,7 @@ import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
 import org.luckyshot.Models.HumanPlayer;
 import org.luckyshot.Models.Player;
+import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.Objects;
 
 public class SinglePlayerGameView extends GameView{
     HashMap<String, String> stateMap = new HashMap<>();
-    String lastAction = null;
+    ArrayList<String> lastAction = new ArrayList<String>();
 
     public void debugSleep(int t) {
         try {
@@ -162,8 +163,10 @@ public class SinglePlayerGameView extends GameView{
             customPrint("It's Bot turn.", "fast", 4, 52);
         }
 
-        if(lastAction != null) {
-            customPrint(lastAction, "slow", 6, 52);
+        if(!lastAction.isEmpty()) {
+            for(int i=0; i<lastAction.size(); i++) {
+                customPrint(lastAction.get(i), "slow", 6 + (2*i), 52);
+            }
             try {
                 Thread.sleep(2000);
             } catch (Exception e) {
@@ -171,7 +174,7 @@ public class SinglePlayerGameView extends GameView{
             }
         }
 
-        lastAction = null;
+        lastAction.clear();
     }
 
     public void showGame(HashMap<String, String> stateMap) {
@@ -212,13 +215,17 @@ public class SinglePlayerGameView extends GameView{
 
     public void showShootingResult(int bulletType) {
         if(bulletType == 0) {
-            lastAction = "The bullet was fake";
+            lastAction.addFirst("The bullet was fake");
         } else if(bulletType == 1) {
-            lastAction = "The bullet was live";
+            lastAction.addFirst("The bullet was live");
         }
     }
 
     public void showPowerupActivation(String powerup) {
-        lastAction= "A " + powerup.toLowerCase() + " has been used!";
+        lastAction.add("A " + powerup.toLowerCase() + " has been used!");
+    }
+
+    public void showPowerupEffect(Powerup powerup) {
+        lastAction.add(powerup.toString() + ": " + powerup.getEffect());
     }
 }
