@@ -6,7 +6,7 @@ import org.luckyshot.Models.SinglePlayerGame;
 public class EnergyDrink extends Consumable{
     private static EnergyDrink instance;
     private EnergyDrink() {
-        super(Probability.MEDIUM);
+        super(Probability.HIGH);
     }
 
     public static EnergyDrink getInstance() {
@@ -17,6 +17,7 @@ public class EnergyDrink extends Consumable{
     }
 
     public String use(SinglePlayerGame singlePlayerGame) {
+
         return "";
     }
 

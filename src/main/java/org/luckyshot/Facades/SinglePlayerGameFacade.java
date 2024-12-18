@@ -3,12 +3,14 @@ package org.luckyshot.Facades;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
+import org.luckyshot.Models.Consumables.EnergyDrink;
 import org.luckyshot.Models.Powerups.*;
 import org.luckyshot.Models.StateEffects.StateEffect;
 import org.luckyshot.Models.StateEffects.StateEffectInterface;
 import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -142,6 +144,8 @@ public class SinglePlayerGameFacade {
         stateMap.put("isBotPoisoned", Boolean.toString(singlePlayerGame.getBot().isPoisoned()));
         stateMap.put("isHumanPoisoned", Boolean.toString(singlePlayerGame.getHumanPlayer().isPoisoned()));
         stateMap.put("isHumanShielded", Boolean.toString(singlePlayerGame.getHumanPlayer().isShieldActive()));
+        stateMap.put("isBotHandcuffed", Boolean.toString(singlePlayerGame.getBot().isHandcuffed()));
+        stateMap.put("isHumanHandcuffed", Boolean.toString(singlePlayerGame.getHumanPlayer().isHandcuffed()));
 
         singlePlayerGameView.showGame(stateMap);
     }
@@ -185,7 +189,6 @@ public class SinglePlayerGameFacade {
                     showGameState();
                 }
 
-                //Prendo l'input del giocatore corrente
                 String[] userInput = getPlayerInput().split(" ");
                 while(userInput.length != 2) {
                     singlePlayerGameView.showError("Wrong syntax, command not recognized");
@@ -254,12 +257,64 @@ public class SinglePlayerGameFacade {
             }
             if(check) {
                 try {
+                    boolean used = false;
                     Method method = Class.forName(consumableClass.getName()).getMethod("getInstance");
                     Object obj = method.invoke(null);
                     singlePlayerGameView.showConsumableActivation(((Consumable) obj).toString());
                     String effect = ((Consumable) obj).use(singlePlayerGame);
                     singlePlayerGameView.showConsumableEffect(((Consumable) obj).getEffect(effect));
-                    singlePlayerGame.getRound().getTurn().getCurrentPlayer().removeConsumable((Consumable) obj);
+                    if(obj.getClass() == EnergyDrink.class) {
+                        singlePlayerGameView.showEnergyDrinkChoise();
+                        showGameState();
+                        Character consumableToSteal = getPlayerInput().charAt(0);
+                        boolean ok = false;
+                        for(int i = 0; i < alphabet.length(); i++) {
+                            if(consumableToSteal.equals(alphabet.charAt(i))) {
+                                ok = true;
+                                break;
+                            }
+                        }
+
+                        ArrayList<Consumable> otherPlayerConsumables = singlePlayerGame.getRound().getTurn().getOtherPlayer().getConsumables();
+                        ArrayList<Character> charList = new ArrayList<>();
+                        for(int i = 0; i < otherPlayerConsumables.size(); i++) {
+                            for(Map.Entry<String, Class<? extends Consumable>> entry : map.entrySet()) {
+                                if(otherPlayerConsumables.get(i).getClass().equals(entry.getValue())) {
+                                    charList.add(entry.getKey().charAt(0));
+                                }
+                            }
+                        }
+
+                        boolean exists = false;
+                        for(int i = 0; i < charList.size(); i++) {
+                            if(charList.get(i) == consumableToSteal) {
+                                exists = true;
+                                break;
+                            }
+                        }
+
+                        if(ok && exists) {
+                            Class<? extends Consumable> stolenConsumableClass = map.get(consumableToSteal.toString());
+                            if(stolenConsumableClass == EnergyDrink.class) {
+                                singlePlayerGameView.addLastAction("You can't choose another energy drink");
+                            } else {
+                                Method method2 = Class.forName(stolenConsumableClass.getName()).getMethod("getInstance");
+                                Object obj2 = method2.invoke(null);
+                                singlePlayerGameView.showConsumableActivation(((Consumable) obj2).toString());
+                                String effect2 = ((Consumable) obj2).use(singlePlayerGame);
+                                singlePlayerGameView.showConsumableEffect(((Consumable) obj2).getEffect(effect2));
+                                singlePlayerGame.getRound().getTurn().getOtherPlayer().removeConsumable((Consumable) obj2);
+                                used = true;
+                            }
+                        }
+                    } else {
+                        used = true;
+                    }
+                    if(used) {
+                        singlePlayerGame.getRound().getTurn().getCurrentPlayer().removeConsumable((Consumable) obj);
+                    } else {
+                        singlePlayerGameView.showError("Consumable could not be used");
+                    }
                 } catch (Exception e) {
                     singlePlayerGameView.showError("No consumable found");
                 }
@@ -320,6 +375,7 @@ public class SinglePlayerGameFacade {
     }
 
     public void drawConsumables() {
+        singlePlayerGameView.addLastAction("Consumables drawn...");
         int maxConsumablesNumber = 8;
         Random rand = new Random();
         int r = rand.nextInt(2, 6);

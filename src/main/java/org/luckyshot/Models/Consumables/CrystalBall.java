@@ -4,7 +4,6 @@ import org.luckyshot.Models.Enums.Probability;
 import org.luckyshot.Models.Gun;
 import org.luckyshot.Models.SinglePlayerGame;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class CrystalBall extends Consumable {
@@ -30,8 +29,8 @@ public class CrystalBall extends Consumable {
     }
 
     public String getEffect(String parameters) {
-        Character position = parameters.charAt(0);
-        Character type = parameters.charAt(1);
+        char position = parameters.charAt(0);
+        char type = parameters.charAt(1);
         return "The bullet in position " + position + " is " + (type == '1' ? "live" : "fake");
     }
 

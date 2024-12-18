@@ -18,12 +18,12 @@ public class Glasses extends Consumable{
     }
 
     public String use(SinglePlayerGame singlePlayerGame) {
-        int type = Gun.getInstance().getBullet(Gun.getInstance().getBullets().size() - 1).getType();
+        int type = Gun.getInstance().getBullets().getLast().getType();
         return String.valueOf(type);
     }
 
     public String getEffect(String effect) {
-        return "The next bullet is " + (effect == "1" ? "live" : "fake");
+        return "The next bullet is " + (effect.equals("1") ? "live" : "fake");
     }
 
     public String toString() {

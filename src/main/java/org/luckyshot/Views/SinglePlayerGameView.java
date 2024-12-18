@@ -115,12 +115,18 @@ public class SinglePlayerGameView extends GameView{
             System.out.print(" A");
         }
 
+        if(stateMap.get("isBotHandcuffed").equals("true")) {
+            System.out.print(" M");
+        }
+
         // Showing bot consumables
+        int cNumber = 0;
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
-            setCursorPos(6+i, 2);
+            setCursorPos(6+cNumber, 2);
             if (stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.print(stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
+                cNumber++;
             }
         }
 
@@ -136,13 +142,18 @@ public class SinglePlayerGameView extends GameView{
         if(stateMap.get("isHumanShielded").equals("true")) {
             System.out.print(" S");
         }
+        if(stateMap.get("isHumanHandcuffed").equals("true")) {
+            System.out.print(" M");
+        }
 
         // Showing human consumables
+        cNumber = 0;
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
-            setCursorPos(23+i, 2);
+            setCursorPos(23+cNumber, 2);
             if (stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.print(stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
+                cNumber++;
             }
         }
 
@@ -263,7 +274,7 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showConsumableActivation(String string) {
-        lastAction.add("A " + string + " has been used!");
+        lastAction.add(string + " used!");
     }
 
     public void showConsumableEffect(String effect) {
@@ -278,7 +289,11 @@ public class SinglePlayerGameView extends GameView{
         if(state) {
             lastAction.add("You are handcuffed, loose your turn!");
         } else {
-            lastAction.add("Someone frees you! Happy freedom");
+            lastAction.add("The other player has been freed! Happy freedom!");
         }
+    }
+
+    public void showEnergyDrinkChoise() {
+        lastAction.add("Choose the consumable to steal");
     }
 }
