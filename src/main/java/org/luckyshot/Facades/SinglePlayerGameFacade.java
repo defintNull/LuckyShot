@@ -100,21 +100,21 @@ public class SinglePlayerGameFacade {
         stateMap.put("humanPlayerLives", Integer.toString(((HumanPlayer)objectStateMap.get("humanPlayer")).getLives()));
 
         // To show bot consumables on view
-        ArrayList<String> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
+        ArrayList<Consumable> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
         botConsumables.forEach(consumable -> {
-            if(!stateMap.containsKey("bot" + consumable)) {
-                stateMap.put("bot" + consumable, "0");
+            if(!stateMap.containsKey("bot" + consumable.getClass().getSimpleName())) {
+                stateMap.put("bot" + consumable.getClass().getSimpleName(), "0");
             }
-            stateMap.put("bot" + consumable, Integer.toString(Integer.parseInt(stateMap.get("bot" + consumable)) + 1));
+            stateMap.put("bot" + consumable.getClass().getSimpleName(), Integer.toString(Integer.parseInt(stateMap.get("bot" + consumable.getClass().getSimpleName())) + 1));
         });
 
         // To show human consumables on view
-        ArrayList<String> humanConsumables = (((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables());
+        ArrayList<Consumable> humanConsumables = (((HumanPlayer) objectStateMap.get("humanPlayer")).getConsumables());
         humanConsumables.forEach(consumable -> {
-            if(!stateMap.containsKey("human" + consumable)) {
-                stateMap.put("human" + consumable, "0");
+            if(!stateMap.containsKey("human" + consumable.getClass().getSimpleName())) {
+                stateMap.put("human" + consumable.getClass().getSimpleName(), "0");
             }
-            stateMap.put("human" + consumable, Integer.toString(Integer.parseInt(stateMap.get("human" + consumable)) + 1));
+            stateMap.put("human" + consumable.getClass().getSimpleName(), Integer.toString(Integer.parseInt(stateMap.get("human" + consumable.getClass().getSimpleName())) + 1));
         });
 
         // To show human powerups on view
@@ -166,35 +166,47 @@ public class SinglePlayerGameFacade {
         // Rimuovo lo scudo al giocatore corrente
         singlePlayerGame.getRound().getTurn().getCurrentPlayer().setShieldActive(false);
 
+        // Rimuovo manette
+        if(singlePlayerGame.getRound().getTurn().getOtherPlayer().isHandcuffed()) {
+            singlePlayerGame.getRound().getTurn().getOtherPlayer().setHandcuffed(false);
+            singlePlayerGameView.showHandcuffedState(false);
+        }
+
         while(!changeTurn) {
             showGameState();
 
-            // Se la pistola è vuota, assegno i consumabili e la ricarico
-            if(gun.isEmpty()) {
-                drawConsumables();
-                showGameState();
-                loadGun();
-                showGameState();
-            }
+            if(!singlePlayerGame.getRound().getTurn().getCurrentPlayer().isHandcuffed()) {
 
-            //Prendo l'input del giocatore corrente
-            String[] userInput = getPlayerInput().split(" ");
-            while(userInput.length != 2) {
-                singlePlayerGameView.showError("Wrong syntax, command not recognized");
-                userInput = getPlayerInput().split(" ");
-            }
-            String command = userInput[0].toLowerCase(); // use, shoot
-            String target = userInput[1].toLowerCase(); // 1, 2, ..., a, b, ...
-
-            if(command.equals("use")) {
-                useCommand(target);
-                if(singlePlayerGame.getHumanPlayer().getLives() <= 0 || singlePlayerGame.getBot().getLives() <= 0) {
-                    changeTurn = true;
+                // Se la pistola è vuota, assegno i consumabili e la ricarico
+                if(gun.isEmpty()) {
+                    drawConsumables();
+                    showGameState();
+                    loadGun();
+                    showGameState();
                 }
-            } else if(command.equals("shoot")) {
-                changeTurn = shootingPhase(target);
+
+                //Prendo l'input del giocatore corrente
+                String[] userInput = getPlayerInput().split(" ");
+                while(userInput.length != 2) {
+                    singlePlayerGameView.showError("Wrong syntax, command not recognized");
+                    userInput = getPlayerInput().split(" ");
+                }
+                String command = userInput[0].toLowerCase(); // use, shoot
+                String target = userInput[1].toLowerCase(); // 1, 2, ..., a, b, ...
+
+                if(command.equals("use")) {
+                    useCommand(target);
+                    if(singlePlayerGame.getHumanPlayer().getLives() <= 0 || singlePlayerGame.getBot().getLives() <= 0) {
+                        changeTurn = true;
+                    }
+                } else if(command.equals("shoot")) {
+                    changeTurn = shootingPhase(target);
+                } else {
+                    singlePlayerGameView.showError("Command not recognized");
+                }
             } else {
-                singlePlayerGameView.showError("Command not recognized");
+                singlePlayerGameView.showHandcuffedState(true);
+                changeTurn = true;
             }
         }
         //Poison effect
@@ -224,35 +236,39 @@ public class SinglePlayerGameFacade {
     }
 
     public void useConsumable(String target) {
-        String alphabet = "abcdefghijklmnopqrstuvwxyz";
-        String consumableString = null;
-        for(int i = 0; i < alphabet.length(); i++) {
-            if(target.charAt(0) == alphabet.charAt(i)) {
-                consumableString = singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumables().get(i);
+        HashMap<String, Class<? extends Consumable>> map = new HashMap<>();
+        String alphabet = "abcdefghijklmnopqrstuwxyz";
+        for(int i=0; i<ConsumableInterface.getConsumableClassList().size(); i++) {
+            map.put(Character.toString(alphabet.charAt(i)), ConsumableInterface.getConsumableClassList().get(i));
+        }
+
+        if(map.containsKey(target)) {
+            Class<? extends Consumable> consumableClass = map.get(target);
+
+            boolean check = false;
+            for(int i=0; i<singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumablesNumber(); i++) {
+                if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumables().get(i).getClass().getSimpleName().equals(consumableClass.getSimpleName())) {
+                    check = true;
+                    break;
+                }
             }
-            //AGGIUNGERE CONTROLLO SLOT
-        }
-
-        Class<? extends Consumable> consumable1 = null;
-        for(int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
-            if(consumableString.equals(ConsumableInterface.getConsumableStringList().get(i))) {
-                consumable1 = ConsumableInterface.getConsumableClassList().get(i);
+            if(check) {
+                try {
+                    Method method = Class.forName(consumableClass.getName()).getMethod("getInstance");
+                    Object obj = method.invoke(null);
+                    singlePlayerGameView.showConsumableActivation(((Consumable) obj).toString());
+                    String effect = ((Consumable) obj).use(singlePlayerGame);
+                    singlePlayerGameView.showConsumableEffect(((Consumable) obj).getEffect(effect));
+                    singlePlayerGame.getRound().getTurn().getCurrentPlayer().removeConsumable((Consumable) obj);
+                } catch (Exception e) {
+                    singlePlayerGameView.showError("No consumable found");
+                }
+            } else {
+                singlePlayerGameView.showError("You don't have this consumable!");
             }
+        } else {
+            singlePlayerGameView.showError("No consumable found");
         }
-
-        Consumable consumable = null;
-        try {
-            Method method = Class.forName(consumable1.getName()).getMethod("getInstance");
-            Object obj = method.invoke(null);
-            consumable = (Consumable) obj;
-        } catch (Exception e) {
-            singlePlayerGameView.showError("No consumable method found");
-        }
-
-        singlePlayerGameView.addLastAction(consumable.getEffect());
-        String effect = consumable.getClass().getSimpleName() + ":" + consumable.use(singlePlayerGame);
-
-        singlePlayerGameView.showConsumableEffect(effect);
     }
 
     public StateEffect getRandomStateEffect() {
@@ -270,28 +286,28 @@ public class SinglePlayerGameFacade {
         return stateEffect;
     }
 
-    private String getRandomConsumable() {
-        HashMap<String, Integer> consumableProb = new HashMap<>();
+    private Consumable getRandomConsumable() {
+        HashMap<Consumable, Integer> consumableProb = new HashMap<>();
 
         for(Class<? extends Consumable> c : ConsumableInterface.getConsumableClassList()) {
             try {
                 Class<?> cls = Class.forName(c.getName());
                 Method m = cls.getMethod("getInstance");
                 Object consumable = m.invoke(null);
-                consumableProb.put(c.getSimpleName(), ((Consumable) consumable).getProbability());
+                consumableProb.put((Consumable) consumable, ((Consumable) consumable).getProbability());
             } catch (Exception e) {
                 singlePlayerGameView.showError("Error getting consumable probability");
             }
         }
 
         Random rand = new Random();
-        String consumable = "";
+        Consumable consumable = null;
         int tries = 0;
         int maxTries = 100;
         boolean found = false;
         while(!found && tries < maxTries) {
-            ArrayList<String> consumableList = new ArrayList<>(consumableProb.keySet());
-            String randomConsumable = consumableList.get(rand.nextInt(consumableList.size()));
+            ArrayList<Consumable> consumableList = new ArrayList<>(consumableProb.keySet());
+            Consumable randomConsumable = consumableList.get(rand.nextInt(consumableList.size()));
             int r = rand.nextInt(100);
             if (r < consumableProb.get(randomConsumable) || tries == maxTries - 1) {
                 found = true;
@@ -310,16 +326,16 @@ public class SinglePlayerGameFacade {
         int numberOfConsumablesHumanPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getHumanPlayer().getConsumablesNumber());
         int numberOfConsumablesBotPlayer = Math.min(r, maxConsumablesNumber - singlePlayerGame.getBot().getConsumablesNumber());
 
-        ArrayList<String> consumables = singlePlayerGame.getHumanPlayer().getConsumables();
+        ArrayList<Consumable> consumables = singlePlayerGame.getHumanPlayer().getConsumables();
         for(int i = 0; i < numberOfConsumablesHumanPlayer; i++) {
-            String randomConsumable = getRandomConsumable();
+            Consumable randomConsumable = getRandomConsumable();
             consumables.add(randomConsumable);
         }
         singlePlayerGame.getHumanPlayer().setConsumables(consumables);
 
         consumables = singlePlayerGame.getBot().getConsumables();
         for(int i = 0; i < numberOfConsumablesBotPlayer; i++) {
-            String randomConsumable = getRandomConsumable();
+            Consumable randomConsumable = getRandomConsumable();
             consumables.add(randomConsumable);
         }
         singlePlayerGame.getBot().setConsumables(consumables);
@@ -378,6 +394,9 @@ public class SinglePlayerGameFacade {
                 changeTurn = true;
                 if(!currentPlayer.isShieldActive()) {
                     currentPlayer.setLives(currentPlayer.getLives() - Gun.getInstance().getDamage());
+                    if(Gun.getInstance().getDamage() != 1) {
+                        singlePlayerGameView.showGhostGunDamage();
+                    }
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
                         currentPlayer.setPoisoned(true);
                     }
@@ -393,6 +412,9 @@ public class SinglePlayerGameFacade {
 
                 if(!otherPlayer.isShieldActive()) {
                     otherPlayer.setLives(otherPlayer.getLives() - Gun.getInstance().getDamage());
+                    if(Gun.getInstance().getDamage() != 1) {
+                        singlePlayerGameView.showGhostGunDamage();
+                    }
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
                         otherPlayer.setPoisoned(true);
                     }

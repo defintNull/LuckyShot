@@ -21,10 +21,10 @@ public abstract class Consumable implements ConsumableInterface{
     }
 
     public String use(SinglePlayerGame singlePlayerGame) {
-
+        return "Nothing happened!";
     }
 
-    public String getEffect() {
+    public String getEffect(String parameters) {
         return "No effect";
     }
 }

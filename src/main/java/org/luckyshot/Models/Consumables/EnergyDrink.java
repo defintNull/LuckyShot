@@ -20,7 +20,7 @@ public class EnergyDrink extends Consumable{
         return "";
     }
 
-    public String getEffect() {
+    public String getEffect(String effect) {
         return "Now you can steal a consumable...";
     }
 

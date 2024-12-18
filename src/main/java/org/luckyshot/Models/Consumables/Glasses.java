@@ -22,8 +22,8 @@ public class Glasses extends Consumable{
         return String.valueOf(type);
     }
 
-    public String getEffect() {
-        return "Let me see...";
+    public String getEffect(String effect) {
+        return "The next bullet is " + (effect == "1" ? "live" : "fake");
     }
 
     public String toString() {

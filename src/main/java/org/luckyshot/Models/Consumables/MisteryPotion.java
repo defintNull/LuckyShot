@@ -32,7 +32,7 @@ public class MisteryPotion extends Consumable{
         return "";
     }
 
-    public String getEffect() {
+    public String getEffect(String effect) {
         return "Hope to stay alive...";
     }
 

@@ -137,7 +137,7 @@ public class SinglePlayerGameView extends GameView{
             System.out.print(" S");
         }
 
-        // Showing human powerups
+        // Showing human consumables
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
             setCursorPos(23+i, 2);
             if (stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
@@ -262,12 +262,23 @@ public class SinglePlayerGameView extends GameView{
         }
     }
 
+    public void showConsumableActivation(String string) {
+        lastAction.add("A " + string + " has been used!");
+    }
+
     public void showConsumableEffect(String effect) {
-        String consumable = effect.split(":")[0];
-        effect = effect.split(":")[1];
+        lastAction.add(effect);
+    }
 
-        if(consumable.equals("CrystalBall")) {
+    public void showGhostGunDamage() {
+        lastAction.add("The damage was doubled!");
+    }
 
+    public void showHandcuffedState(boolean state) {
+        if(state) {
+            lastAction.add("You are handcuffed, loose your turn!");
+        } else {
+            lastAction.add("Someone frees you! Happy freedom");
         }
     }
 }

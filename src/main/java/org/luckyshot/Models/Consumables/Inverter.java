@@ -23,7 +23,7 @@ public class Inverter extends Consumable{
         return "";
     }
 
-    public String getEffect() {
+    public String getEffect(String effect) {
         return "Bullet inverted!";
     }
 

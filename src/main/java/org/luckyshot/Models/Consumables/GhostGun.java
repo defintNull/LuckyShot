@@ -22,7 +22,7 @@ public class GhostGun extends Consumable{
         return "";
     }
 
-    public String getEffect() {
+    public String getEffect(String effect) {
         return "Damage is doubled!";
     }
 

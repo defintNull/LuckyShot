@@ -22,8 +22,8 @@ public class Magnet extends Consumable{
         return String.valueOf(type);
     }
 
-    public String getEffect() {
-        return "Bullet removed!";
+    public String getEffect(String effect) {
+        return "Bullet removed! It was " + (effect == "1" ? "live" : "fake");
     }
 
     public String toString() {
