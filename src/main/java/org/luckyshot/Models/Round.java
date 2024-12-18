@@ -9,6 +9,8 @@ public class Round {
     private int roundNumber;
     private StateEffect stateEffect;
     private Turn turn;
+    private int maxLives;
+
     public Round(int n, StateEffect stateEffect) {
         this.roundNumber = n;
         this.stateEffect = stateEffect;
@@ -36,5 +38,13 @@ public class Round {
 
     public void setStateEffect(StateEffect stateEffect) {
         this.stateEffect = stateEffect;
+    }
+
+    public int getMaxLives() {
+        return maxLives;
+    }
+
+    public void setMaxLives(int maxLives) {
+        this.maxLives = maxLives;
     }
 }

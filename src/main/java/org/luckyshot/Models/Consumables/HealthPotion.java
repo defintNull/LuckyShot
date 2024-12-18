@@ -1,6 +1,7 @@
 package org.luckyshot.Models.Consumables;
 
 import org.luckyshot.Models.Enums.Probability;
+import org.luckyshot.Models.SinglePlayerGame;
 
 public class HealthPotion extends Consumable{
 
@@ -15,6 +16,16 @@ public class HealthPotion extends Consumable{
         }
         return instance;
     }
+
+    public String use(SinglePlayerGame singlePlayerGame) {
+        singlePlayerGame.getRound().getTurn().getCurrentPlayer().setLives(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getLives() + 1);
+        return "";
+    }
+
+    public String getEffect() {
+        return "Life restored!";
+    }
+
     public String toString() {
         return "Health potion";
     }

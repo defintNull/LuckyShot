@@ -238,6 +238,10 @@ public class SinglePlayerGameView extends GameView{
         lastAction.add(powerup.toString() + ": " + powerup.getEffect());
     }
 
+    public void addLastAction(String s) {
+        lastAction.add(s);
+    }
+
     public void showEndGameScreen(String winner) {
         lastAction.add("The game is over...");
         lastAction.add("The winner is: " + winner + "!");
@@ -255,6 +259,15 @@ public class SinglePlayerGameView extends GameView{
             Thread.sleep(2000);
         } catch (Exception e) {
             showError("sleep");
+        }
+    }
+
+    public void showConsumableEffect(String effect) {
+        String consumable = effect.split(":")[0];
+        effect = effect.split(":")[1];
+
+        if(consumable.equals("CrystalBall")) {
+
         }
     }
 }

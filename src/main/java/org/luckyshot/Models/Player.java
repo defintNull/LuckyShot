@@ -11,6 +11,7 @@ public abstract class Player {
     private ArrayList<String> consumables;
     private boolean isShieldActive;
     private boolean isPoisoned;
+    private boolean isHandcuffed;
 
     public Player() {
         consumables = new ArrayList<>();
@@ -50,5 +51,13 @@ public abstract class Player {
 
     public void setPoisoned(boolean poisoned) {
         isPoisoned = poisoned;
+    }
+
+    public boolean isHandcuffed() {
+        return isHandcuffed;
+    }
+
+    public void setHandcuffed(boolean handcuffed) {
+        isHandcuffed = handcuffed;
     }
 }

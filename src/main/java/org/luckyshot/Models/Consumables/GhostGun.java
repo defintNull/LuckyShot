@@ -1,6 +1,8 @@
 package org.luckyshot.Models.Consumables;
 
 import org.luckyshot.Models.Enums.Probability;
+import org.luckyshot.Models.Gun;
+import org.luckyshot.Models.SinglePlayerGame;
 
 public class GhostGun extends Consumable{
     private static GhostGun instance;
@@ -14,6 +16,16 @@ public class GhostGun extends Consumable{
         }
         return instance;
     }
+
+    public String use(SinglePlayerGame singlePlayerGame) {
+        Gun.getInstance().setDamage(2);
+        return "";
+    }
+
+    public String getEffect() {
+        return "Damage is doubled!";
+    }
+
     public String toString() {
         return "Ghost gun";
     }

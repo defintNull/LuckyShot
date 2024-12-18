@@ -49,6 +49,7 @@ public class SinglePlayerGameFacade {
             this.singlePlayerGame.setRound(round);
             Random rnd = new Random();
             int randomLives = rnd.nextInt(2, 5);
+            this.singlePlayerGame.getRound().setMaxLives(randomLives);
             this.singlePlayerGame.getHumanPlayer().setLives(randomLives);
             this.singlePlayerGame.getBot().setLives(randomLives);
 
@@ -60,8 +61,9 @@ public class SinglePlayerGameFacade {
             while(!roundEnded) {
                 //Inizio di un turno
                 Player currentPlayer = players[turn];
+                Player otherPlayer = players[(turn + 1) % 2];
 
-                Turn currentTurn = new Turn(currentPlayer);
+                Turn currentTurn = new Turn(currentPlayer, otherPlayer);
                 this.singlePlayerGame.getRound().setTurn(currentTurn);
 
                 processTurn();
@@ -134,7 +136,7 @@ public class SinglePlayerGameFacade {
         }
 
         // To show current player on view
-        stateMap.put("turn", singlePlayerGame.getRound().getTurn().getPlayer().getClass().getSimpleName());
+        stateMap.put("turn", singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass().getSimpleName());
 
         // To show powerups effects on view
         stateMap.put("isBotPoisoned", Boolean.toString(singlePlayerGame.getBot().isPoisoned()));
@@ -145,7 +147,7 @@ public class SinglePlayerGameFacade {
     }
 
     public String getPlayerInput() {
-        if(this.singlePlayerGame.getRound().getTurn().getPlayer().getClass() == HumanPlayer.class) {
+        if(this.singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
             return singlePlayerGameView.getUserInput();
         }
 
@@ -162,7 +164,7 @@ public class SinglePlayerGameFacade {
         boolean changeTurn = false;
 
         // Rimuovo lo scudo al giocatore corrente
-        singlePlayerGame.getRound().getTurn().getPlayer().setShieldActive(false);
+        singlePlayerGame.getRound().getTurn().getCurrentPlayer().setShieldActive(false);
 
         while(!changeTurn) {
             showGameState();
@@ -196,9 +198,9 @@ public class SinglePlayerGameFacade {
             }
         }
         //Poison effect
-        if(singlePlayerGame.getRound().getTurn().getPlayer().isPoisoned()) {
-            singlePlayerGame.getRound().getTurn().getPlayer().setLives(singlePlayerGame.getRound().getTurn().getPlayer().getLives() - 1);
-            singlePlayerGame.getRound().getTurn().getPlayer().setPoisoned(false);
+        if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().isPoisoned()) {
+            singlePlayerGame.getRound().getTurn().getCurrentPlayer().setLives(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getLives() - 1);
+            singlePlayerGame.getRound().getTurn().getCurrentPlayer().setPoisoned(false);
             singlePlayerGameView.showPowerupEffect(PoisonBullet.getInstance());
         }
         showGameState();
@@ -217,8 +219,40 @@ public class SinglePlayerGameFacade {
         if(isInteger(target)) {
             usePowerup(Integer.parseInt(target)); //Aggiungere controllo numero
         } else {
-            //useConsumable(target);
+            useConsumable(target);
         }
+    }
+
+    public void useConsumable(String target) {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        String consumableString = null;
+        for(int i = 0; i < alphabet.length(); i++) {
+            if(target.charAt(0) == alphabet.charAt(i)) {
+                consumableString = singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumables().get(i);
+            }
+            //AGGIUNGERE CONTROLLO SLOT
+        }
+
+        Class<? extends Consumable> consumable1 = null;
+        for(int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
+            if(consumableString.equals(ConsumableInterface.getConsumableStringList().get(i))) {
+                consumable1 = ConsumableInterface.getConsumableClassList().get(i);
+            }
+        }
+
+        Consumable consumable = null;
+        try {
+            Method method = Class.forName(consumable1.getName()).getMethod("getInstance");
+            Object obj = method.invoke(null);
+            consumable = (Consumable) obj;
+        } catch (Exception e) {
+            singlePlayerGameView.showError("No consumable method found");
+        }
+
+        singlePlayerGameView.addLastAction(consumable.getEffect());
+        String effect = consumable.getClass().getSimpleName() + ":" + consumable.use(singlePlayerGame);
+
+        singlePlayerGameView.showConsumableEffect(effect);
     }
 
     public StateEffect getRandomStateEffect() {
@@ -334,7 +368,7 @@ public class SinglePlayerGameFacade {
         boolean shot = false;
         String user = null;
 
-        Player currentPlayer = singlePlayerGame.getRound().getTurn().getPlayer();
+        Player currentPlayer = singlePlayerGame.getRound().getTurn().getCurrentPlayer();
         Bullet currentBullet = Gun.getInstance().popBullet();
 
         // 1 = self
@@ -343,7 +377,7 @@ public class SinglePlayerGameFacade {
             if(currentBullet.getType() == 1) {
                 changeTurn = true;
                 if(!currentPlayer.isShieldActive()) {
-                    currentPlayer.setLives(currentPlayer.getLives() - 1);
+                    currentPlayer.setLives(currentPlayer.getLives() - Gun.getInstance().getDamage());
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
                         currentPlayer.setPoisoned(true);
                     }
@@ -355,15 +389,10 @@ public class SinglePlayerGameFacade {
             shot = true;
         } else if(target.equals("2")) {
             if(currentBullet.getType() == 1) {
-                Player otherPlayer = null;
-                if(currentPlayer.getClass() == HumanPlayer.class) {
-                    otherPlayer = singlePlayerGame.getBot();
-                } else {
-                    otherPlayer = singlePlayerGame.getHumanPlayer();
-                }
+                Player otherPlayer = singlePlayerGame.getRound().getTurn().getOtherPlayer();
 
                 if(!otherPlayer.isShieldActive()) {
-                    otherPlayer.setLives(otherPlayer.getLives() - 1);
+                    otherPlayer.setLives(otherPlayer.getLives() - Gun.getInstance().getDamage());
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
                         otherPlayer.setPoisoned(true);
                     }
@@ -379,6 +408,7 @@ public class SinglePlayerGameFacade {
         }
 
         if(shot) {
+            Gun.getInstance().setDamage(1);
             singlePlayerGame.getRound().getTurn().setBulletPoisoned(false);
             singlePlayerGameView.showShootingResult(currentBullet.getType());
             if(currentPlayer.getClass() == BotPlayer.class) {

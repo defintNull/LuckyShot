@@ -1,6 +1,8 @@
 package org.luckyshot.Models.Consumables;
 
 import org.luckyshot.Models.Enums.Probability;
+import org.luckyshot.Models.Gun;
+import org.luckyshot.Models.SinglePlayerGame;
 
 public class Magnet extends Consumable{
     private static Magnet instance;
@@ -14,6 +16,16 @@ public class Magnet extends Consumable{
         }
         return instance;
     }
+
+    public String use(SinglePlayerGame singlePlayerGame) {
+        int type = Gun.getInstance().popBullet().getType();
+        return String.valueOf(type);
+    }
+
+    public String getEffect() {
+        return "Bullet removed!";
+    }
+
     public String toString() {
         return "Magnet";
     }

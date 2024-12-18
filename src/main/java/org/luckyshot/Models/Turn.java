@@ -2,21 +2,15 @@ package org.luckyshot.Models;
 
 public class Turn {
     private Gun gun;
-    private Player player;
+    private Player currentPlayer;
+    private Player otherPlayer;
     private boolean isBulletPoisoned;
 
-    public Turn(Player currentPlayer) {
+    public Turn(Player currentPlayer, Player otherPlayer) {
         this.gun = Gun.getInstance();
-        this.player = currentPlayer;
+        this.currentPlayer = currentPlayer;
+        this.otherPlayer = otherPlayer;
         isBulletPoisoned = false;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
     }
 
     public boolean isBulletPoisoned() {
@@ -25,5 +19,21 @@ public class Turn {
 
     public void setBulletPoisoned(boolean bulletPoisoned) {
         isBulletPoisoned = bulletPoisoned;
+    }
+
+    public Player getOtherPlayer() {
+        return otherPlayer;
+    }
+
+    public void setOtherPlayer(Player otherPlayer) {
+        this.otherPlayer = otherPlayer;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 }

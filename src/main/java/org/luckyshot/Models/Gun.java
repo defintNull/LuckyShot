@@ -7,9 +7,11 @@ import java.util.Random;
 public class Gun {
     ArrayList<Bullet> bullets;
     private static Gun instance;
+    private int damage;
 
     private Gun() {
         bullets = new ArrayList<>();
+        damage = 1;
     }
 
     public static Gun getInstance() {
@@ -57,5 +59,13 @@ public class Gun {
     public void setBullets(ArrayList<Bullet> bullets) {
         Collections.shuffle(bullets);
         this.bullets = bullets;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
     }
 }

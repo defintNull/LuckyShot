@@ -1,6 +1,7 @@
 package org.luckyshot.Models.Consumables;
 
 import org.luckyshot.Models.Enums.Probability;
+import org.luckyshot.Models.SinglePlayerGame;
 
 import java.util.ArrayList;
 
@@ -17,5 +18,13 @@ public abstract class Consumable implements ConsumableInterface{
 
     public String toString() {
         return this.getClass().getSimpleName();
+    }
+
+    public String use(SinglePlayerGame singlePlayerGame) {
+
+    }
+
+    public String getEffect() {
+        return "No effect";
     }
 }
