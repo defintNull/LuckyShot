@@ -9,12 +9,12 @@ public class Fog extends StateEffect{
 
     }
 
-    public void use(SinglePlayerGame singlePlayerGame) {
-
+    public String getActivation() {
+        return "There's some fog on the field!";
     }
 
     public String getEffect() {
-        return "There's some fog on the field!";
+        return "For this round your vision lacks of luck";
     }
 
     public static Fog getInstance() {

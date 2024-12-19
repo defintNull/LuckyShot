@@ -9,12 +9,12 @@ public class DoubleScore extends StateEffect {
 
     }
 
-    public void use(SinglePlayerGame singlePlayerGame) {
-
+    public String getActivation() {
+        return "The score now is doubled!";
     }
 
     public String getEffect() {
-        return "The score is doubled!";
+        return "Your score was doubled!";
     }
 
     public static DoubleScore getInstance() {

@@ -9,12 +9,12 @@ public class Antidote extends StateEffect{
 
     }
 
-    public void use(SinglePlayerGame singlePlayerGame) {
-
+    public String getActivation() {
+        return "No potion will affect any player!";
     }
 
     public String getEffect() {
-        return "No potion will affect any player!";
+        return "All potion have loose all their effects";
     }
 
     public static Antidote getInstance() {

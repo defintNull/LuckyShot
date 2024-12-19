@@ -9,12 +9,12 @@ public class GuardianAngel extends StateEffect{
 
     }
 
-    public void use(SinglePlayerGame singlePlayerGame) {
-
+    public String getActivation() {
+        return "The guardian angel protected a player!";
     }
 
     public String getEffect() {
-        return "The guardian angel protected a player!";
+        return "The guardian angel gives you another life!";
     }
 
     public static GuardianAngel getInstance() {

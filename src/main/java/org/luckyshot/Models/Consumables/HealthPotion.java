@@ -7,7 +7,7 @@ public class HealthPotion extends Consumable{
 
     private static HealthPotion instance;
     private HealthPotion() {
-        super(Probability.LOW);
+        super(Probability.HIGH);
     }
 
     public static HealthPotion getInstance() {

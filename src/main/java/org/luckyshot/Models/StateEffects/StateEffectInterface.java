@@ -30,6 +30,7 @@ public interface StateEffectInterface {
         list.add(DoubleScore.class);
         list.add(Fog.class);
         list.add(GuardianAngel.class);
+        list.add(NoneEffect.class);
         return list;
     }
 }

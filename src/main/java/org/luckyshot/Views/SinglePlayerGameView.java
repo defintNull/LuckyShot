@@ -285,6 +285,14 @@ public class SinglePlayerGameView extends GameView{
         lastAction.add("The damage was doubled!");
     }
 
+    public void showStateEffectActivation(String activation) {
+        lastAction.add(activation);
+    }
+
+    public void showStateEffectEffect(String effect) {
+        lastAction.add(effect);
+    }
+
     public void showHandcuffedState(boolean state) {
         if(state) {
             lastAction.add("You are handcuffed, loose your turn!");

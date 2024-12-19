@@ -1,17 +1,16 @@
 package org.luckyshot.Models;
 
 import org.luckyshot.Models.Consumables.Consumable;
-import org.luckyshot.Models.Powerups.Powerup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public abstract class Player {
     private int lives;
     private ArrayList<Consumable> consumables;
-    private boolean isShieldActive;
-    private boolean isPoisoned;
-    private boolean isHandcuffed;
+    private boolean isShieldActive = false;
+    private boolean isPoisoned = false;
+    private boolean isHandcuffed = false;
+    private boolean isResurrected = false;
 
     public Player() {
         consumables = new ArrayList<>();
@@ -63,5 +62,13 @@ public abstract class Player {
 
     public void setHandcuffed(boolean handcuffed) {
         isHandcuffed = handcuffed;
+    }
+
+    public boolean isResurrected() {
+        return isResurrected;
+    }
+
+    public void setResurrected(boolean resurrected) {
+        isResurrected = resurrected;
     }
 }
