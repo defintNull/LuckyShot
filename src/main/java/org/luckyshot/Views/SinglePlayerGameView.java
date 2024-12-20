@@ -52,16 +52,16 @@ public class SinglePlayerGameView extends GameView{
     public void drawTable() {
         displayHeader();
 
-        for(int i = 0; i < 29; i++) {
+        for(int i = 0; i < 30; i++) {
             setCursorPos(4+i, 1);
             System.out.print("║");
         }
-        for(int i = 0; i < 29; i++) {
+        for(int i = 0; i < 30; i++) {
             setCursorPos(4+i, 100);
             System.out.print("║");
         }
 
-        for(int i = 0; i < 29; i++) {
+        for(int i = 0; i < 30; i++) {
             setCursorPos(4+i, 51);
             System.out.print("│");
         }
@@ -85,13 +85,13 @@ public class SinglePlayerGameView extends GameView{
 
         setCursorPos(20, 1);
         System.out.print("╟" + "─".repeat(49) + "┼" + "─".repeat(48) + "╢");
-        setCursorPos(33, 1);
+        setCursorPos(34, 1);
         System.out.print("╚" + "═".repeat(98) + "╝");
 
         setCursorPos(3, 51);
         System.out.print("╤");
 
-        setCursorPos(33, 51);
+        setCursorPos(34, 51);
         System.out.print("╧");
     }
 
@@ -121,8 +121,10 @@ public class SinglePlayerGameView extends GameView{
 
         // Showing bot consumables
         int cNumber = 0;
+        setCursorPos(6, 2);
+        System.out.print("Consumables:");
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
-            setCursorPos(6+cNumber, 2);
+            setCursorPos(8+cNumber, 2);
             if (stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.print(stateMap.get("bot" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
@@ -145,11 +147,18 @@ public class SinglePlayerGameView extends GameView{
         if(stateMap.get("isHumanHandcuffed").equals("true")) {
             System.out.print(" M");
         }
+        // SPAZIO VA FATTO PROPORZIONALE AL NUMERO DI CIFRE
+        setCursorPos(21, 20);
+        System.out.print("Combo: " + stateMap.get("humanCombo"));
+        setCursorPos(21, 35);
+        System.out.print("Score: " + stateMap.get("humanScore"));
 
         // Showing human consumables
         cNumber = 0;
+        setCursorPos(23, 2);
+        System.out.print("Consumables:");
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
-            setCursorPos(23+cNumber, 2);
+            setCursorPos(25+cNumber, 2);
             if (stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.print(stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
@@ -161,7 +170,7 @@ public class SinglePlayerGameView extends GameView{
         setCursorPos(23, 27);
         System.out.print("Powerups:");
         for (int i = 0; i < PowerupInterface.getPowerupStringList().size(); i++) {
-            setCursorPos(24+i, 27);
+            setCursorPos(25+i, 27);
             System.out.print(i + 1 + ". " + PowerupInterface.getPowerupStringList().get(i) + ": x");
             System.out.print(stateMap.get(PowerupInterface.getPowerupStringList().get(i)));
         }
@@ -253,9 +262,20 @@ public class SinglePlayerGameView extends GameView{
         lastAction.add(s);
     }
 
-    public void showEndGameScreen(String winner) {
+    public void showFinalXp(int xp) {
+        lastAction.add("You gained " + Integer.toString(xp) + " xp!");
+    }
+
+    public void showLevelAndXp(String user, int level, int xp) {
+        lastAction.add(user + ":  Level:" + Integer.toString(level) + "      XP:" + Integer.toString(xp));
+    }
+
+    public void showWinner(String winner) {
         lastAction.add("The game is over...");
         lastAction.add("The winner is: " + winner + "!");
+    }
+
+    public void showEndGameScreen() {
         showGame(this.stateMap);
         try {
             Thread.sleep(2000);

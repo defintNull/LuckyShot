@@ -2,7 +2,9 @@ package org.luckyshot.Models.Powerups;
 
 import org.luckyshot.Models.SinglePlayerGame;
 
-public abstract class Powerup implements PowerupInterface{
+import java.io.Serializable;
+
+public abstract class Powerup implements PowerupInterface, Serializable {
     private int cost;
 
     protected  Powerup(int cost) {

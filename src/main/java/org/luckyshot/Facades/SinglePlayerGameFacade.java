@@ -1,5 +1,7 @@
 package org.luckyshot.Facades;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.*;
 import org.luckyshot.Models.Powerups.*;
@@ -16,6 +18,7 @@ public class SinglePlayerGameFacade {
     private static SinglePlayerGameFacade instance;
     private SinglePlayerGame singlePlayerGame;
     private final SinglePlayerGameView singlePlayerGameView;
+    private User user;
 
     private SinglePlayerGameFacade() {
         singlePlayerGameView = new SinglePlayerGameView();
@@ -29,6 +32,7 @@ public class SinglePlayerGameFacade {
     }
 
     public void start(User user) {
+        this.user = user;
         HumanPlayer humanPlayer = new HumanPlayer(user.getId(), user.getPowerups());
         BotPlayer botPlayer = new BotPlayer();
 
@@ -75,6 +79,9 @@ public class SinglePlayerGameFacade {
                 if(botPlayer.getLives() <= 0) {
                     roundEnded = true;
                     roundNumber += 1;
+
+                    //XP
+                    singlePlayerGame.getHumanPlayer().addXp(30);
                 }
                 // Condizione di fine gioco
                 if(humanPlayer.getLives() <= 0) {
@@ -90,7 +97,35 @@ public class SinglePlayerGameFacade {
                 gameEnded = true;
             }
         }
-        singlePlayerGameView.showEndGameScreen(humanPlayer.getLives() != 0 ? "you" : "bot");
+        // XP
+        if(humanPlayer.getLives() != 0) {
+            humanPlayer.addXp(120);
+        }
+
+        // Passing parameters to User
+        user.setXp(user.getXp() + humanPlayer.getXp());
+        while(user.getLevel() * 1000 < user.getXp()) {
+            user.setXp(user.getXp() - (user.getLevel() * 1000));
+            user.setLevel(user.getLevel() + 1);
+            user.addCoins(3);
+        }
+
+        //Persistence
+        Session session = HibernateService.getInstance().getSessionFactory().openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.merge(user);
+            transaction.commit();
+        } catch (Exception e) {
+            singlePlayerGameView.showError("Sincronization error");
+        }
+
+        singlePlayerGameView.showWinner(humanPlayer.getLives() != 0 ? "you" : "bot");
+        singlePlayerGameView.showFinalXp(humanPlayer.getXp());
+        singlePlayerGameView.showLevelAndXp(user.getUsername(), user.getLevel(), user.getXp());
+        singlePlayerGameView.showEndGameScreen();
+
         Facade.getInstance(user).menu();
     }
 
@@ -101,6 +136,10 @@ public class SinglePlayerGameFacade {
         // To show players lives on view
         stateMap.put("botLives", Integer.toString(((BotPlayer)objectStateMap.get("bot")).getLives()));
         stateMap.put("humanPlayerLives", Integer.toString(((HumanPlayer)objectStateMap.get("humanPlayer")).getLives()));
+
+        // To show combo and score
+        stateMap.put("humanCombo", Integer.toString(singlePlayerGame.getHumanPlayer().getComboCounter()));
+        stateMap.put("humanScore", Integer.toString(singlePlayerGame.getHumanPlayer().getScore()));
 
         // To show bot consumables on view
         ArrayList<Consumable> botConsumables = (((BotPlayer) objectStateMap.get("bot")).getConsumables());
@@ -360,6 +399,11 @@ public class SinglePlayerGameFacade {
                         }
                         if(used) {
                             singlePlayerGame.getRound().getTurn().getCurrentPlayer().removeConsumable((Consumable) obj);
+
+                            //XP
+                            if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                                ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addXp(10);
+                            }
                         } else {
                             singlePlayerGameView.addLastAction("Consumable could not be used");
                         }
@@ -471,6 +515,19 @@ public class SinglePlayerGameFacade {
                 if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) != 0) {
                     ((Powerup) obj).use(singlePlayerGame);
                     singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
+                    user.removePowerup((Powerup) obj);
+                    //Persistence
+                    Session session = HibernateService.getInstance().getSessionFactory().openSession();
+                    Transaction transaction = null;
+                    try {
+                        transaction = session.beginTransaction();
+                        session.merge(user);
+                        transaction.commit();
+                    } catch (Exception e) {
+                        singlePlayerGameView.showError("Powerup db error");
+                    }
+                    session.close();
+
                     singlePlayerGameView.showPowerupActivation(((Powerup) obj).toString());
                     if (obj.getClass() == Bomb.class) {
                         singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
@@ -507,9 +564,27 @@ public class SinglePlayerGameFacade {
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
                         currentPlayer.setPoisoned(true);
                     }
+
+                    //Score system reset
+                    if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).setComboCounter(0);
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).setMultiplier(1);
+                    }
                 } else {
                     singlePlayerGameView.showPowerupEffect(Shield.getInstance());
                     currentPlayer.setShieldActive(false);
+                }
+            } else {
+                //Score system & XP
+                if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore((int) Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 80));
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementComboCounter();
+                    if((((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getComboCounter() % 5) == 0) {
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplayer();
+                    }
+
+                    // XP
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addXp(20);
                 }
             }
             shot = true;
@@ -525,9 +600,28 @@ public class SinglePlayerGameFacade {
                     if(singlePlayerGame.getRound().getTurn().isBulletPoisoned()) {
                         otherPlayer.setPoisoned(true);
                     }
+
+                    //Score system & XP
+                    if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                        //Score System
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore((int) Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 100));
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementComboCounter();
+                        if((((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getComboCounter() % 5) == 0) {
+                            ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplayer();
+                        }
+
+                        // XP
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addXp(25);
+                    }
                 } else {
                     singlePlayerGameView.showPowerupEffect(Shield.getInstance());
                     otherPlayer.setShieldActive(false);
+                }
+            } else {
+                //Score system reset
+                if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).setComboCounter(0);
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).setMultiplier(1);
                 }
             }
             shot = true;

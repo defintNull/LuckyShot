@@ -3,6 +3,9 @@ package org.luckyshot.Facades.Services.Converters;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Converter;
+import org.jetbrains.annotations.NotNull;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Views.SinglePlayerGameView;
 import org.luckyshot.Views.View;
@@ -12,10 +15,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Converter
 public class PowerupConverter implements AttributeConverter<HashMap<Powerup, Integer>, String>{
 
     @Override
-    public String convertToDatabaseColumn(HashMap<Powerup, Integer> powerupIntegerHashMap) {
+    public String convertToDatabaseColumn(@NotNull HashMap<Powerup, Integer> powerupIntegerHashMap) {
         ArrayList<ArrayList<String>> matrice = new ArrayList<ArrayList<String>>();
         for(Map.Entry<Powerup, Integer> entry : powerupIntegerHashMap.entrySet()) {
             ArrayList<String> row = new ArrayList<String>();
@@ -63,6 +67,7 @@ public class PowerupConverter implements AttributeConverter<HashMap<Powerup, Int
             SinglePlayerGameView view = new SinglePlayerGameView();
             view.systemError();
         }
+
         return hashMap;
     }
 }

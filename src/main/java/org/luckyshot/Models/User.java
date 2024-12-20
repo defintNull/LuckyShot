@@ -38,6 +38,9 @@ public class User {
     @Column(name = "level", nullable = false)
     private int level;
 
+    @Column(name = "xp", nullable = false)
+    private  int xp;
+
     @Column(name = "total_score", nullable = false)
     private long totalScore;
 
@@ -45,11 +48,12 @@ public class User {
 
     }
 
-    public User(String username, String password, int coins, int level, long totalScore) {
+    public User(String username, String password, int coins, int level, int xp, long totalScore) {
         this.username = username;
         this.password = password;
         this.coins = coins;
         this.level = level;
+        this.xp = xp;
         this.totalScore = totalScore;
 
         for(Class<? extends Powerup> powerup : PowerupInterface.getPowerupClassList()) {
@@ -66,7 +70,7 @@ public class User {
     }
 
     public User(String username, String password) {
-        this(username, password, 0, 0, 0);
+        this(username, password, 0, 0, 0, 0);
     }
 
     @Transient
@@ -108,8 +112,16 @@ public class User {
         this.coins = coins;
     }
 
+    public void addCoins(int coins) {
+        this.coins += coins;
+    }
+
     public HashMap<Powerup, Integer> getPowerups() {
         return powerups;
+    }
+
+    public void removePowerup(Powerup powerup) {
+        this.powerups.put(powerup ,this.powerups.get(powerup) - 1);
     }
 
     public int getLevel() {
@@ -126,5 +138,13 @@ public class User {
 
     public void setTotalScore(long totalScore) {
         this.totalScore = totalScore;
+    }
+
+    public int getXp() {
+        return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
     }
 }

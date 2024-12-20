@@ -16,7 +16,7 @@ public class GameView extends View{
         System.out.print("╠"+ "═".repeat(98) + "╣");
     }
     public String getUserInput() {
-        setCursorPos(34, 1);
+        setCursorPos(35, 1);
         System.out.print("> ");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();

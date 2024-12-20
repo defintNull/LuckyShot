@@ -28,6 +28,9 @@ public class HumanPlayer extends Player{
         PoisonBullet pb = PoisonBullet.getInstance();
         this.powerups.put(pb, 2);
         this.xp = 0;
+        this.multiplier = 1;
+        this.comboCounter = 0;
+        this.score = 0;
     }
 
     public int getScore() {
@@ -38,6 +41,10 @@ public class HumanPlayer extends Player{
         this.score = score;
     }
 
+    public void addScore(int score) {
+        this.score += score;
+    }
+
     public double getMultiplier() {
         return multiplier;
     }
@@ -46,12 +53,28 @@ public class HumanPlayer extends Player{
         this.multiplier = multiplier;
     }
 
+    public void incrementMultiplayer() {
+        this.multiplier += 0.5;
+    }
+
+    public void incrementMultiplayer(double multiplier) {
+        this.multiplier += multiplier;
+    }
+
     public int getComboCounter() {
         return comboCounter;
     }
 
     public void setComboCounter(int comboCounter) {
         this.comboCounter = comboCounter;
+    }
+
+    public void incrementComboCounter() {
+        this.comboCounter += 1;
+    }
+
+    public void incrementComboCounter(int comboCounter) {
+        this.comboCounter += comboCounter;
     }
 
     public HashMap<Powerup, Integer> getPowerups() {
