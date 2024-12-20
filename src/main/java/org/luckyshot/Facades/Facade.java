@@ -3,9 +3,11 @@ package org.luckyshot.Facades;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.Menu;
 
+import java.util.HashMap;
+
 public class Facade {
     private static Facade instance;
-    private User user;
+    private final User user;
 
     private Facade(User user) {
         this.user = user;
@@ -18,9 +20,22 @@ public class Facade {
         return instance;
     }
 
+    private boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
     public void menu() {
         Menu menu = new Menu();
-        menu.showMenu();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", user.getUsername());
+        map.put("level", Integer.toString(user.getLevel()));
+        map.put("xp", Integer.toString(user.getXp()));
+        menu.showMenu(map);
 
         int choice;
         do {

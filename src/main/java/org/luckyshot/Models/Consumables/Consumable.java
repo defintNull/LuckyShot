@@ -6,7 +6,7 @@ import org.luckyshot.Models.SinglePlayerGame;
 import java.util.ArrayList;
 
 public abstract class Consumable implements ConsumableInterface{
-    private int probability;
+    private final int probability;
 
     protected Consumable(Probability probability) {
         this.probability = probabilityRange.get(probability);

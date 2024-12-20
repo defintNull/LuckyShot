@@ -7,12 +7,9 @@ import org.luckyshot.Models.Consumables.*;
 import org.luckyshot.Models.Powerups.*;
 import org.luckyshot.Models.StateEffects.*;
 import org.luckyshot.Views.SinglePlayerGameView;
-import org.luckyshot.Views.View;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SinglePlayerGameFacade {
     private static SinglePlayerGameFacade instance;
@@ -112,14 +109,16 @@ public class SinglePlayerGameFacade {
 
         //Persistence
         Session session = HibernateService.getInstance().getSessionFactory().openSession();
-        Transaction transaction = null;
+        Transaction transaction;
         try {
             transaction = session.beginTransaction();
             session.merge(user);
             transaction.commit();
         } catch (Exception e) {
-            singlePlayerGameView.showError("Sincronization error");
+            singlePlayerGameView.showError("Synchronization error");
         }
+
+        session.close();
 
         singlePlayerGameView.showWinner(humanPlayer.getLives() != 0 ? "you" : "bot");
         singlePlayerGameView.showFinalXp(humanPlayer.getXp());
@@ -301,122 +300,116 @@ public class SinglePlayerGameFacade {
             map.put(Character.toString(alphabet.charAt(i)), ConsumableInterface.getConsumableClassList().get(i));
         }
 
-        if(map.containsKey(target)) {
-            Class<? extends Consumable> consumableClass = map.get(target);
+        if(!map.containsKey(target)) {
+            singlePlayerGameView.showError("No consumable found");
+            return;
+        }
 
-            boolean check = false;
-            for(int i=0; i<singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumablesNumber(); i++) {
-                if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumables().get(i).getClass().getSimpleName().equals(consumableClass.getSimpleName())) {
-                    check = true;
-                    break;
-                }
+        Class<? extends Consumable> consumableClass = map.get(target);
+
+        boolean check = false;
+        for(int i=0; i<singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumablesNumber(); i++) {
+            if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getConsumables().get(i).getClass().getSimpleName().equals(consumableClass.getSimpleName())) {
+                check = true;
+                break;
             }
-            if(check) {
-                try {
-                    boolean used = false;
-                    Method method = Class.forName(consumableClass.getName()).getMethod("getInstance");
-                    Object obj = method.invoke(null);
+        }
 
-                    // Fog state effect
-                    boolean checkFog = false;
-                    if(singlePlayerGame.getRound().getStateEffect().getClass() == Fog.class) {
-                        if(obj.getClass() == CrystalBall.class || obj.getClass() == Glasses.class) {
-                            checkFog = true;
+        if(!check) {
+            singlePlayerGameView.showError("You don't have this consumable!");
+            return;
+        }
+        try {
+            boolean used = false;
+            Method method = Class.forName(consumableClass.getName()).getMethod("getInstance");
+            Object obj = method.invoke(null);
+
+            // Fog state effect
+            boolean checkFog = singlePlayerGame.getRound().getStateEffect().getClass() == Fog.class && (obj.getClass() == CrystalBall.class || obj.getClass() == Glasses.class);
+
+            //Antidote state effect
+            boolean checkAntidote = singlePlayerGame.getRound().getStateEffect().getClass() == Antidote.class && (obj.getClass() == HealthPotion.class || obj.getClass() == MisteryPotion.class);
+
+            if(checkFog || checkAntidote) {
+                singlePlayerGameView.showStateEffectEffect(singlePlayerGame.getRound().getStateEffect().getEffect());
+                return;
+            }
+
+            singlePlayerGameView.showConsumableActivation(obj.toString()); // Ho tolto il cast a Consumable per il warning
+            String effect = ((Consumable) obj).use(singlePlayerGame);
+            singlePlayerGameView.showConsumableEffect(((Consumable) obj).getEffect(effect));
+            if(obj.getClass() == EnergyDrink.class) {
+                singlePlayerGameView.showEnergyDrinkChoise();
+                showGameState();
+                Character consumableToSteal = getPlayerInput().charAt(0);
+                boolean ok = false;
+                for(int i = 0; i < alphabet.length(); i++) {
+                    if(consumableToSteal.equals(alphabet.charAt(i))) {
+                        ok = true;
+                        break;
+                    }
+                }
+
+                ArrayList<Consumable> otherPlayerConsumables = singlePlayerGame.getRound().getTurn().getOtherPlayer().getConsumables();
+                ArrayList<Character> charList = new ArrayList<>();
+                for (Consumable otherPlayerConsumable : otherPlayerConsumables) {
+                    for (Map.Entry<String, Class<? extends Consumable>> entry : map.entrySet()) {
+                        if (otherPlayerConsumable.getClass().equals(entry.getValue())) {
+                            charList.add(entry.getKey().charAt(0));
                         }
                     }
+                }
 
-                    //Antidote state effect
-                    boolean checkAntidote = false;
-                    if(singlePlayerGame.getRound().getStateEffect().getClass() == Antidote.class) {
-                        if(obj.getClass() == HealthPotion.class || obj.getClass() == MisteryPotion.class) {
-                            checkAntidote = true;
-                        }
+                boolean exists = false;
+                for (Character character : charList) {
+                    if (character == consumableToSteal) {
+                        exists = true;
+                        break;
                     }
+                }
 
-                    if(!checkFog && !checkAntidote) {
-                        singlePlayerGameView.showConsumableActivation(((Consumable) obj).toString());
-                        String effect = ((Consumable) obj).use(singlePlayerGame);
-                        singlePlayerGameView.showConsumableEffect(((Consumable) obj).getEffect(effect));
-                        if(obj.getClass() == EnergyDrink.class) {
-                            singlePlayerGameView.showEnergyDrinkChoise();
-                            showGameState();
-                            Character consumableToSteal = getPlayerInput().charAt(0);
-                            boolean ok = false;
-                            for(int i = 0; i < alphabet.length(); i++) {
-                                if(consumableToSteal.equals(alphabet.charAt(i))) {
-                                    ok = true;
-                                    break;
-                                }
-                            }
-
-                            ArrayList<Consumable> otherPlayerConsumables = singlePlayerGame.getRound().getTurn().getOtherPlayer().getConsumables();
-                            ArrayList<Character> charList = new ArrayList<>();
-                            for(int i = 0; i < otherPlayerConsumables.size(); i++) {
-                                for(Map.Entry<String, Class<? extends Consumable>> entry : map.entrySet()) {
-                                    if(otherPlayerConsumables.get(i).getClass().equals(entry.getValue())) {
-                                        charList.add(entry.getKey().charAt(0));
-                                    }
-                                }
-                            }
-
-                            boolean exists = false;
-                            for(int i = 0; i < charList.size(); i++) {
-                                if(charList.get(i) == consumableToSteal) {
-                                    exists = true;
-                                    break;
-                                }
-                            }
-
-                            if(ok && exists) {
-                                Class<? extends Consumable> stolenConsumableClass = map.get(consumableToSteal.toString());
-                                if(stolenConsumableClass == EnergyDrink.class) {
-                                    singlePlayerGameView.addLastAction("You can't choose another energy drink");
-                                } else {
-                                    Method method2 = Class.forName(stolenConsumableClass.getName()).getMethod("getInstance");
-                                    Object obj2 = method2.invoke(null);
-
-                                    //Fog effect
-                                    boolean checkFog2 = false;
-                                    if(singlePlayerGame.getRound().getStateEffect().getClass() == Fog.class) {
-                                        if(obj2.getClass() == CrystalBall.class || obj2.getClass() == Glasses.class) {
-                                            checkFog2 = true;
-                                        }
-                                    }
-
-                                    if(!checkFog2) {
-                                        singlePlayerGameView.showConsumableActivation(((Consumable) obj2).toString());
-                                        String effect2 = ((Consumable) obj2).use(singlePlayerGame);
-                                        singlePlayerGameView.showConsumableEffect(((Consumable) obj2).getEffect(effect2));
-                                        singlePlayerGame.getRound().getTurn().getOtherPlayer().removeConsumable((Consumable) obj2);
-                                        used = true;
-                                    } else {
-                                        singlePlayerGameView.showStateEffectEffect(singlePlayerGame.getRound().getStateEffect().getEffect());
-                                    }
-                                }
-                            }
-                        } else {
-                            used = true;
-                        }
-                        if(used) {
-                            singlePlayerGame.getRound().getTurn().getCurrentPlayer().removeConsumable((Consumable) obj);
-
-                            //XP
-                            if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
-                                ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addXp(10);
-                            }
-                        } else {
-                            singlePlayerGameView.addLastAction("Consumable could not be used");
-                        }
+                if(ok && exists) {
+                    Class<? extends Consumable> stolenConsumableClass = map.get(consumableToSteal.toString());
+                    if(stolenConsumableClass == EnergyDrink.class) {
+                        singlePlayerGameView.addLastAction("You can't choose another energy drink");
                     } else {
-                        singlePlayerGameView.showStateEffectEffect(singlePlayerGame.getRound().getStateEffect().getEffect());
+                        Method method2 = Class.forName(stolenConsumableClass.getName()).getMethod("getInstance");
+                        Object obj2 = method2.invoke(null);
+
+                        //Fog effect
+                        boolean checkFog2 = false;
+                        if(singlePlayerGame.getRound().getStateEffect().getClass() == Fog.class) {
+                            if(obj2.getClass() == CrystalBall.class || obj2.getClass() == Glasses.class) {
+                                checkFog2 = true;
+                            }
+                        }
+
+                        if(!checkFog2) {
+                            singlePlayerGameView.showConsumableActivation(obj2.toString()); // Ho tolto il cast a Consumable per il warning
+                            String effect2 = ((Consumable) obj2).use(singlePlayerGame);
+                            singlePlayerGameView.showConsumableEffect(((Consumable) obj2).getEffect(effect2));
+                            singlePlayerGame.getRound().getTurn().getOtherPlayer().removeConsumable((Consumable) obj2);
+                            used = true;
+                        } else {
+                            singlePlayerGameView.showStateEffectEffect(singlePlayerGame.getRound().getStateEffect().getEffect());
+                        }
                     }
-                } catch (Exception e) {
-                    singlePlayerGameView.showError("No consumable found");
                 }
             } else {
-                singlePlayerGameView.showError("You don't have this consumable!");
+                used = true;
             }
-        } else {
+
+            if(used) {
+                singlePlayerGame.getRound().getTurn().getCurrentPlayer().removeConsumable((Consumable) obj);
+
+                //XP
+                if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addXp(10);
+                }
+            } else {
+                singlePlayerGameView.addLastAction("Consumable could not be used");
+            }
+        } catch (Exception e) {
             singlePlayerGameView.showError("No consumable found");
         }
     }
@@ -507,46 +500,47 @@ public class SinglePlayerGameFacade {
     }
 
     public void usePowerup(int target) {
-        if(target >= 1 && target <= PowerupInterface.getPowerupClassList().size()) {
-            String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
-            try {
-                Method method = Class.forName(powerupName).getMethod("getInstance");
-                Object obj = method.invoke(null);
-                if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) != 0) {
-                    ((Powerup) obj).use(singlePlayerGame);
-                    singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
-                    user.removePowerup((Powerup) obj);
-                    //Persistence
-                    Session session = HibernateService.getInstance().getSessionFactory().openSession();
-                    Transaction transaction = null;
-                    try {
-                        transaction = session.beginTransaction();
-                        session.merge(user);
-                        transaction.commit();
-                    } catch (Exception e) {
-                        singlePlayerGameView.showError("Powerup db error");
-                    }
-                    session.close();
-
-                    singlePlayerGameView.showPowerupActivation(((Powerup) obj).toString());
-                    if (obj.getClass() == Bomb.class) {
-                        singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
-                    }
-                } else {
-                    singlePlayerGameView.showError("No such powerup.");
-                }
-            } catch (Exception e) {
-                singlePlayerGameView.showError("Could not use powerup...");
-            }
-        } else {
+        if(target < 1 || target > PowerupInterface.getPowerupClassList().size()) {
             singlePlayerGameView.showError("No such powerup.");
+        }
+        String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
+        try {
+            Method method = Class.forName(powerupName).getMethod("getInstance");
+            Object obj = method.invoke(null);
+
+            if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) == 0) {
+                singlePlayerGameView.showError("No such powerup.");
+                return;
+            }
+
+            ((Powerup) obj).use(singlePlayerGame);
+            singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
+            user.removePowerup((Powerup) obj);
+
+            //Persistence
+            Session session = HibernateService.getInstance().getSessionFactory().openSession();
+            Transaction transaction;
+            try {
+                transaction = session.beginTransaction();
+                session.merge(user);
+                transaction.commit();
+            } catch (Exception e) {
+                singlePlayerGameView.showError("Powerup db error");
+            }
+            session.close();
+
+            singlePlayerGameView.showPowerupActivation(obj.toString()); // Ho tolto il cast a Powerup per il warning
+            if (obj.getClass() == Bomb.class) {
+                singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
+            }
+        } catch (Exception e) {
+            singlePlayerGameView.showError("Could not use powerup...");
         }
     }
 
     public boolean shootingPhase(String target) {
         boolean changeTurn = false;
         boolean shot = false;
-        String user = null;
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getCurrentPlayer();
         Bullet currentBullet = Gun.getInstance().popBullet();

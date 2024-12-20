@@ -70,7 +70,7 @@ public class User {
     }
 
     public User(String username, String password) {
-        this(username, password, 0, 0, 0, 0);
+        this(username, password, 0, 1, 0, 0);
     }
 
     @Transient

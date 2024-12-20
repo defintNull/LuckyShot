@@ -7,10 +7,6 @@ public class NoneEffect extends StateEffect{
 
     }
 
-    public String getActivation() {
-        return "No state effect for this round";
-    }
-
     public String getEffect() {
         return "No state effect for this round";
     }

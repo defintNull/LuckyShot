@@ -19,14 +19,14 @@ public class HumanPlayer extends Player{
 
     public HumanPlayer(long userId, HashMap<Powerup, Integer> powerups) {
         this.userId = userId;
-        //this.powerups = powerups;
-        this.powerups = new HashMap<>();
-        Bomb b = Bomb.getInstance();
-        this.powerups.put(b, 2);
-        Shield s = Shield.getInstance();
-        this.powerups.put(s, 2);
-        PoisonBullet pb = PoisonBullet.getInstance();
-        this.powerups.put(pb, 2);
+        this.powerups = powerups;
+//        this.powerups = new HashMap<>();
+//        Bomb b = Bomb.getInstance();
+//        this.powerups.put(b, 2);
+//        Shield s = Shield.getInstance();
+//        this.powerups.put(s, 2);
+//        PoisonBullet pb = PoisonBullet.getInstance();
+//        this.powerups.put(pb, 2);
         this.xp = 0;
         this.multiplier = 1;
         this.comboCounter = 0;

@@ -3,12 +3,10 @@ package org.luckyshot.Facades.Services.Converters;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Converter;
 import org.jetbrains.annotations.NotNull;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Views.SinglePlayerGameView;
-import org.luckyshot.Views.View;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,20 +18,20 @@ public class PowerupConverter implements AttributeConverter<HashMap<Powerup, Int
 
     @Override
     public String convertToDatabaseColumn(@NotNull HashMap<Powerup, Integer> powerupIntegerHashMap) {
-        ArrayList<ArrayList<String>> matrice = new ArrayList<ArrayList<String>>();
+        ArrayList<ArrayList<String>> matrix = new ArrayList<>();
         for(Map.Entry<Powerup, Integer> entry : powerupIntegerHashMap.entrySet()) {
-            ArrayList<String> row = new ArrayList<String>();
-            //Name
+            ArrayList<String> row = new ArrayList<>();
+            // Name
             row.add(entry.getKey().getClass().getName());
-            //Occurences
+            // Occurrences
             row.add(Integer.toString(entry.getValue()));
-            matrice.add(row);
+            matrix.add(row);
         }
 
         String json = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            json = mapper.writeValueAsString(matrice);
+            json = mapper.writeValueAsString(matrix);
         } catch (Exception e) {
             SinglePlayerGameView view = new SinglePlayerGameView();
             view.systemError();
@@ -44,13 +42,13 @@ public class PowerupConverter implements AttributeConverter<HashMap<Powerup, Int
 
     @Override
     public HashMap<Powerup, Integer> convertToEntityAttribute(String hashMapConvertedHashMap) {
-        HashMap<Powerup, Integer> hashMap = new HashMap<Powerup, Integer>();
+        HashMap<Powerup, Integer> hashMap = new HashMap<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             ArrayList<ArrayList<String>> convertList = mapper.readValue(
                     hashMapConvertedHashMap,
-                    new TypeReference<ArrayList<ArrayList<String>>>() {}
+                    new TypeReference<>() {}
             );
 
             for(ArrayList<String> convert : convertList) {
