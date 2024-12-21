@@ -574,7 +574,7 @@ public class SinglePlayerGameFacade {
                     ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore((int) Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 80));
                     ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementComboCounter();
                     if((((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getComboCounter() % 5) == 0) {
-                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplayer();
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplier();
                     }
 
                     // XP
@@ -601,7 +601,7 @@ public class SinglePlayerGameFacade {
                         ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore((int) Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 100));
                         ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementComboCounter();
                         if((((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getComboCounter() % 5) == 0) {
-                            ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplayer();
+                            ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplier();
                         }
 
                         // XP

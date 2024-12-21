@@ -53,11 +53,11 @@ public class HumanPlayer extends Player{
         this.multiplier = multiplier;
     }
 
-    public void incrementMultiplayer() {
+    public void incrementMultiplier() {
         this.multiplier += 0.5;
     }
 
-    public void incrementMultiplayer(double multiplier) {
+    public void incrementMultiplier(double multiplier) {
         this.multiplier += multiplier;
     }
 
