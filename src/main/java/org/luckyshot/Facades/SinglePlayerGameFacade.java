@@ -571,7 +571,11 @@ public class SinglePlayerGameFacade {
             } else {
                 //Score system & XP
                 if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
-                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore((int) Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 80));
+                    int score = (int)Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 80);
+                    if(singlePlayerGame.getRound().getStateEffect().getClass() == DoubleScore.class) {
+                        score *= 2;
+                    }
+                    ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore(score);
                     ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementComboCounter();
                     if((((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getComboCounter() % 5) == 0) {
                         ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplier();
@@ -598,7 +602,11 @@ public class SinglePlayerGameFacade {
                     //Score system & XP
                     if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
                         //Score System
-                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore((int) Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 100));
+                        int score = (int)Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 100);
+                        if(singlePlayerGame.getRound().getStateEffect().getClass() == DoubleScore.class) {
+                            score *= 2;
+                        }
+                        ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).addScore(score);
                         ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementComboCounter();
                         if((((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getComboCounter() % 5) == 0) {
                             ((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).incrementMultiplier();
