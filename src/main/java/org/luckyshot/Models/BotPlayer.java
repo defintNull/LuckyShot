@@ -21,7 +21,7 @@ public class BotPlayer extends Player{
             output = getShootingInput();
         } else {
             output = getShootingInput();
-            //getConsumableInput();
+            //output = getConsumableInput();
         }
         return output;
     }

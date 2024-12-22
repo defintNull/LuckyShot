@@ -69,21 +69,21 @@ public class SinglePlayerGameView extends GameView{
         setCursorPos(5, 1);
         System.out.print("╟" + "─".repeat(49) + "┤");
 
-        setCursorPos(22, 1);
+        setCursorPos(23, 1);
         System.out.print("╟" + "─".repeat(49) + "┤");
 
-        setCursorPos(15, 1);
+        setCursorPos(16, 1);
         System.out.print("╟" + "─".repeat(49) + "┼" + "─".repeat(48) + "╢");
-        setCursorPos(16, 22);
+        setCursorPos(17, 22);
         System.out.print("__,_____");
-        setCursorPos(17, 21);
+        setCursorPos(18, 21);
         System.out.print("/ __.==--\"");
-        setCursorPos(18, 20);
-        System.out.print("/#(-'");
         setCursorPos(19, 20);
+        System.out.print("/#(-'");
+        setCursorPos(20, 20);
         System.out.print("`-'");
 
-        setCursorPos(20, 1);
+        setCursorPos(21, 1);
         System.out.print("╟" + "─".repeat(49) + "┼" + "─".repeat(48) + "╢");
         setCursorPos(34, 1);
         System.out.print("╚" + "═".repeat(98) + "╝");
@@ -99,34 +99,34 @@ public class SinglePlayerGameView extends GameView{
     }
     public void drawHowToPlayGuide() {
         // Titolo della guida
-        setCursorPos(21, 52);
+        setCursorPos(22, 52);
         System.out.print(ANSI_BLUE + "Commands guide:" + ANSI_RESET);
 
         // Sezione 1: Shooting
-        setCursorPos(23, 52);
+        setCursorPos(24, 52);
         System.out.print("1) Shooting:");
-        setCursorPos(24, 55);
-        System.out.print("shoot 1: shoot yourself");
         setCursorPos(25, 55);
+        System.out.print("shoot 1: shoot yourself");
+        setCursorPos(26, 55);
         System.out.print("shoot 2: shoot the opponent");
 
         // Sezione 2: Consumables
-        setCursorPos(26, 52);
+        setCursorPos(27, 52);
         System.out.print("2) Use consumable:");
-        setCursorPos(27, 55);
+        setCursorPos(28, 55);
         System.out.print("use a, b, c, ...");
 
         // Sezione 3: Powerups
-        setCursorPos(28, 52);
+        setCursorPos(29, 52);
         System.out.print("3) Use powerup:");
-        setCursorPos(29, 55);
+        setCursorPos(30, 55);
         System.out.print("use 1, 2, 3, ...");
     }
 
     public void showGameState(HashMap<String, String> stateMap) {
         this.stateMap = stateMap;
 
-        String letters = "abcdefghi"; // Da vedere perchè non scalabile
+        String letters = "abcdefghijklmnopqrstuvwxyz";
         setCursorPos(2, 2);
         System.out.print("Round " + stateMap.get("roundNumber"));
 
@@ -161,7 +161,7 @@ public class SinglePlayerGameView extends GameView{
         }
 
         // Showing human lives and state (shield, poison)
-        setCursorPos(21, 2);
+        setCursorPos(22, 2);
         System.out.print("You: ");
         for(int i = 0; i < Integer.parseInt(stateMap.get("humanPlayerLives")); i++) {
             System.out.print(ANSI_RED + "♥" + ANSI_RESET);
@@ -176,17 +176,17 @@ public class SinglePlayerGameView extends GameView{
             System.out.print(" M");
         }
         // SPAZIO VA FATTO PROPORZIONALE AL NUMERO DI CIFRE
-        setCursorPos(21, 20);
+        setCursorPos(22, 20);
         System.out.print("Combo: " + stateMap.get("humanCombo"));
-        setCursorPos(21, 35);
+        setCursorPos(22, 35);
         System.out.print("Score: " + stateMap.get("humanScore"));
 
         // Showing human consumables
         cNumber = 0;
-        setCursorPos(23, 2);
+        setCursorPos(24, 2);
         System.out.print("Consumables:");
         for (int i = 0; i < ConsumableInterface.getConsumableStringList().size(); i++) {
-            setCursorPos(25+cNumber, 2);
+            setCursorPos(26+cNumber, 2);
             if (stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()) != null) {
                 System.out.print(letters.charAt(i) + ". " + ConsumableInterface.getConsumableStringList().get(i) + ": x");
                 System.out.print(stateMap.get("human" + ConsumableInterface.getConsumableClassList().get(i).getSimpleName()));
@@ -195,10 +195,10 @@ public class SinglePlayerGameView extends GameView{
         }
 
         // Showing powerups
-        setCursorPos(23, 27);
+        setCursorPos(24, 27);
         System.out.print("Powerups:");
         for (int i = 0; i < PowerupInterface.getPowerupStringList().size(); i++) {
-            setCursorPos(25+i, 27);
+            setCursorPos(26+i, 27);
             System.out.print(i + 1 + ". " + PowerupInterface.getPowerupStringList().get(i) + ": x");
             System.out.print(stateMap.get(PowerupInterface.getPowerupStringList().get(i)));
         }
@@ -240,7 +240,7 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showBullets(ArrayList<String> bullets) {
-        customPrint("Here are the bullets: ", "slow", 16, 52);
+        customPrint("Here are the bullets: ", "slow", 17, 52);
 
         String m = "";
         for (String bullet : bullets) {
@@ -251,9 +251,9 @@ public class SinglePlayerGameView extends GameView{
             }
             m += "█ " + ANSI_RESET;
         }
-        customPrint(m, "fast", 17, 52);
+        customPrint(m, "fast", 18, 52);
 
-        customPrint("I'm loading the gun...", "slow", 19, 52);
+        customPrint("I'm loading the gun...", "slow", 20, 52);
 
         try {
             Thread.sleep(2000);
