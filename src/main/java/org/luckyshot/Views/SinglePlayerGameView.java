@@ -93,6 +93,34 @@ public class SinglePlayerGameView extends GameView{
 
         setCursorPos(34, 51);
         System.out.print("╧");
+
+        drawHowToPlayGuide();
+
+    }
+    public void drawHowToPlayGuide() {
+        // Titolo della guida
+        setCursorPos(21, 52);
+        System.out.print(ANSI_BLUE + "Commands guide:" + ANSI_RESET);
+
+        // Sezione 1: Shooting
+        setCursorPos(23, 52);
+        System.out.print("1) Shooting:");
+        setCursorPos(24, 55);
+        System.out.print("shoot 1: shoot yourself");
+        setCursorPos(25, 55);
+        System.out.print("shoot 2: shoot the opponent");
+
+        // Sezione 2: Consumables
+        setCursorPos(26, 52);
+        System.out.print("2) Use consumable:");
+        setCursorPos(27, 55);
+        System.out.print("use a, b, c, ...");
+
+        // Sezione 3: Powerups
+        setCursorPos(28, 52);
+        System.out.print("3) Use powerup:");
+        setCursorPos(29, 55);
+        System.out.print("use 1, 2, 3, ...");
     }
 
     public void showGameState(HashMap<String, String> stateMap) {
