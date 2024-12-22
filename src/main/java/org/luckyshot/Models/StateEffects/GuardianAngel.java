@@ -10,7 +10,7 @@ public class GuardianAngel extends StateEffect{
     }
 
     public String getActivation() {
-        return "The guardian angel protected a player!";
+        return "There is a strange entity looking after both...";
     }
 
     public String getEffect() {

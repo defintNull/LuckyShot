@@ -1,12 +1,28 @@
 package org.luckyshot.Models;
 
+import org.luckyshot.Models.Consumables.Consumable;
+import org.luckyshot.Models.Consumables.ConsumableInterface;
+import org.luckyshot.Views.SinglePlayerGameView;
+
 import java.util.Random;
 
 public class BotPlayer extends Player{
     public String getConsumableInput() {
-        //String options = "abcdefghi"
+        return "use " + getRandomConsumableLetter();
+    }
+
+    public String getRandomConsumableLetter() {
+        String options = "";
+        String alphabet = "abcdefghijklmnopqrstuwxyz";
+        for(int i = 0; i < ConsumableInterface.getConsumableClassList().size(); i++) {
+            for(int j = 0; j < this.getConsumables().size(); j++) {
+                if(this.getConsumables().get(j).getClass().equals(ConsumableInterface.getConsumableClassList().get(i))){
+                    options += alphabet.charAt(i);
+                }
+            }
+        }
         Random rand = new Random();
-        return "use " + rand.nextInt(1,9);
+        return Character.toString(options.charAt(rand.nextInt(0, options.length())));
     }
 
     public String getShootingInput() {
@@ -16,12 +32,12 @@ public class BotPlayer extends Player{
 
     public String getInput() {
         Random rand = new Random();
-        String output = "";
-        if(rand.nextInt(2) == 0) {
+        String output;
+        if(rand.nextInt(2) == 0 && !getConsumables().isEmpty()) {
+            output = getConsumableInput();
+        }
+        else {
             output = getShootingInput();
-        } else {
-            output = getShootingInput();
-            //output = getConsumableInput();
         }
         return output;
     }

@@ -35,7 +35,7 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void debug(String s) {
-        showGame(stateMap);
+        //showGame(stateMap);
         setCursorPos(28, 52);
         System.out.print(ANSI_CYAN + "DEBUG: " + s + ANSI_RESET);
     }
@@ -343,13 +343,13 @@ public class SinglePlayerGameView extends GameView{
 
     public void showHandcuffedState(boolean state) {
         if(state) {
-            lastAction.add("You are handcuffed, loose your turn!");
+            lastAction.add("You are handcuffed, you lose your turn!");
         } else {
-            lastAction.add("The other player has been freed! Happy freedom!");
+            lastAction.add("The other player has been freed.");
         }
     }
 
     public void showEnergyDrinkChoise() {
-        lastAction.add("Choose the consumable to steal");
+        lastAction.add("Choose the consumable to steal.");
     }
 }

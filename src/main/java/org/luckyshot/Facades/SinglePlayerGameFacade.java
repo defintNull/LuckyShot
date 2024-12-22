@@ -335,21 +335,15 @@ public class SinglePlayerGameFacade {
                 return;
             }
 
-            singlePlayerGameView.showConsumableActivation(obj.toString()); // Ho tolto il cast a Consumable per il warning
+            singlePlayerGameView.showConsumableActivation(obj.toString());
             String effect = ((Consumable) obj).use(singlePlayerGame);
             singlePlayerGameView.showConsumableEffect(((Consumable) obj).getEffect(effect));
+
+            // Energy drink actions
             if(obj.getClass() == EnergyDrink.class) {
                 singlePlayerGameView.showEnergyDrinkChoise();
                 showGameState();
-                Character consumableToSteal = getPlayerInput().charAt(0);
-                boolean ok = false;
-                for(int i = 0; i < alphabet.length(); i++) {
-                    if(consumableToSteal.equals(alphabet.charAt(i))) {
-                        ok = true;
-                        break;
-                    }
-                }
-
+                Character consumableToSteal;
                 ArrayList<Consumable> otherPlayerConsumables = singlePlayerGame.getRound().getTurn().getOtherPlayer().getConsumables();
                 ArrayList<Character> charList = new ArrayList<>();
                 for (Consumable otherPlayerConsumable : otherPlayerConsumables) {
@@ -357,6 +351,20 @@ public class SinglePlayerGameFacade {
                         if (otherPlayerConsumable.getClass().equals(entry.getValue())) {
                             charList.add(entry.getKey().charAt(0));
                         }
+                    }
+                }
+
+                if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
+                    consumableToSteal = getPlayerInput().charAt(0);
+                } else {
+                    Random rand = new Random();
+                    consumableToSteal = charList.get(rand.nextInt(0, charList.size()));
+                }
+                boolean ok = false;
+                for(int i = 0; i < alphabet.length(); i++) {
+                    if(consumableToSteal.equals(alphabet.charAt(i))) {
+                        ok = true;
+                        break;
                     }
                 }
 
@@ -503,12 +511,13 @@ public class SinglePlayerGameFacade {
         if(target < 1 || target > PowerupInterface.getPowerupClassList().size()) {
             singlePlayerGameView.showError("No such powerup.");
         }
+
         String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
         try {
             Method method = Class.forName(powerupName).getMethod("getInstance");
             Object obj = method.invoke(null);
 
-            if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) == 0) {
+            if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) <= 0) {
                 singlePlayerGameView.showError("No such powerup.");
                 return;
             }
