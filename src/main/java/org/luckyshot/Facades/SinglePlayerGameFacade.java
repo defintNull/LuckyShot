@@ -53,8 +53,10 @@ public class SinglePlayerGameFacade {
             this.singlePlayerGame.getRound().setMaxLives(randomLives);
             this.singlePlayerGame.getHumanPlayer().setResurrected(false);
             this.singlePlayerGame.getHumanPlayer().setLives(randomLives);
+            this.singlePlayerGame.getHumanPlayer().setConsumables(new ArrayList<>());
             this.singlePlayerGame.getBot().setResurrected(false);
             this.singlePlayerGame.getBot().setLives(randomLives);
+            this.singlePlayerGame.getBot().setConsumables(new ArrayList<>());
 
             boolean roundEnded = false;
             int turn = 0;
@@ -124,8 +126,6 @@ public class SinglePlayerGameFacade {
         singlePlayerGameView.showFinalXp(humanPlayer.getXp());
         singlePlayerGameView.showLevelAndXp(user.getUsername(), user.getLevel(), user.getXp());
         singlePlayerGameView.showEndGameScreen();
-
-        Facade.getInstance(user).menu();
     }
 
     public void showGameState() {

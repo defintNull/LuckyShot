@@ -30,35 +30,37 @@ public class Facade {
     }
 
     public void menu() {
-        Menu menu = new Menu();
-        HashMap<String, String> map = new HashMap<>();
-        map.put("username", user.getUsername());
-        map.put("level", Integer.toString(user.getLevel()));
-        map.put("xp", Integer.toString(user.getXp()));
-        menu.showMenu(map);
+        while(true) {
+            Menu menu = new Menu();
+            HashMap<String, String> map = new HashMap<>();
+            map.put("username", user.getUsername());
+            map.put("level", Integer.toString(user.getLevel()));
+            map.put("xp", Integer.toString(user.getXp()));
+            menu.showMenu(map);
 
-        int choice;
-        do {
-            choice = menu.getUserInput();
-            if (choice == 1) {
-                this.startSinglePlayerMatch();
-            } else if (choice == 2) {
-                this.startMultiPlayerMatch();
-            } else if (choice == 3) {
-                this.showShop();
-            } else if (choice == 4) {
-                this.showStats();
-            } else if (choice == 5) {
-                try {
-                    this.quitGame();
-                } catch (Exception e) {
-                    System.out.println("Error while quitting the game.");
-                    System.exit(1);
+            int choice;
+            do {
+                choice = menu.getUserInput();
+                if (choice == 1) {
+                    this.startSinglePlayerMatch();
+                } else if (choice == 2) {
+                    this.startMultiPlayerMatch();
+                } else if (choice == 3) {
+                    this.shopMenu();
+                } else if (choice == 4) {
+                    this.showStats();
+                } else if (choice == 5) {
+                    try {
+                        this.quitGame();
+                    } catch (Exception e) {
+                        System.out.println("Error while quitting the game.");
+                        System.exit(1);
+                    }
+                } else {
+                    menu.showInvalidChoice();
                 }
-            } else {
-                menu.showInvalidChoice();
-            }
-        } while(choice < 1 || choice > 5);
+            } while (choice < 1 || choice > 5);
+        }
     }
 
     private void startSinglePlayerMatch() {
@@ -70,8 +72,9 @@ public class Facade {
 
     }
 
-    private void showShop() {
-
+    private void shopMenu() {
+        ShopFacade shopFacade = ShopFacade.getInstance();
+        shopFacade.shopMenu();
     }
 
     private void showStats() {

@@ -1,24 +1,16 @@
 package org.luckyshot.Views;
 
-import org.checkerframework.checker.units.qual.A;
-import org.luckyshot.Models.Bullet;
-import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
-import org.luckyshot.Models.HumanPlayer;
-import org.luckyshot.Models.Player;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class SinglePlayerGameView extends GameView{
     HashMap<String, String> stateMap = new HashMap<>();
-    ArrayList<String> lastAction = new ArrayList<String>();
+    ArrayList<String> lastAction = new ArrayList<>();
 
     public void debugSleep(int t) {
         try {
@@ -291,11 +283,11 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showFinalXp(int xp) {
-        lastAction.add("You gained " + Integer.toString(xp) + " xp!");
+        lastAction.add("You gained " + xp + " xp!");
     }
 
     public void showLevelAndXp(String user, int level, int xp) {
-        lastAction.add(user + ":  Level:" + Integer.toString(level) + "      XP:" + Integer.toString(xp));
+        lastAction.add(user + ":  Level:" + level + "      XP:" + xp);
     }
 
     public void showWinner(String winner) {
