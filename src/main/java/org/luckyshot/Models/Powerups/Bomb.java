@@ -5,7 +5,7 @@ import org.luckyshot.Models.SinglePlayerGame;
 
 public class Bomb extends Powerup{
     private static Bomb instance;
-    private static final int COST = 1;
+    private static final int COST = 20;
 
     private Bomb() {
         super(COST);

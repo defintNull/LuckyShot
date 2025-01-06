@@ -124,6 +124,10 @@ public class User {
         this.powerups.put(powerup ,this.powerups.get(powerup) - 1);
     }
 
+    public void addPowerup(Powerup powerup) {
+        this.powerups.put(powerup ,this.powerups.get(powerup) + 1);
+    }
+
     public int getLevel() {
         return level;
     }

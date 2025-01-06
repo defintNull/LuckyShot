@@ -5,7 +5,7 @@ import org.luckyshot.Models.SinglePlayerGame;
 
 public class Shield extends Powerup{
     private static Shield instance;
-    private static final int COST = 1;
+    private static final int COST = 15;
 
     private Shield() {
         super(COST);

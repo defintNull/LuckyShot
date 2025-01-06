@@ -91,6 +91,8 @@ public class SinglePlayerGameFacade {
                 turn = (turn + 1) % 2;
             }
 
+
+
             // Condizione di fine gioco
             if(singlePlayerGame.getRound().getRoundNumber() >= 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
                 gameEnded = true;
@@ -550,6 +552,7 @@ public class SinglePlayerGameFacade {
     public boolean shootingPhase(String target) {
         boolean changeTurn = false;
         boolean shot = false;
+        int score = 0;
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getCurrentPlayer();
         Bullet currentBullet = Gun.getInstance().popBullet();
@@ -580,7 +583,7 @@ public class SinglePlayerGameFacade {
             } else {
                 //Score system & XP
                 if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
-                    int score = (int)Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 80);
+                    score = (int)Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 80);
                     if(singlePlayerGame.getRound().getStateEffect().getClass() == DoubleScore.class) {
                         score *= 2;
                     }
@@ -611,7 +614,7 @@ public class SinglePlayerGameFacade {
                     //Score system & XP
                     if(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getClass() == HumanPlayer.class) {
                         //Score System
-                        int score = (int)Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 100);
+                        score = (int)Math.round(((HumanPlayer) singlePlayerGame.getRound().getTurn().getCurrentPlayer()).getMultiplier() * 100);
                         if(singlePlayerGame.getRound().getStateEffect().getClass() == DoubleScore.class) {
                             score *= 2;
                         }
@@ -648,6 +651,8 @@ public class SinglePlayerGameFacade {
             if(currentPlayer.getClass() == BotPlayer.class) {
                 singlePlayerGameView.showShootingTarget(target);
             }
+
+            user.setTotalScore(user.getTotalScore() + score);
         }
         return changeTurn;
     }

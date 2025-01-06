@@ -73,7 +73,7 @@ public class Facade {
     }
 
     private void shopMenu() {
-        ShopFacade shopFacade = ShopFacade.getInstance();
+        ShopFacade shopFacade = ShopFacade.getInstance(user);
         shopFacade.shopMenu();
     }
 

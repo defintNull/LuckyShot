@@ -1,19 +1,29 @@
 package org.luckyshot.Facades;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
+import org.luckyshot.Models.User;
 import org.luckyshot.Views.ShopView;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ShopFacade {
     private static ShopFacade instance;
     private final ShopView shopView;
+    private final User user;
 
-    private ShopFacade() {
+    private ShopFacade(User user) {
         shopView = new ShopView();
+        this.user = user;
     }
 
-    public static ShopFacade getInstance() {
+    public static ShopFacade getInstance(User user) {
         if (instance == null) {
-            instance = new ShopFacade();
+            instance = new ShopFacade(user);
         }
         return instance;
     }
@@ -22,15 +32,73 @@ public class ShopFacade {
         while(true) {
             showShop();
             String choice = shopView.getUserInput();
+            ArrayList<String> choices = new ArrayList<>();
+            boolean valid = false;
+            for(int i = 0; i < PowerupInterface.getPowerupClassList().size(); i++) {
+                choices.add(Integer.toString(i + 1));
+                if(choice.equals(Integer.toString(i + 1))) {
+                    valid = true;
+                }
+            }
             if(choice.equals("q")) {
                 break;
-            } else if((Integer.parseInt(choice) < 1 || Integer.parseInt(choice) > PowerupInterface.getPowerupClassList().size())) {
-                shopView.showError("The desired powerup doesn't exists...");
             }
+            if(!valid) {
+                shopView.showError("Insert a valid choice...");
+                continue;
+            }
+            if((Integer.parseInt(choice) < 1 || Integer.parseInt(choice) > PowerupInterface.getPowerupClassList().size())) {
+                shopView.showError("The desired powerup doesn't exists...");
+                continue;
+            }
+            // Compra il powerup scelto
+
+            Class<? extends Powerup> chosenPowerup = PowerupInterface.getPowerupClassList().get(Integer.parseInt(choice) - 1);
+            int price;
+            Powerup powerup;
+            try {
+                Method method = Class.forName(chosenPowerup.getName()).getMethod("getInstance");
+                Object obj = method.invoke(null);
+                powerup = (Powerup) obj;
+                price = powerup.getCost();
+            } catch (Exception e) {
+                shopView.showError("No method found");
+                continue;
+            }
+            if(user.getCoins() < price) {
+                shopView.showError("You can't afford that...");
+                continue;
+            }
+            user.setCoins(user.getCoins() - price);
+            user.addPowerup(powerup);
+
+            Session session = HibernateService.getInstance().getSessionFactory().openSession();
+            Transaction transaction;
+            try {
+                transaction = session.beginTransaction();
+                session.merge(user);
+                transaction.commit();
+            } catch (Exception e) {
+                shopView.showError("Synchronization error");
+            }
+
+            session.close();
         }
     }
 
     public void showShop() {
-        shopView.showShop();
+        HashMap<String, Integer> map = new HashMap<>();
+        for(int i = 0; i < PowerupInterface.getPowerupClassList().size(); i++) {
+            Class<? extends Powerup> powerupClass = PowerupInterface.getPowerupClassList().get(i);
+            try {
+                Method method = Class.forName(powerupClass.getName()).getMethod("getInstance");
+                Object obj = method.invoke(null);
+                map.put(powerupClass.getSimpleName(), ((Powerup)obj).getCost());
+            } catch (Exception e) {
+                shopView.showError("No method found");
+            }
+        }
+
+        shopView.showShop(map, user.getCoins());
     }
 }

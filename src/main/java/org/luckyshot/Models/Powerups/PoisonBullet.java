@@ -5,7 +5,7 @@ import org.luckyshot.Models.SinglePlayerGame;
 
 public class PoisonBullet extends Powerup{
     private static PoisonBullet instance;
-    private static final int COST = 1;
+    private static final int COST = 10;
 
     private PoisonBullet() {
         super(COST);

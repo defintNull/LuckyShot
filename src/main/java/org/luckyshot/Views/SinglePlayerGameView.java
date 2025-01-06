@@ -12,14 +12,6 @@ public class SinglePlayerGameView extends GameView{
     HashMap<String, String> stateMap = new HashMap<>();
     ArrayList<String> lastAction = new ArrayList<>();
 
-    public void debugSleep(int t) {
-        try {
-            Thread.sleep(t);
-        } catch (Exception e) {
-            showError("debug sleep error");
-        }
-    }
-
     public void showError(String s) {
         showGame(stateMap);
         setCursorPos(27, 52);
