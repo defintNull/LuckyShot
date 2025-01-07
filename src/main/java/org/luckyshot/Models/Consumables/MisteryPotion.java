@@ -22,7 +22,7 @@ public class MisteryPotion extends Consumable{
         Random rand = new Random();
         int lives = singlePlayerGame.getRound().getTurn().getCurrentPlayer().getLives();
         if(rand.nextInt(0, 2) == 0) {
-            if(lives + 1 < singlePlayerGame.getRound().getMaxLives()) {
+            if(lives < singlePlayerGame.getRound().getMaxLives()) {
                 singlePlayerGame.getRound().getTurn().getCurrentPlayer().setLives(lives + 1);
             }
         } else {
