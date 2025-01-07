@@ -44,7 +44,7 @@ public class Facade {
                 if (choice == 1) {
                     this.startSinglePlayerMatch();
                 } else if (choice == 2) {
-                    this.startMultiPlayerMatch();
+                    this.startMultiplayerMatch();
                 } else if (choice == 3) {
                     this.shopMenu();
                 } else if (choice == 4) {
@@ -70,7 +70,7 @@ public class Facade {
         singlePlayerGameFacade.start(user);
     }
 
-    private void startMultiPlayerMatch() {
+    private void startMultiplayerMatch() {
 
     }
 
