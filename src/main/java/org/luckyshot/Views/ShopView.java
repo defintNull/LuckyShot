@@ -10,7 +10,7 @@ public class ShopView extends View {
         try{
             clearScreen();
         } catch (Exception e) {
-            showError("Error while clearing the screen");
+            showError("Error while clearing the screen", 21, 2);
         }
         displayHeader();
 
@@ -37,15 +37,5 @@ public class ShopView extends View {
     public String getUserInput() {
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
-    }
-
-    public void showError(String s) {
-        setCursorPos(21, 2);
-        System.out.print(ANSI_RED + "Error: " + s + ANSI_RESET);
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            System.out.print(ANSI_RED + "Error while sleeping" + ANSI_RESET);
-        }
     }
 }

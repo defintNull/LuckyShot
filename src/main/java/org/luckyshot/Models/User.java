@@ -44,6 +44,18 @@ public class User {
     @Column(name = "total_score", nullable = false)
     private long totalScore;
 
+    @Column(name = "games_played", nullable = false)
+    private int gamesPlayed;
+
+    @Column(name = "games_won", nullable = false)
+    private int gamesWon;
+
+    @Column(name = "number_of_kills", nullable = false)
+    private int numberOfKills;
+
+    @Column(name = "number_of_self_shots", nullable = false)
+    private int numberOfSelfShots;
+
     public User() {
 
     }
@@ -150,5 +162,37 @@ public class User {
 
     public void setXp(int xp) {
         this.xp = xp;
+    }
+
+    public int getGamesPlayed() {
+        return gamesPlayed;
+    }
+
+    public void setGamesPlayed(int gamesPlayed) {
+        this.gamesPlayed = gamesPlayed;
+    }
+
+    public int getGamesWon() {
+        return gamesWon;
+    }
+
+    public void setGamesWon(int gamesWon) {
+        this.gamesWon = gamesWon;
+    }
+
+    public int getNumberOfKills() {
+        return numberOfKills;
+    }
+
+    public void setNumberOfKills(int numberOfKills) {
+        this.numberOfKills = numberOfKills;
+    }
+
+    public int getNumberOfSelfShots() {
+        return numberOfSelfShots;
+    }
+
+    public void setNumberOfSelfShots(int numberOfSelfShots) {
+        this.numberOfSelfShots = numberOfSelfShots;
     }
 }

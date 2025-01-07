@@ -65,6 +65,7 @@ public class Facade {
 
     private void startSinglePlayerMatch() {
         SinglePlayerGameFacade singlePlayerGameFacade = SinglePlayerGameFacade.getInstance();
+        user.setGamesPlayed(user.getGamesPlayed() + 1);
         singlePlayerGameFacade.start(user);
     }
 
@@ -78,7 +79,8 @@ public class Facade {
     }
 
     private void showStats() {
-
+        StatsFacade statsFacade = StatsFacade.getInstance(user);
+        statsFacade.showStats();
     }
 
     private void quitGame() throws InterruptedException {

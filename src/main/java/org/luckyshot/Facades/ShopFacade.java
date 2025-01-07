@@ -44,11 +44,11 @@ public class ShopFacade {
                 break;
             }
             if(!valid) {
-                shopView.showError("Insert a valid choice...");
+                shopView.showError("Insert a valid choice...", 21, 2);
                 continue;
             }
             if((Integer.parseInt(choice) < 1 || Integer.parseInt(choice) > PowerupInterface.getPowerupClassList().size())) {
-                shopView.showError("The desired powerup doesn't exists...");
+                shopView.showError("The desired powerup doesn't exists...", 21, 2);
                 continue;
             }
             // Compra il powerup scelto
@@ -62,11 +62,11 @@ public class ShopFacade {
                 powerup = (Powerup) obj;
                 price = powerup.getCost();
             } catch (Exception e) {
-                shopView.showError("No method found");
+                shopView.showError("No method found", 21, 2);
                 continue;
             }
             if(user.getCoins() < price) {
-                shopView.showError("You can't afford that...");
+                shopView.showError("You can't afford that...", 21, 2);
                 continue;
             }
             user.setCoins(user.getCoins() - price);
@@ -79,7 +79,7 @@ public class ShopFacade {
                 session.merge(user);
                 transaction.commit();
             } catch (Exception e) {
-                shopView.showError("Synchronization error");
+                shopView.showError("Synchronization error", 21, 2);
             }
 
             session.close();
@@ -95,7 +95,7 @@ public class ShopFacade {
                 Object obj = method.invoke(null);
                 map.put(powerupClass.getSimpleName(), ((Powerup)obj).getCost());
             } catch (Exception e) {
-                shopView.showError("No method found");
+                shopView.showError("No method found",21, 2);
             }
         }
 

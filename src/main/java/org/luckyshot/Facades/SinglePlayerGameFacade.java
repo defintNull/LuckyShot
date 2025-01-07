@@ -91,8 +91,6 @@ public class SinglePlayerGameFacade {
                 turn = (turn + 1) % 2;
             }
 
-
-
             // Condizione di fine gioco
             if(singlePlayerGame.getRound().getRoundNumber() >= 3 && (humanPlayer.getLives() <= 0 || botPlayer.getLives() <= 0)) {
                 gameEnded = true;
@@ -100,6 +98,7 @@ public class SinglePlayerGameFacade {
         }
         // XP
         if(humanPlayer.getLives() != 0) {
+            user.setGamesWon(user.getGamesWon() + 1);
             humanPlayer.addXp(120);
         }
 
@@ -564,6 +563,7 @@ public class SinglePlayerGameFacade {
                 changeTurn = true;
                 if(!currentPlayer.isShieldActive()) {
                     currentPlayer.setLives(currentPlayer.getLives() - Gun.getInstance().getDamage());
+                    user.setNumberOfSelfShots(user.getNumberOfSelfShots() + 1);
                     if(Gun.getInstance().getDamage() != 1) {
                         singlePlayerGameView.showGhostGunDamage();
                     }
@@ -604,6 +604,7 @@ public class SinglePlayerGameFacade {
 
                 if(!otherPlayer.isShieldActive()) {
                     otherPlayer.setLives(otherPlayer.getLives() - Gun.getInstance().getDamage());
+                    user.setNumberOfKills(user.getNumberOfKills() + 1);
                     if(Gun.getInstance().getDamage() != 1) {
                         singlePlayerGameView.showGhostGunDamage();
                     }

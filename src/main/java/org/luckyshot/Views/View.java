@@ -17,6 +17,16 @@ public abstract class View {
     protected static final String ANSI_CYAN = "\u001B[36m";
     protected static final String ANSI_WHITE = "\u001B[37m";
 
+    public void showError(String s, int x, int y) {
+        setCursorPos(x, y);
+        System.out.print(ANSI_RED + "Error: " + s + ANSI_RESET);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.print(ANSI_RED + "Error while sleeping" + ANSI_RESET);
+        }
+    }
+
     protected void displayHeader() {
         setCursorPos(1, 1);
         System.out.print("╔" + "═".repeat(98) + "╗");
