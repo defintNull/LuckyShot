@@ -23,7 +23,7 @@ public class Magnet extends Consumable{
     }
 
     public String getEffect(String effect) {
-        return "Bullet removed! It was " + (effect == "1" ? "live" : "fake");
+        return "Bullet removed! It was " + (effect.equals("1") ? "live" : "fake");
     }
 
     public String toString() {
