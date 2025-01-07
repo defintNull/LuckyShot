@@ -232,6 +232,7 @@ public class SinglePlayerGameFacade {
                 String[] userInput = getPlayerInput().split(" ");
                 while(userInput.length != 2) {
                     singlePlayerGameView.showError("Wrong syntax, command not recognized");
+                    showGameState();
                     userInput = getPlayerInput().split(" ");
                 }
                 String command = userInput[0].toLowerCase(); // use, shoot
@@ -511,41 +512,42 @@ public class SinglePlayerGameFacade {
     public void usePowerup(int target) {
         if(target < 1 || target > PowerupInterface.getPowerupClassList().size()) {
             singlePlayerGameView.showError("No such powerup.");
-        }
-
-        String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
-        try {
-            Method method = Class.forName(powerupName).getMethod("getInstance");
-            Object obj = method.invoke(null);
-
-            if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) <= 0) {
-                singlePlayerGameView.showError("No such powerup.");
-                return;
-            }
-
-            ((Powerup) obj).use(singlePlayerGame);
-            singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
-            user.removePowerup((Powerup) obj);
-
-            //Persistence
-            Session session = HibernateService.getInstance().getSessionFactory().openSession();
-            Transaction transaction;
+        } else {
+            String powerupName = PowerupInterface.getPowerupClassList().get(target - 1).getName();
             try {
-                transaction = session.beginTransaction();
-                session.merge(user);
-                transaction.commit();
-            } catch (Exception e) {
-                singlePlayerGameView.showError("Powerup db error");
-            }
-            session.close();
+                Method method = Class.forName(powerupName).getMethod("getInstance");
+                Object obj = method.invoke(null);
 
-            singlePlayerGameView.showPowerupActivation(obj.toString()); // Ho tolto il cast a Powerup per il warning
-            if (obj.getClass() == Bomb.class) {
-                singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
+                if (singlePlayerGame.getHumanPlayer().getPowerups().get((Powerup) obj) <= 0) {
+                    singlePlayerGameView.showError("No such powerup.");
+                    return;
+                }
+
+                ((Powerup) obj).use(singlePlayerGame);
+                singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
+                user.removePowerup((Powerup) obj);
+
+                //Persistence
+                Session session = HibernateService.getInstance().getSessionFactory().openSession();
+                Transaction transaction;
+                try {
+                    transaction = session.beginTransaction();
+                    session.merge(user);
+                    transaction.commit();
+                } catch (Exception e) {
+                    singlePlayerGameView.showError("Powerup db error");
+                }
+                session.close();
+
+                singlePlayerGameView.showPowerupActivation(obj.toString()); // Ho tolto il cast a Powerup per il warning
+                if (obj.getClass() == Bomb.class) {
+                    singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
+                }
+            } catch (Exception e) {
+                singlePlayerGameView.showError("Could not use powerup...");
             }
-        } catch (Exception e) {
-            singlePlayerGameView.showError("Could not use powerup...");
         }
+
     }
 
     public boolean shootingPhase(String target) {
@@ -554,7 +556,10 @@ public class SinglePlayerGameFacade {
         int score = 0;
 
         Player currentPlayer = singlePlayerGame.getRound().getTurn().getCurrentPlayer();
-        Bullet currentBullet = Gun.getInstance().popBullet();
+        Bullet currentBullet = null;
+        if(target.equals("1") || target.equals("2")) {
+            currentBullet = Gun.getInstance().popBullet();
+        }
 
         // 1 = self
         // 2 = other

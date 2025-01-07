@@ -55,14 +55,20 @@ public class Menu extends View{
         Scanner scanner = new Scanner(System.in);
         setCursorPos(12, 1);
         System.out.print("> ");
-        if(scanner.hasNextInt()) {
-            return scanner.nextInt();
+        String input = scanner.nextLine();
+        if(!input.trim().isEmpty()) {
+            try {
+                return Integer.parseInt(input);
+            } catch (Exception _) {
+
+            }
         }
         return 0;
     }
 
-    public void showInvalidChoice() {
-        System.out.println("Not a valid option, try again.");
+    public void showInvalidChoice(int row) {
+        setCursorPos(row, 1);
+        System.out.print(ANSI_RED + "Not a valid option, try again." + ANSI_RESET);
     }
 
     public void quitGame() {

@@ -11,11 +11,19 @@ import java.util.HashMap;
 public class SinglePlayerGameView extends GameView{
     HashMap<String, String> stateMap = new HashMap<>();
     ArrayList<String> lastAction = new ArrayList<>();
+    ArrayList<String> lastErrorAction = new ArrayList<>();
 
     public void showError(String s) {
-        showGame(stateMap);
-        setCursorPos(27, 52);
-        System.out.print(ANSI_RED + "ERROR: " + s + ANSI_RESET);
+        this.lastErrorAction.add(ANSI_RED + "ERROR: " + s + ANSI_RESET);
+    }
+
+    public void printLastErrorAction() {
+        if(!lastErrorAction.isEmpty()) {
+            for(int i=0; i<lastErrorAction.size(); i++) {
+                customPrint(lastErrorAction.get(i), "fast", 17 + i, 52);
+            }
+        }
+        lastErrorAction.clear();
     }
 
     public void debug(String s) {
@@ -221,6 +229,7 @@ public class SinglePlayerGameView extends GameView{
         drawTable();
         showGameState(stateMap);
         printLastAction();
+        printLastErrorAction();
     }
 
     public void showBullets(ArrayList<String> bullets) {

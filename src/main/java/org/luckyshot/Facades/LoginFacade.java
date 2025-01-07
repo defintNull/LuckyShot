@@ -52,7 +52,8 @@ public class LoginFacade {
                     System.exit(0);
                 }
             }else {
-                menu.showInvalidChoice();
+                menu.showLoginMenu();
+                menu.showInvalidChoice(14);
             }
         } while(choice < 1 || choice > 3);
     }

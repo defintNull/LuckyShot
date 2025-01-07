@@ -57,7 +57,8 @@ public class Facade {
                         System.exit(1);
                     }
                 } else {
-                    menu.showInvalidChoice();
+                    menu.showMenu(map);
+                    menu.showInvalidChoice(14);
                 }
             } while (choice < 1 || choice > 5);
         }
