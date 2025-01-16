@@ -30,8 +30,8 @@ public class Facade {
     }
 
     public void menu() {
+        Menu menu = new Menu();
         while(true) {
-            Menu menu = new Menu();
             HashMap<String, String> map = new HashMap<>();
             map.put("username", user.getUsername());
             map.put("level", Integer.toString(user.getLevel()));

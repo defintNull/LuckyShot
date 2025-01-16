@@ -2,10 +2,17 @@ package org.luckyshot.Facades;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.jetbrains.annotations.NotNull;
+import org.luckyshot.Facades.Services.Client;
+import org.luckyshot.Facades.Services.Converters.ObjectConverter;
+import org.luckyshot.Facades.Services.HibernateService;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.LoginView;
 import org.luckyshot.Views.Menu;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LoginFacade {
     private static LoginFacade instance;
@@ -32,30 +39,38 @@ public class LoginFacade {
             e.printStackTrace();
         }
 
+        Client client = Client.getInstance();
+        client.connect();
+
+        loginMenu();
+    }
+
+    public void loginMenu() {
         Menu menu = new Menu();
-        menu.showLoading();
-        hibernateService = HibernateService.getInstance();
+        while(true) {
+            menu.showLoading();
 
-        menu.showLoginMenu();
+            menu.showLoginMenu();
 
-        int choice;
-        do {
-            choice = menu.getUserInput();
-            if (choice == 1) {
-                this.login();
-            } else if (choice == 2) {
-                this.register();
-            } else if(choice == 3) {
-                try {
-                    this.quitGame();
-                } catch (Exception e) {
-                    System.exit(0);
+            int choice;
+            do {
+                choice = menu.getUserInput();
+                if (choice == 1) {
+                    this.login();
+                } else if (choice == 2) {
+                    this.register();
+                } else if (choice == 3) {
+                    try {
+                        this.quitGame();
+                    } catch (Exception e) {
+                        System.exit(0);
+                    }
+                } else {
+                    menu.showLoginMenu();
+                    menu.showInvalidChoice(14);
                 }
-            }else {
-                menu.showLoginMenu();
-                menu.showInvalidChoice(14);
-            }
-        } while(choice < 1 || choice > 3);
+            } while (choice < 1 || choice > 3);
+        }
     }
 
     private void quitGame() throws InterruptedException {
@@ -69,63 +84,81 @@ public class LoginFacade {
         LoginView loginView = new LoginView();
         loginView.displayLogin();
 
-        Session session = hibernateService.getSessionFactory().openSession();
-        User user = null;
-        while (user == null) {
-            String[] credentials = loginView.getLoginUserInput();
-            try {
-                user = session.createQuery("from User where username = :username", User.class)
-                        .setParameter("username", credentials[0])
-                        .getSingleResult();
-            } catch (Exception e) {
-                user = null;
-                loginView.displayLoginRetry();
-            }
-            if(user != null) {
-                if(!encoder.matches(credentials[1], user.getPassword())) {
-                    user = null;
-                    loginView.displayLoginRetry();
-                }
+        String result;
+        String status;
+
+        String[] credentials = loginView.getLoginUserInput();
+        String username = credentials[0];
+        String password = credentials[1];
+
+        //AGGIUNGERE CONTROLLO CARATTERI :&
+
+        Client client = Client.getInstance();
+        client.send("LOGIN:" + username + "&" + password);
+        ArrayList<String> recv = client.getBuffer();
+
+        while(recv == null) {
+            recv = client.getBuffer();
+            try{
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-        session.close();
+
+        result = recv.getFirst();
+        status = result.split(":")[0];
+
+        while(status.equals("ERROR")) {
+            loginView.displayLoginRetry();
+            credentials = loginView.getLoginUserInput();
+            username = credentials[0];
+            password = credentials[1];
+
+            //AGGIUNGERE CONTROLLO CARATTERI :&
+
+            client = Client.getInstance();
+            client.send("LOGIN:" + username + "&" + password);
+            recv = client.getBuffer();
+
+            while(recv == null) {
+                recv = client.getBuffer();
+                try{
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            result = recv.getFirst();
+            status = result.split(":")[0];
+        }
+
+        ObjectConverter converter = new ObjectConverter();
+        ArrayList<String> json = new ArrayList<>(Arrays.asList(result.split(":")));
+        json.removeFirst();
+        result = String.join(":", json);
+        User user = converter.jsonToUser(result);
 
         Facade facade = Facade.getInstance(user);
         facade.menu();
     }
 
     public void register() {
-
-        HibernateService hibernateService = HibernateService.getInstance();
-        Session session = hibernateService.getSessionFactory().openSession();
-
+//        HibernateService hibernateService = HibernateService.getInstance();
+//        Session session = hibernateService.getSessionFactory().openSession();
+//
         LoginView loginView = new LoginView();
         loginView.displayRegistration();
 
-        String username = "";
+        Client client = Client.getInstance();
+
+        String username = loginView.getRegisterUsernameInput();
+        String[] passwords = {};
         boolean check = false;
         while (!check) {
-            username = loginView.getRegisterUsernameInput();
-            User user = null;
-            try {
-                user = session.createQuery("from User where username = :username", User.class)
-                        .setParameter("username", username)
-                        .getSingleResult();
-            } catch (Exception e) {
-                user = null;
-            }
-            if(user != null) {
-                loginView.displayRegistrationUserRetry();
-            } else {
-                check = true;
-            }
-        }
-
-        String[] credentials = {};
-        check = false;
-        while (!check) {
-            credentials = loginView.getRegistrationPasswordInput();
-            if(!credentials[0].equals(credentials[1])) {
+            passwords = loginView.getRegistrationPasswordInput();
+            if(!passwords[0].equals(passwords[1])) {
                 loginView.displayRegistrationPasswordRetry();
             } else {
                 check = true;
@@ -133,22 +166,60 @@ public class LoginFacade {
         }
 
 
-        Transaction transaction = null;
-        User user = null;
-        try {
-            transaction = session.beginTransaction();
-            user = new User(username, encoder.encode(credentials[0]));
-            session.persist(user);
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-            loginView.systemError();
-        }
-        session.close();
+        client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
 
-        Facade facade = Facade.getInstance(user);
-        facade.menu();
+        ArrayList<String> recv = client.getBuffer();
+
+        while(recv == null) {
+            recv = client.getBuffer();
+            try{
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String result = recv.getFirst();
+        String status = result.split(":")[0];
+
+        while(status.equals("ERROR")) {
+            loginView.displayRegistrationUserRetry();
+
+            username = loginView.getRegisterUsernameInput();
+            passwords = new String[]{};
+            check = false;
+            while (!check) {
+                passwords = loginView.getRegistrationPasswordInput();
+                if(!passwords[0].equals(passwords[1])) {
+                    loginView.displayRegistrationPasswordRetry();
+                } else {
+                    check = true;
+                }
+            }
+
+
+            client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
+
+            recv = client.getBuffer();
+
+            while(recv == null) {
+                recv = client.getBuffer();
+                try{
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            result = recv.getFirst();
+            status = result.split(":")[0];
+        }
+
+        loginView.displayRegistrationSuccess();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

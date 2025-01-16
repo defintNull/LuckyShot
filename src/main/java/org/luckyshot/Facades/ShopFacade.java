@@ -2,6 +2,7 @@ package org.luckyshot.Facades;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.luckyshot.Facades.Services.HibernateService;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
 import org.luckyshot.Models.User;

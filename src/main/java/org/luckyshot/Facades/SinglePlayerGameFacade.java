@@ -2,6 +2,7 @@ package org.luckyshot.Facades;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.luckyshot.Facades.Services.HibernateService;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.*;
 import org.luckyshot.Models.Powerups.*;
@@ -30,12 +31,10 @@ public class SinglePlayerGameFacade {
 
     public void start(User user) {
         this.user = user;
-        HumanPlayer humanPlayer = new HumanPlayer(user.getId(), user.getPowerups());
+        HumanPlayer humanPlayer = new HumanPlayer(user.getUsername(), user.getPowerups());
         BotPlayer botPlayer = new BotPlayer();
 
-        user.setPlayer(humanPlayer);
-
-        this.singlePlayerGame = new SinglePlayerGame(user.getPlayer(), botPlayer);
+        this.singlePlayerGame = new SinglePlayerGame(humanPlayer, botPlayer);
 
         boolean gameEnded = false;
         int roundNumber = 1;

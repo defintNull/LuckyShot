@@ -5,13 +5,16 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 public class Client extends WebSocketClient {
     private static Client instance = null;
     private static URI serverURI = URI.create("ws://localhost:8456");
+    private ArrayList<String> buffer;
 
     private Client() {
         super(serverURI);
+        buffer = new ArrayList<>();
     }
 
     public static Client getInstance() {
@@ -28,7 +31,10 @@ public class Client extends WebSocketClient {
 
     @Override
     public void onMessage(String s) {
-        System.out.println(s);
+        if(s.equals("START")){
+            buffer = new ArrayList<>();
+        }
+        buffer.add(s);
     }
 
     @Override
@@ -39,5 +45,14 @@ public class Client extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         System.out.println(e.getMessage());
+    }
+
+    public ArrayList<String> getBuffer() {
+        if (!buffer.isEmpty() && buffer.getLast().equals("STOP")) {
+            buffer.remove(buffer.getFirst());
+            buffer.remove(buffer.getLast());
+            return buffer;
+        }
+        return null;
     }
 }

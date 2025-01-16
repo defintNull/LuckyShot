@@ -67,4 +67,7 @@ public class LoginView extends View{
         return new String[]{password, password2};
     }
 
+    public void displayRegistrationSuccess() {
+        System.out.println("You have successfully registered!");
+    }
 }

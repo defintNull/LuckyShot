@@ -85,17 +85,6 @@ public class User {
         this(username, password, 0, 1, 0, 0);
     }
 
-    @Transient
-    private HumanPlayer player;
-
-    public HumanPlayer getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(HumanPlayer player) {
-        this.player = player;
-    }
-
     public Long getId() {
         return id;
     }
@@ -126,6 +115,10 @@ public class User {
 
     public void addCoins(int coins) {
         this.coins += coins;
+    }
+
+    public void setPowerups(HashMap<Powerup, Integer> powerups) {
+        this.powerups = powerups;
     }
 
     public HashMap<Powerup, Integer> getPowerups() {

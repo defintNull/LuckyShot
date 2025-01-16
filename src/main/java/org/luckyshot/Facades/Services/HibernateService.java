@@ -1,4 +1,4 @@
-package org.luckyshot.Facades;
+package org.luckyshot.Facades.Services;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
