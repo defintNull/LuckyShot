@@ -70,4 +70,8 @@ public class LoginView extends View{
     public void displayRegistrationSuccess() {
         System.out.println("You have successfully registered!");
     }
+
+    public void displayAlreadyLogged() {
+        System.out.println("You already logged in!");
+    }
 }

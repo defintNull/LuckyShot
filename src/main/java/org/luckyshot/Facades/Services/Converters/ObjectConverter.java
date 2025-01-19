@@ -43,6 +43,7 @@ public class ObjectConverter {
         }
 
         User user = new User();
+        user.setId(Long.parseLong(String.valueOf(map.get("id"))));
         user.setUsername((String)map.get("username"));
         user.setPassword((String)map.get("password"));
         user.setCoins(Integer.parseInt((String)map.get("coins")));
@@ -88,6 +89,7 @@ public class ObjectConverter {
     public String userToJson(User user) {
         Map<String, Object> map = new HashMap<>();
 
+        map.put("id", user.getId());
         map.put("username", user.getUsername());
         map.put("password", user.getPassword());
         map.put("coins", String.valueOf(user.getCoins()));

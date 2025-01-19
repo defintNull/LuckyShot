@@ -1,8 +1,8 @@
 package org.luckyshot.Facades.Services;
 
-import org.checkerframework.checker.units.qual.C;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.luckyshot.Views.Menu;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -39,7 +39,14 @@ public class Client extends WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
-        System.out.println("Connection close");
+        Menu menu = new Menu();
+        menu.quitGame();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.exit(0);
+        }
+        System.exit(0);
     }
 
     @Override
@@ -47,12 +54,27 @@ public class Client extends WebSocketClient {
         System.out.println(e.getMessage());
     }
 
-    public ArrayList<String> getBuffer() {
+    private ArrayList<String> getBuffer() {
         if (!buffer.isEmpty() && buffer.getLast().equals("STOP")) {
             buffer.remove(buffer.getFirst());
             buffer.remove(buffer.getLast());
             return buffer;
         }
         return null;
+    }
+
+    public ArrayList<String> recv() {
+        ArrayList<String> r = getBuffer();
+
+        while(r == null) {
+            r = getBuffer();
+            try{
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return r;
     }
 }

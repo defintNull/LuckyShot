@@ -1,6 +1,7 @@
 package org.luckyshot.Views;
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class StatsView extends View {
     public void showStats(HashMap<String, String> stats) {
@@ -40,6 +41,8 @@ public class StatsView extends View {
         System.out.println("Press Enter key to continue...");
         try {
             System.in.read();
+            Scanner sc = new Scanner(System.in);
+            sc.nextLine();
         }
         catch(Exception e) {
             showError("Error while reading key", 21, 2);

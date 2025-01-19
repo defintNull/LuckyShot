@@ -1,8 +1,7 @@
 package org.luckyshot.Facades;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.luckyshot.Facades.Services.HibernateService;
+import org.luckyshot.Facades.Services.Client;
+import org.luckyshot.Facades.Services.Converters.ObjectConverter;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
 import org.luckyshot.Models.User;
@@ -29,7 +28,7 @@ public class ShopFacade {
         return instance;
     }
 
-    public void shopMenu() {
+    public boolean shopMenu() {
         while(true) {
             showShop();
             String choice = shopView.getUserInput();
@@ -73,18 +72,22 @@ public class ShopFacade {
             user.setCoins(user.getCoins() - price);
             user.addPowerup(powerup);
 
-            Session session = HibernateService.getInstance().getSessionFactory().openSession();
-            Transaction transaction;
-            try {
-                transaction = session.beginTransaction();
-                session.merge(user);
-                transaction.commit();
-            } catch (Exception e) {
-                shopView.showError("Synchronization error", 21, 2);
-            }
+            Client client = Client.getInstance();
+            ObjectConverter converter = new ObjectConverter();
+            client.send("UPDATE_USER:" + converter.userToJson(user));
+            ArrayList<String> recv = client.recv();
 
-            session.close();
+            String m = recv.getFirst();
+            String status = m.split(":")[0];
+            String result = m.split(":")[1];
+
+            if(status.equals("ERROR") && result.equals("FATAL")) {
+                user.setCoins(user.getCoins() + price);
+                user.removePowerup(powerup);
+                return false;
+            }
         }
+        return true;
     }
 
     public void showShop() {

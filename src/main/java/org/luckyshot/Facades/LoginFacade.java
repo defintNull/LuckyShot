@@ -1,11 +1,7 @@
 package org.luckyshot.Facades;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.jetbrains.annotations.NotNull;
 import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Facades.Services.Converters.ObjectConverter;
-import org.luckyshot.Facades.Services.HibernateService;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.LoginView;
 import org.luckyshot.Views.Menu;
@@ -13,11 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class LoginFacade {
     private static LoginFacade instance;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    private HibernateService hibernateService;
 
     private LoginFacade() {
 
@@ -36,11 +32,19 @@ public class LoginFacade {
             Process process = processBuilder.start();
             process.waitFor();
         } catch (Exception e) {
-            e.printStackTrace();
+            LoginView loginView = new LoginView();
+            loginView.showError("Unable to start", 2, 10);
+            return;
         }
 
         Client client = Client.getInstance();
-        client.connect();
+        try {
+            if(!client.connectBlocking()) {
+                return;
+            }
+        } catch (Exception e) {
+            return;
+        }
 
         loginMenu();
     }
@@ -74,10 +78,8 @@ public class LoginFacade {
     }
 
     private void quitGame() throws InterruptedException {
-        Menu menu = new Menu();
-        menu.quitGame();
-        Thread.sleep(1000);
-        System.exit(0);
+        Client client = Client.getInstance();
+        client.close();
     }
 
     public void login() {
@@ -95,22 +97,19 @@ public class LoginFacade {
 
         Client client = Client.getInstance();
         client.send("LOGIN:" + username + "&" + password);
-        ArrayList<String> recv = client.getBuffer();
-
-        while(recv == null) {
-            recv = client.getBuffer();
-            try{
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        ArrayList<String> recv = client.recv();
 
         result = recv.getFirst();
         status = result.split(":")[0];
+        String message = result.split(":")[1];
 
         while(status.equals("ERROR")) {
-            loginView.displayLoginRetry();
+            if(message.equals("ALREADY_LOGGED")) {
+                loginView.displayAlreadyLogged();
+            } else if(message.equals("NOT_FOUND")) {
+                loginView.displayLoginRetry();
+            }
+
             credentials = loginView.getLoginUserInput();
             username = credentials[0];
             password = credentials[1];
@@ -119,16 +118,7 @@ public class LoginFacade {
 
             client = Client.getInstance();
             client.send("LOGIN:" + username + "&" + password);
-            recv = client.getBuffer();
-
-            while(recv == null) {
-                recv = client.getBuffer();
-                try{
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            recv = client.recv();
 
             result = recv.getFirst();
             status = result.split(":")[0];
@@ -145,9 +135,6 @@ public class LoginFacade {
     }
 
     public void register() {
-//        HibernateService hibernateService = HibernateService.getInstance();
-//        Session session = hibernateService.getSessionFactory().openSession();
-//
         LoginView loginView = new LoginView();
         loginView.displayRegistration();
 
@@ -168,16 +155,7 @@ public class LoginFacade {
 
         client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
 
-        ArrayList<String> recv = client.getBuffer();
-
-        while(recv == null) {
-            recv = client.getBuffer();
-            try{
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        ArrayList<String> recv = client.recv();
 
         String result = recv.getFirst();
         String status = result.split(":")[0];
@@ -200,16 +178,7 @@ public class LoginFacade {
 
             client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
 
-            recv = client.getBuffer();
-
-            while(recv == null) {
-                recv = client.getBuffer();
-                try{
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            recv = client.recv();
 
             result = recv.getFirst();
             status = result.split(":")[0];

@@ -1,5 +1,6 @@
 package org.luckyshot.Facades;
 
+import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.Menu;
 
@@ -38,17 +39,20 @@ public class Facade {
             map.put("xp", Integer.toString(user.getXp()));
             menu.showMenu(map);
 
+            boolean success = false;
             int choice;
             do {
                 choice = menu.getUserInput();
                 if (choice == 1) {
                     this.startSinglePlayerMatch();
+                    success = true;
                 } else if (choice == 2) {
                     this.startMultiplayerMatch();
+                    success = true;
                 } else if (choice == 3) {
-                    this.shopMenu();
+                    success = this.shopMenu();
                 } else if (choice == 4) {
-                    this.showStats();
+                    success = this.showStats();
                 } else if (choice == 5) {
                     try {
                         this.quitGame();
@@ -61,12 +65,21 @@ public class Facade {
                     menu.showInvalidChoice(14);
                 }
             } while (choice < 1 || choice > 5);
+
+            if(!success) {
+                menu.showError("Server error", 2, 10);
+                try{
+                    Thread.sleep(1000);
+                } catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+                break;
+            }
         }
     }
 
     private void startSinglePlayerMatch() {
         SinglePlayerGameFacade singlePlayerGameFacade = SinglePlayerGameFacade.getInstance();
-        user.setGamesPlayed(user.getGamesPlayed() + 1);
         singlePlayerGameFacade.start(user);
     }
 
@@ -74,20 +87,19 @@ public class Facade {
 
     }
 
-    private void shopMenu() {
+    private boolean shopMenu() {
         ShopFacade shopFacade = ShopFacade.getInstance(user);
-        shopFacade.shopMenu();
+        return shopFacade.shopMenu();
     }
 
-    private void showStats() {
+    private boolean showStats() {
         StatsFacade statsFacade = StatsFacade.getInstance(user);
         statsFacade.showStats();
+        return true;
     }
 
     private void quitGame() throws InterruptedException {
-        Menu menu = new Menu();
-        menu.quitGame();
-        Thread.sleep(1000);
-        System.exit(0);
+        Client client = Client.getInstance();
+        client.close();
     }
 }

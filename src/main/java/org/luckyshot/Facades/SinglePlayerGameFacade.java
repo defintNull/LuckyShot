@@ -1,8 +1,7 @@
 package org.luckyshot.Facades;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.luckyshot.Facades.Services.HibernateService;
+import org.luckyshot.Facades.Services.Client;
+import org.luckyshot.Facades.Services.Converters.ObjectConverter;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.*;
 import org.luckyshot.Models.Powerups.*;
@@ -109,18 +108,20 @@ public class SinglePlayerGameFacade {
             user.addCoins(3);
         }
 
-        //Persistence
-        Session session = HibernateService.getInstance().getSessionFactory().openSession();
-        Transaction transaction;
-        try {
-            transaction = session.beginTransaction();
-            session.merge(user);
-            transaction.commit();
-        } catch (Exception e) {
-            singlePlayerGameView.showError("Synchronization error");
-        }
+        user.setGamesPlayed(user.getGamesPlayed() + 1);
 
-        session.close();
+        // User updated on db
+        Client client = Client.getInstance();
+        ObjectConverter converter = new ObjectConverter();
+        client.send("UPDATE_USER:" + converter.userToJson(user));
+
+        String recv = client.recv().getFirst();
+        String status = recv.split(":")[0];
+
+        if(status.equals("ERROR")) {
+            client.send("QUIT:QUIT");
+            client.close();
+        }
 
         singlePlayerGameView.showWinner(humanPlayer.getLives() != 0 ? "you" : "bot");
         singlePlayerGameView.showFinalXp(humanPlayer.getXp());
@@ -526,19 +527,19 @@ public class SinglePlayerGameFacade {
                 singlePlayerGame.getHumanPlayer().getPowerups().put((Powerup) obj, singlePlayerGame.getHumanPlayer().getPowerups().get(obj) - 1);
                 user.removePowerup((Powerup) obj);
 
-                //Persistence
-                Session session = HibernateService.getInstance().getSessionFactory().openSession();
-                Transaction transaction;
-                try {
-                    transaction = session.beginTransaction();
-                    session.merge(user);
-                    transaction.commit();
-                } catch (Exception e) {
-                    singlePlayerGameView.showError("Powerup db error");
-                }
-                session.close();
+                // User updated on db
+                Client client = Client.getInstance();
+                ObjectConverter converter = new ObjectConverter();
+                client.send("UPDATE_USER:" + converter.userToJson(user));
 
-                singlePlayerGameView.showPowerupActivation(obj.toString()); // Ho tolto il cast a Powerup per il warning
+                String recv = client.recv().getFirst();
+                String status = recv.split(":")[0];
+
+                if(status.equals("ERROR")) {
+                    client.close();
+                }
+
+                singlePlayerGameView.showPowerupActivation(obj.toString());
                 if (obj.getClass() == Bomb.class) {
                     singlePlayerGameView.showPowerupEffect(Bomb.getInstance());
                 }

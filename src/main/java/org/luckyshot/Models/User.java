@@ -39,7 +39,7 @@ public class User {
     private int level;
 
     @Column(name = "xp", nullable = false)
-    private  int xp;
+    private int xp;
 
     @Column(name = "total_score", nullable = false)
     private long totalScore;
@@ -85,6 +85,10 @@ public class User {
         this(username, password, 0, 1, 0, 0);
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
@@ -122,6 +126,7 @@ public class User {
     }
 
     public HashMap<Powerup, Integer> getPowerups() {
+        HashMap<Powerup, Integer> powerups = new HashMap<>(this.powerups);
         return powerups;
     }
 
