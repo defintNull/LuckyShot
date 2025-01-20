@@ -18,7 +18,9 @@ public class HealthPotion extends Consumable{
     }
 
     public String use(SinglePlayerGame singlePlayerGame) {
-        singlePlayerGame.getRound().getTurn().getCurrentPlayer().setLives(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getLives() + 1);
+        if(singlePlayerGame.getRound().getMaxLives() != singlePlayerGame.getRound().getTurn().getCurrentPlayer().getLives()) {
+            singlePlayerGame.getRound().getTurn().getCurrentPlayer().setLives(singlePlayerGame.getRound().getTurn().getCurrentPlayer().getLives() + 1);
+        }
         return "";
     }
 
