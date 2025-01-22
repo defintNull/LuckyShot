@@ -4,6 +4,7 @@ import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Facades.Services.Converters.ObjectConverter;
 import org.luckyshot.Models.*;
 import org.luckyshot.Models.Consumables.*;
+import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.Powerups.*;
 import org.luckyshot.Models.StateEffects.*;
 import org.luckyshot.Views.SinglePlayerGameView;
@@ -118,7 +119,7 @@ public class SinglePlayerGameFacade {
         String recv = client.recv().getFirst();
         String status = recv.split(":")[0];
 
-        if(status.equals("ERROR")) {
+        if(status.equals(MessageEnum.ERROR.getMessage())) {
             client.send("QUIT:QUIT");
             client.close();
         }
@@ -535,7 +536,7 @@ public class SinglePlayerGameFacade {
                 String recv = client.recv().getFirst();
                 String status = recv.split(":")[0];
 
-                if(status.equals("ERROR")) {
+                if(status.equals(MessageEnum.ERROR.getMessage())) {
                     client.close();
                 }
 

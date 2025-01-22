@@ -2,6 +2,7 @@ package org.luckyshot.Facades;
 
 import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Facades.Services.Converters.ObjectConverter;
+import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
 import org.luckyshot.Models.User;
@@ -81,7 +82,7 @@ public class ShopFacade {
             String status = m.split(":")[0];
             String result = m.split(":")[1];
 
-            if(status.equals("ERROR") && result.equals("FATAL")) {
+            if(status.equals(MessageEnum.ERROR.getMessage()) && result.equals("FATAL")) {
                 user.setCoins(user.getCoins() + price);
                 user.removePowerup(powerup);
                 return false;

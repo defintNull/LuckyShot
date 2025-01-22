@@ -2,6 +2,7 @@ package org.luckyshot.Facades;
 
 import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Facades.Services.Converters.ObjectConverter;
+import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.LoginView;
 import org.luckyshot.Views.Menu;
@@ -103,7 +104,7 @@ public class LoginFacade {
         status = result.split(":")[0];
         String message = result.split(":")[1];
 
-        while(status.equals("ERROR")) {
+        while(status.equals(MessageEnum.ERROR.getMessage())) {
             if(message.equals("ALREADY_LOGGED")) {
                 loginView.displayAlreadyLogged();
             } else if(message.equals("NOT_FOUND")) {
@@ -160,7 +161,7 @@ public class LoginFacade {
         String result = recv.getFirst();
         String status = result.split(":")[0];
 
-        while(status.equals("ERROR")) {
+        while(status.equals(MessageEnum.ERROR.getMessage())) {
             loginView.displayRegistrationUserRetry();
 
             username = loginView.getRegisterUsernameInput();
