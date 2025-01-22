@@ -98,6 +98,7 @@ public class MultiplayerGameFacade {
         do {
             view.showJoinMenu();
             input = view.getUserInput();
+            roomCode = input;
             client.send("JOIN_ROOM:" + input);
             ArrayList<String> message = client.recv();
             String status = message.getFirst().split(":")[0];
@@ -124,6 +125,7 @@ public class MultiplayerGameFacade {
             choice = view.getUserInput();
             if (choice.equals("1")){
                 client.send("LEAVE_ROOM:" + roomCode);
+                client.recv();
                 ok = true;
             } else {
                 view.showRoomMenu(false, usernames, input);
