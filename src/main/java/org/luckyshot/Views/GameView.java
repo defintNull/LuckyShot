@@ -13,13 +13,6 @@ public class GameView extends View{
         setCursorPos(2, 100);
         System.out.print("║");
         setCursorPos(3, 1);
-        System.out.print("╠"+ "═".repeat(98) + "╣");
+        System.out.print("╠" + "═".repeat(98) + "╣");
     }
-    public String getUserInput() {
-        setCursorPos(35, 1);
-        System.out.print("> ");
-        Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
-    }
-
 }

@@ -89,6 +89,7 @@ public class SinglePlayerGameView extends GameView{
         drawHowToPlayGuide();
 
     }
+
     public void drawHowToPlayGuide() {
         // Titolo della guida
         setCursorPos(22, 52);
@@ -220,11 +221,7 @@ public class SinglePlayerGameView extends GameView{
     }
 
     public void showGame(HashMap<String, String> stateMap) {
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            showError("clear");
-        }
+        clearScreen();
 
         drawTable();
         showGameState(stateMap);

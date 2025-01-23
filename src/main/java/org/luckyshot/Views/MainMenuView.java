@@ -1,16 +1,10 @@
 package org.luckyshot.Views;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Scanner;
 
-public class Menu extends View{
+public class MainMenuView extends View{
     public void showMenu(HashMap<String, String> map) {
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("!!! Error while clearing the console !!!");
-        }
+        clearScreen();
         displayHeader();
 
 
@@ -36,11 +30,7 @@ public class Menu extends View{
     }
 
     public void showLoginMenu() {
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("!!! Error while cleaning the console !!!");
-        }
+        clearScreen();
         displayHeader();
 
         setCursorPos(5, 1);
@@ -49,21 +39,6 @@ public class Menu extends View{
         System.out.println("2. Register");
         System.out.println("3. Quit");
         setCursorPos(10, 1);
-    }
-
-    public int getUserInput() {
-        Scanner scanner = new Scanner(System.in);
-        setCursorPos(12, 1);
-        System.out.print("> ");
-        String input = scanner.nextLine();
-        if(!input.trim().isEmpty()) {
-            try {
-                return Integer.parseInt(input);
-            } catch (Exception _) {
-
-            }
-        }
-        return 0;
     }
 
     public void showInvalidChoice(int row) {

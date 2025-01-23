@@ -3,19 +3,19 @@ package org.luckyshot.Facades;
 import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.User;
-import org.luckyshot.Views.MultiplayerView;
-import org.luckyshot.Views.SinglePlayerGameView;
+import org.luckyshot.Views.MultiplayerMenuView;
 
 import java.util.ArrayList;
 
 public class MultiplayerGameFacade {
     private static MultiplayerGameFacade instance;
-    private final MultiplayerView view;
+    private final MultiplayerMenuView view;
     private static boolean ready;
     private User user;
     String roomCode;
+    private final int MAX_ROOM_PLAYERS = 2;
     private MultiplayerGameFacade() {
-        view = new MultiplayerView();
+        view = new MultiplayerMenuView();
         roomCode = null;
     }
 
@@ -28,24 +28,30 @@ public class MultiplayerGameFacade {
 
     public void start(User user) {
         this.user = user;
-        view.showMenu();
-
         String choice;
-        boolean ok = true;
-        do {
-            choice = view.getUserInput();
-            if (choice.equals("1")) {
-                createRoom();
-            } else if (choice.equals("2")){
-                joinRoom();
-            } else if (choice.equals("3")) {
-                break;
-            } else {
-                view.showMenu();
-                view.showInvalidChoice(14);
-                ok = false;
-            }
-        } while (!ok);
+        boolean checkInput;
+        boolean goBack = false;
+
+        while(!goBack) {
+            view.showMenu();
+
+            do {
+                checkInput = true;
+                choice = view.getUserInput();
+                if (choice.equals("1")) {
+                    createRoom();
+                } else if (choice.equals("2")) {
+                    joinRoom();
+                } else if (choice.equals("3")) {
+                    goBack = true;
+                    break;
+                } else {
+                    view.showMenu();
+                    view.showInvalidChoice(14);
+                    checkInput = false;
+                }
+            } while (!checkInput);
+        }
     }
 
     public void createRoom() {
@@ -55,14 +61,8 @@ public class MultiplayerGameFacade {
         Thread waitPlayer = new Thread(() -> {
             while(true) {
                 ArrayList<String> usernames = client.recv();
-                if(usernames.size() == 2) {
-                    ready = true;
-                } else {
-                    ready = false;
-                }
-                for (int i = 0; i < usernames.size(); i++) {
-                    usernames.set(i, usernames.get(i).split(":")[1]);
-                }
+                ready = usernames.size() == MAX_ROOM_PLAYERS;
+                usernames.replaceAll(s -> s.split(":")[1]);
                 view.showRoomMenu(ready, usernames, roomCode);
             }
         });
@@ -70,32 +70,35 @@ public class MultiplayerGameFacade {
         ArrayList<String> usernames = new ArrayList<>();
         usernames.add(user.getUsername());
         view.showRoomMenu(ready, usernames, roomCode);
-        view.getUserInput();
+
         String choice;
-        boolean ok = true;
+        boolean checkInput;
         do {
+            checkInput = true;
             choice = view.getUserInput();
-            if (choice.equals("1") && ready) {
-                waitPlayer.interrupt();
-                startMultiplayerGame();
-            } else if (choice.equals("2")){
+            if (choice.equals("1")) {
                 client.send("LEAVE_ROOM:" + roomCode);
                 break;
+            } else if (choice.equals("2") && ready) {
+                waitPlayer.interrupt();
+                startMultiplayerGame();
             } else {
                 view.showMenu();
                 view.showInvalidChoice(14);
-                ok = false;
+                checkInput = false;
             }
-        } while (!ok);
+        } while (!checkInput);
         waitPlayer.interrupt(); //ATTENZIONE
     }
 
     public void joinRoom() {
-        boolean joined = false;
+        boolean joined;
         ArrayList<String> usernames = new ArrayList<>();
         Client client = Client.getInstance();
         String input = null;
         do {
+            joined = false;
+
             view.showJoinMenu();
             input = view.getUserInput();
             roomCode = input;
@@ -105,8 +108,8 @@ public class MultiplayerGameFacade {
             if(status.equals(MessageEnum.ERROR.getMessage())) {
                 view.showError("ERROR WHILE JOIN", 10, 10);
             } else {
-                for (int i = 0; i < message.size(); i++) {
-                    String username = message.get(i).split(":")[1];
+                for (String s : message) {
+                    String username = s.split(":")[1];
                     usernames.add(username);
                 }
                 joined = true;
@@ -119,20 +122,20 @@ public class MultiplayerGameFacade {
 
         });
 
-        boolean ok = true;
+        boolean checkInput;
         String choice;
         do {
+            checkInput = true;
             choice = view.getUserInput();
             if (choice.equals("1")){
                 client.send("LEAVE_ROOM:" + roomCode);
                 client.recv();
-                ok = true;
             } else {
                 view.showRoomMenu(false, usernames, input);
                 view.showInvalidChoice(14);
-                ok = false;
+                checkInput = false;
             }
-        } while (!ok);
+        } while (!checkInput);
     }
 
     public void startMultiplayerGame() {

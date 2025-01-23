@@ -6,22 +6,14 @@ import java.util.Scanner;
 public class LoginView extends View{
 
     public void displayLogin() {
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("!!! Error while cleaning the console !!!");
-        }
+        clearScreen();
         displayHeader();
         setCursorPos(5, 1);
         System.out.println("Login\n");
     }
 
     public void displayRegistration() {
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("!!! Error while cleaning the console !!!");
-        }
+        clearScreen();
         displayHeader();
 
         setCursorPos(5, 1);
@@ -54,8 +46,7 @@ public class LoginView extends View{
     public String getRegisterUsernameInput() {
         System.out.println("Enter your username: ");
         Scanner sc = new Scanner(System.in);
-        String username = sc.nextLine();
-        return username;
+        return sc.nextLine();
     }
 
     public String[] getRegistrationPasswordInput() {

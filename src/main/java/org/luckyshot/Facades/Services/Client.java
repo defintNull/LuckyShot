@@ -2,7 +2,7 @@ package org.luckyshot.Facades.Services;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.luckyshot.Views.Menu;
+import org.luckyshot.Views.MainMenuView;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -39,8 +39,8 @@ public class Client extends WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
-        Menu menu = new Menu();
-        menu.quitGame();
+        MainMenuView mainMenuView = new MainMenuView();
+        mainMenuView.quitGame();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

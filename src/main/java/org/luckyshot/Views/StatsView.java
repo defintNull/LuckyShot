@@ -5,11 +5,7 @@ import java.util.Scanner;
 
 public class StatsView extends View {
     public void showStats(HashMap<String, String> stats) {
-        try {
-            clearScreen();
-        } catch (Exception e) {
-            showError("Error while clearing the screen", 21, 2);
-        }
+        clearScreen();
         displayHeader();
         setCursorPos(5, 2);
         System.out.println("Player stats");

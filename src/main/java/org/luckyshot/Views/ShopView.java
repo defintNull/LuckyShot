@@ -7,16 +7,12 @@ import java.util.Scanner;
 
 public class ShopView extends View {
     public void showShop(HashMap<String, Integer> map, int coins) {
-        try{
-            clearScreen();
-        } catch (Exception e) {
-            showError("Error while clearing the screen", 21, 2);
-        }
+        clearScreen();
         displayHeader();
 
         setCursorPos(5, 2);
         System.out.print("Shop");
-        int i = 0;
+        int i;
         for(i = 0; i < PowerupInterface.getPowerupStringList().size(); i++) {
             setCursorPos(7+i, 2);
             System.out.print((i + 1) + ". " + PowerupInterface.getPowerupStringList().get(i) + ": " + map.get(PowerupInterface.getPowerupClassList().get(i).getSimpleName()).toString() + " coins");

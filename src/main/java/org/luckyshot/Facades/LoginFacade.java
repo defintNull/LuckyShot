@@ -5,12 +5,11 @@ import org.luckyshot.Facades.Services.Converters.ObjectConverter;
 import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.LoginView;
-import org.luckyshot.Views.Menu;
+import org.luckyshot.Views.MainMenuView;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 public class LoginFacade {
     private static LoginFacade instance;
@@ -51,30 +50,31 @@ public class LoginFacade {
     }
 
     public void loginMenu() {
-        Menu menu = new Menu();
+        MainMenuView mainMenuView = new MainMenuView();
         while(true) {
-            menu.showLoading();
+            mainMenuView.showLoading();
+            mainMenuView.showLoginMenu();
 
-            menu.showLoginMenu();
-
-            int choice;
+            String choice;
+            boolean checkInput = true;
             do {
-                choice = menu.getUserInput();
-                if (choice == 1) {
+                choice = mainMenuView.getUserInput();
+                if (choice.equals("1")) {
                     this.login();
-                } else if (choice == 2) {
+                } else if (choice.equals("2")) {
                     this.register();
-                } else if (choice == 3) {
+                } else if (choice.equals("3")) {
                     try {
                         this.quitGame();
                     } catch (Exception e) {
                         System.exit(0);
                     }
                 } else {
-                    menu.showLoginMenu();
-                    menu.showInvalidChoice(14);
+                    mainMenuView.showLoginMenu();
+                    mainMenuView.showInvalidChoice(14);
+                    checkInput = false;
                 }
-            } while (choice < 1 || choice > 3);
+            } while (!checkInput);
         }
     }
 

@@ -1,9 +1,7 @@
 package org.luckyshot.Views;
 
-import java.io.IOException;
+import java.util.Scanner;
 
-
-//DA FARE ASTRATTA
 // PER FAR VEDERE CARATTERI UNICODE SU POWERSHELL (almeno):
 // $OutputEncoding = [Console]::InputEncoding = [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 public abstract class View {
@@ -40,24 +38,16 @@ public abstract class View {
         System.out.print("╚"+ "═".repeat(98) + "╝");
     }
 
-    protected void clearScreen() throws IOException, InterruptedException {
-        final String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows"))
-            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-        else
-            new ProcessBuilder("clear").inheritIO().start().waitFor();
-    }
-
-    protected void slowPrintln(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            System.out.print(s.charAt(i));
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                systemError();
-            }
+    protected void clearScreen() {
+        try {
+            final String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("windows"))
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            else
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+        }catch (Exception e) {
+            systemError();
         }
-        System.out.println();
     }
 
     protected void slowPrint(String s) {
@@ -72,22 +62,25 @@ public abstract class View {
     }
 
     public void showLoading() {
-        try {
-            clearScreen();
-        } catch (IOException | InterruptedException e) {
-            System.out.println("!!! Error while cleaning the console !!!");
-        }
+        clearScreen();
         displayHeader();
         setCursorPos(5, 1);
         System.out.println("Loading...");
     }
 
     public void systemError() {
-        System.out.println(ANSI_RED + "System error!" + ANSI_RESET);
+        System.out.println(ANSI_RED + "!!! SYSTEM ERROR !!!" + ANSI_RESET);
     }
 
     protected void setCursorPos(int row, int column) {
         char escCode = 0x1B;
         System.out.printf("%c[%d;%df",escCode,row,column);
+    }
+
+    public String getUserInput() {
+        setCursorPos(35, 1);
+        System.out.print("> ");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
     }
 }

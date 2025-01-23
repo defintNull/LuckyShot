@@ -2,7 +2,7 @@ package org.luckyshot.Facades;
 
 import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Models.User;
-import org.luckyshot.Views.Menu;
+import org.luckyshot.Views.MainMenuView;
 
 import java.util.HashMap;
 
@@ -31,29 +31,30 @@ public class Facade {
     }
 
     public void menu() {
-        Menu menu = new Menu();
+        MainMenuView mainMenuView = new MainMenuView();
         while(true) {
             HashMap<String, String> map = new HashMap<>();
             map.put("username", user.getUsername());
             map.put("level", Integer.toString(user.getLevel()));
             map.put("xp", Integer.toString(user.getXp()));
-            menu.showMenu(map);
+            mainMenuView.showMenu(map);
 
             boolean success = false;
-            int choice;
+            String choice;
+            boolean checkInput = true;
             do {
-                choice = menu.getUserInput();
-                if (choice == 1) {
+                choice = mainMenuView.getUserInput();
+                if (choice.equals("1")) {
                     this.startSinglePlayerMatch();
                     success = true;
-                } else if (choice == 2) {
+                } else if (choice.equals("2")) {
                     this.startMultiplayerMatch();
                     success = true;
-                } else if (choice == 3) {
+                } else if (choice.equals("3")) {
                     success = this.shopMenu();
-                } else if (choice == 4) {
+                } else if (choice.equals("4")) {
                     success = this.showStats();
-                } else if (choice == 5) {
+                } else if (choice.equals("5")) {
                     try {
                         this.quitGame();
                     } catch (Exception e) {
@@ -61,17 +62,18 @@ public class Facade {
                         System.exit(1);
                     }
                 } else {
-                    menu.showMenu(map);
-                    menu.showInvalidChoice(14);
+                    mainMenuView.showMenu(map);
+                    mainMenuView.showInvalidChoice(14);
+                    checkInput = false;
                 }
-            } while (choice < 1 || choice > 5);
+            } while (!checkInput);
 
             if(!success) {
-                menu.showError("Server error", 2, 10);
+                mainMenuView.showError("Server error", 2, 10);
                 try{
                     Thread.sleep(1000);
                 } catch(InterruptedException e){
-                    e.printStackTrace();
+                    mainMenuView.systemError();
                 }
                 break;
             }
@@ -79,8 +81,7 @@ public class Facade {
     }
 
     private void startSinglePlayerMatch() {
-        SinglePlayerGameFacade singlePlayerGameFacade = SinglePlayerGameFacade.getInstance();
-        singlePlayerGameFacade.start(user);
+        SinglePlayerGameFacade.getInstance().start(user);
     }
 
     private void startMultiplayerMatch() {
@@ -98,7 +99,7 @@ public class Facade {
         return true;
     }
 
-    private void quitGame() throws InterruptedException {
+    private void quitGame() {
         Client client = Client.getInstance();
         client.close();
     }
