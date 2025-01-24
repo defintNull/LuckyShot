@@ -76,7 +76,12 @@ public class ShopFacade {
             Client client = Client.getInstance();
             ObjectConverter converter = new ObjectConverter();
             client.send("UPDATE_USER:" + converter.userToJson(user));
-            ArrayList<String> recv = client.recv();
+            ArrayList<String> recv = null;
+            try {
+                recv = client.recv();
+            } catch (Exception e) {
+
+            }
 
             String m = recv.getFirst();
             String status = m.split(":")[0];

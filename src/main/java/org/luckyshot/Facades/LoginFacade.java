@@ -98,7 +98,13 @@ public class LoginFacade {
 
         Client client = Client.getInstance();
         client.send("LOGIN:" + username + "&" + password);
-        ArrayList<String> recv = client.recv();
+        ArrayList<String> recv = null;
+        try {
+            recv = client.recv();
+        } catch (Exception e) {
+            loginView.systemError();
+            System.exit(1);
+        }
 
         result = recv.getFirst();
         status = result.split(":")[0];
@@ -119,7 +125,13 @@ public class LoginFacade {
 
             client = Client.getInstance();
             client.send("LOGIN:" + username + "&" + password);
-            recv = client.recv();
+            try {
+                recv = client.recv();
+            } catch (Exception e) {
+                loginView.systemError();
+                System.exit(1);
+            }
+
 
             result = recv.getFirst();
             status = result.split(":")[0];
@@ -156,7 +168,13 @@ public class LoginFacade {
 
         client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
 
-        ArrayList<String> recv = client.recv();
+        ArrayList<String> recv = null;
+        try {
+            recv = client.recv();
+        } catch (Exception e) {
+            loginView.systemError();
+            System.exit(1);
+        }
 
         String result = recv.getFirst();
         String status = result.split(":")[0];
@@ -179,7 +197,12 @@ public class LoginFacade {
 
             client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
 
-            recv = client.recv();
+            try {
+                recv = client.recv();
+            } catch (Exception e) {
+                loginView.systemError();
+                System.exit(1);
+            }
 
             result = recv.getFirst();
             status = result.split(":")[0];
@@ -189,7 +212,8 @@ public class LoginFacade {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            loginView.systemError();
+            System.exit(1);
         }
     }
 }

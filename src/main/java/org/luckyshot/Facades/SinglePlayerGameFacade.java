@@ -115,8 +115,12 @@ public class SinglePlayerGameFacade {
         Client client = Client.getInstance();
         ObjectConverter converter = new ObjectConverter();
         client.send("UPDATE_USER:" + converter.userToJson(user));
+        String recv = null;
+        try {
+            recv = client.recv().getFirst();
+        } catch (Exception e) {
 
-        String recv = client.recv().getFirst();
+        }
         String status = recv.split(":")[0];
 
         if(status.equals(MessageEnum.ERROR.getMessage())) {

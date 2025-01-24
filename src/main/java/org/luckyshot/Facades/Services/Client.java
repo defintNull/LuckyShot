@@ -63,18 +63,13 @@ public class Client extends WebSocketClient {
         return null;
     }
 
-    public ArrayList<String> recv() {
+    public ArrayList<String> recv() throws InterruptedException {
         ArrayList<String> r = getBuffer();
 
         while(r == null) {
             r = getBuffer();
-            try{
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(10);
         }
-
         return r;
     }
 }

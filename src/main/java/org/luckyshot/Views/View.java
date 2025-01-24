@@ -1,5 +1,7 @@
 package org.luckyshot.Views;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 // PER FAR VEDERE CARATTERI UNICODE SU POWERSHELL (almeno):
@@ -82,5 +84,21 @@ public abstract class View {
         System.out.print("> ");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
+    }
+
+    public String getUserInputThread() throws Exception{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String input = "";
+        // wait until we have data to complete a readLine()
+        while (!br.ready()) {
+            if (System.in.available() > 0) {
+                char c = (char) br.read();
+                System.out.print(c);
+                input += c;
+            }
+            Thread.sleep(200);
+        }
+        //input = br.readLine();
+        return input;
     }
 }

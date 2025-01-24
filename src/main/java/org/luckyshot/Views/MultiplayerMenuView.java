@@ -61,4 +61,12 @@ public class MultiplayerMenuView extends View {
         setCursorPos(5, 2);
         System.out.print("Insert room's code: ");
     }
+
+    public void showRoomClosed() {
+        clearScreen();
+        displayHeader();
+
+        setCursorPos(5, 2);
+        System.out.print("Room closed. Back to menu.");
+    }
 }
