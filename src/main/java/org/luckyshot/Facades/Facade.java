@@ -85,7 +85,7 @@ public class Facade {
     }
 
     private void startMultiplayerMatch() {
-        MultiplayerGameFacade.getInstance().start(user);
+        MultiplayerMenuFacade.getInstance().start(user);
     }
 
     private boolean shopMenu() {

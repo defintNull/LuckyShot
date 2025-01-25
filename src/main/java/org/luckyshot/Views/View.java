@@ -87,18 +87,13 @@ public abstract class View {
     }
 
     public String getUserInputThread() throws Exception{
+        setCursorPos(35, 3);
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input = "";
-        // wait until we have data to complete a readLine()
+        StringBuilder sb = new StringBuilder();
         while (!br.ready()) {
-            if (System.in.available() > 0) {
-                char c = (char) br.read();
-                System.out.print(c);
-                input += c;
-            }
+            sb.append((char)br.read());
             Thread.sleep(200);
         }
-        //input = br.readLine();
-        return input;
+        return sb.toString();
     }
 }

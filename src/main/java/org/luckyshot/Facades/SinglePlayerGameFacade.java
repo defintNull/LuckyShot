@@ -119,7 +119,8 @@ public class SinglePlayerGameFacade {
         try {
             recv = client.recv().getFirst();
         } catch (Exception e) {
-
+            singlePlayerGameView.systemError();
+            System.exit(1);
         }
         String status = recv.split(":")[0];
 

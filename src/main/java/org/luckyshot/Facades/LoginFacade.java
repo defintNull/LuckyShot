@@ -90,11 +90,17 @@ public class LoginFacade {
         String result;
         String status;
 
-        String[] credentials = loginView.getLoginUserInput();
-        String username = credentials[0];
-        String password = credentials[1];
+        String username = null;
+        String password = null;
+        String[] credentials = null;
 
-        //AGGIUNGERE CONTROLLO CARATTERI :&
+        do {
+            credentials = loginView.getLoginUserInput();
+            username = credentials[0];
+            password = credentials[1];
+
+            //AGGIUNGERE CONTROLLO CARATTERI :&
+        } while(username.isEmpty() || password.isEmpty());
 
         Client client = Client.getInstance();
         client.send("LOGIN:" + username + "&" + password);
@@ -193,8 +199,6 @@ public class LoginFacade {
                     check = true;
                 }
             }
-
-
             client.send("REGISTER:" + username+"&"+encoder.encode(passwords[0]));
 
             try {
