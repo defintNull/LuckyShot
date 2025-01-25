@@ -6,16 +6,23 @@ import org.luckyshot.Views.MultiplayerGameView;
 import java.util.HashMap;
 
 public class MultiplayerGameFacade {
-    private Client client;
+    private Client client = Client.getInstance();
     private MultiplayerGameView view;
+    boolean gameEnded = false;
 
     public MultiplayerGameFacade() {
         view = new MultiplayerGameView();
     }
 
     public void start() {
-        HashMap<String, String> gameState = getGameStateMap();
-        view.showGame(gameState);
+        view.showGame(getGameStateMap());
+        while (!gameEnded) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public HashMap<String, String> getGameStateMap() {

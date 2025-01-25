@@ -100,7 +100,9 @@ public class MultiplayerMenuFacade {
                 break;
             } else if (choice.equals("2") && ready) {
                 waitPlayer.interrupt();
+                client.send("START_GAME:" + roomCode);
                 startMultiplayerGame();
+                break;
             } else {
                 view.showMenu();
                 view.showInvalidChoice(14);
@@ -150,6 +152,7 @@ public class MultiplayerMenuFacade {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     ArrayList<String> m = client.recv();
+                    System.out.println(m);
                     if(m.size() >= 2) {
                         m.replaceAll(s -> s.split(":")[1]);
                         view.showRoomMenu(false, m, roomCode);
@@ -157,9 +160,10 @@ public class MultiplayerMenuFacade {
                         String value = m.getFirst().split(":")[1];
                         if(value.equals("ROOM_CLOSED")) {
                             roomClosed = true;
-                        } else if(value.equals("START_GAME")) {
+                        } else if(value.equals("GAME_STARTED")) {
                             gameStarted = true;
                         }
+                        break;
                     }
                 } catch (Exception e) {
                     break;
@@ -189,7 +193,7 @@ public class MultiplayerMenuFacade {
                 waitStart.interrupt();
                 getInput.interrupt();
                 startMultiplayerGame();
-                break;
+                return;
             }
             if(roomClosed) {
                 waitStart.interrupt();
