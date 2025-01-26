@@ -54,10 +54,7 @@ public class ThreadInput extends View implements NativeKeyListener {
     }
 
     public void nativeKeyTyped(NativeKeyEvent e) {
-        if(e.getKeyCode() != NativeKeyEvent.VC_SPACE && e.getKeyCode() != NativeKeyEvent.VC_TAB && e.getKeyCode() != 0) {
-            setCursorPos(36, 2);
-            System.out.println(e.getKeyCode());
-            System.out.println(NativeKeyEvent.VC_BACKSPACE);
+        if(e.getKeyChar() != '\b') {
             setCursorPos(35, 3 + buffer.size());
             buffer.add(e.getKeyChar());
             System.out.print(e.getKeyChar());
