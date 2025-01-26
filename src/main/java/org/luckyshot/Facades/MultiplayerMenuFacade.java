@@ -155,7 +155,6 @@ public class MultiplayerMenuFacade {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     ArrayList<String> m = client.recv();
-                    System.out.println(m);
                     if(m.size() >= 2) {
                         m.replaceAll(s -> s.split(":")[1]);
                         view.showRoomMenu(false, m, roomCode);
@@ -244,7 +243,7 @@ public class MultiplayerMenuFacade {
     }
 
     public void startMultiplayerGame() {
-        MultiplayerGameFacade multiplayerGameFacade = new MultiplayerGameFacade();
+        MultiplayerGameFacade multiplayerGameFacade = new MultiplayerGameFacade(roomCode, user.getUsername());
         multiplayerGameFacade.start();
     }
 }
