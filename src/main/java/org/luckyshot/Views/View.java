@@ -74,7 +74,7 @@ public abstract class View {
         System.out.println(ANSI_RED + "!!! SYSTEM ERROR !!!" + ANSI_RESET);
     }
 
-    protected void setCursorPos(int row, int column) {
+    public void setCursorPos(int row, int column) {
         char escCode = 0x1B;
         System.out.printf("%c[%d;%df",escCode,row,column);
     }

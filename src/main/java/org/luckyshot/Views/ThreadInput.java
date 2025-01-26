@@ -19,12 +19,11 @@ public class ThreadInput extends View implements NativeKeyListener {
     public static ThreadInput getInstance() {
         if (instance == null) {
             instance = new ThreadInput();
-            instance.start();
         }
         return instance;
     }
 
-    private void start() {
+    public void start() {
         try {
             GlobalScreen.registerNativeHook();
         } catch (Exception e) {
@@ -61,38 +60,6 @@ public class ThreadInput extends View implements NativeKeyListener {
         }
     }
 
-    public void printBuffer() {
-        if(buffer.contains(' ')) {
-            int p = buffer.indexOf(' ');
-            setCursorPos(35, 3 + p);
-            int s = buffer.size();
-            for(int i = p; i < s; i++) {
-                System.out.print(" ");
-                buffer.removeLast();
-            }
-            setCursorPos(35, 3 + p);
-        } else {
-            setCursorPos(35, 3 + xPos);
-            for (int i = xPos; i < buffer.size(); i++) {
-                System.out.print(buffer.get(i));
-            }
-        }
-        xPos = buffer.size();
-
-//        if(!buffer.contains(' ')) {
-//            setCursorPos(35, 3 + xPos);
-//            for (int i = xPos; i < buffer.size(); i++) {
-//                System.out.print(buffer.get(i));
-//            }
-//        } else {
-//            System.out.print("B");
-//            setCursorPos(35, 3 + buffer.size());
-//            for (int i = buffer.size() - 1; i < xPos; i++) {
-//                System.out.print("A");
-//            }
-//        }
-    }
-
     public ArrayList<Character> getBuffer() {
         return buffer;
     }
@@ -100,6 +67,7 @@ public class ThreadInput extends View implements NativeKeyListener {
     public void close() {
         try {
             GlobalScreen.unregisterNativeHook();
+            GlobalScreen.removeNativeKeyListener(instance);
         } catch (Exception e) {
             systemError();
             System.exit(1);

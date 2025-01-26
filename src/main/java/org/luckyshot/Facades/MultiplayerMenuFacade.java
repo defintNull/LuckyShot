@@ -175,36 +175,21 @@ public class MultiplayerMenuFacade {
         });
         waitStart.start();
 
-//        Thread getInput = new Thread(() -> {
-//            boolean interrupted = gameStarted || roomClosed;
-//            while (!interrupted) {
-//                try {
-//                    interrupted = gameStarted || roomClosed;
-//                    choice = view.getUserInputThread();
-//                    Thread.sleep(30);
-//                } catch (Exception e) {
-//                    break;
-//                }
-//            }
-//        });
-
         boolean checkInput;
-        //getInput.start();
 
         ThreadInput threadInput = ThreadInput.getInstance();
+        threadInput.start();
 
         do {
             checkInput = true;
 
             if(gameStarted) {
                 waitStart.interrupt();
-                //getInput.interrupt();
                 startMultiplayerGame();
                 return;
             }
             if(roomClosed) {
                 waitStart.interrupt();
-                //getInput.interrupt();
                 view.showRoomClosed();
                 try {
                     Thread.sleep(1000);
@@ -215,9 +200,14 @@ public class MultiplayerMenuFacade {
             }
 
             try {
-                //threadInput.printBuffer();
                 if (System.in.available() > 0) {
-                    choice = threadInput.getBuffer().toString();
+                    String s = "";
+                    ArrayList<Character> chars = new ArrayList<>(threadInput.getBuffer());
+                    for(int i = 0; i < chars.size(); i++) {
+                        s += chars.get(i);
+                    }
+                    choice = new String(s);
+                    view.getUserInput();
                 }
             } catch (Exception e){
                 view.systemError();
