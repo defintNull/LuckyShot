@@ -4,6 +4,9 @@ import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.MultiplayerMenuView;
+import org.luckyshot.Views.ThreadInput;
+
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class MultiplayerMenuFacade {
@@ -172,32 +175,36 @@ public class MultiplayerMenuFacade {
         });
         waitStart.start();
 
-        Thread getInput = new Thread(() -> {
-            boolean interrupted = gameStarted || roomClosed;
-            while (!interrupted) {
-                try {
-                    interrupted = gameStarted || roomClosed;
-                    choice = view.getUserInputThread();
-                    Thread.sleep(30);
-                } catch (Exception e) {
-                    break;
-                }
-            }
-        });
+//        Thread getInput = new Thread(() -> {
+//            boolean interrupted = gameStarted || roomClosed;
+//            while (!interrupted) {
+//                try {
+//                    interrupted = gameStarted || roomClosed;
+//                    choice = view.getUserInputThread();
+//                    Thread.sleep(30);
+//                } catch (Exception e) {
+//                    break;
+//                }
+//            }
+//        });
 
         boolean checkInput;
-        getInput.start();
+        //getInput.start();
+
+        ThreadInput threadInput = ThreadInput.getInstance();
+
         do {
             checkInput = true;
+
             if(gameStarted) {
                 waitStart.interrupt();
-                getInput.interrupt();
+                //getInput.interrupt();
                 startMultiplayerGame();
                 return;
             }
             if(roomClosed) {
                 waitStart.interrupt();
-                getInput.interrupt();
+                //getInput.interrupt();
                 view.showRoomClosed();
                 try {
                     Thread.sleep(1000);
@@ -206,6 +213,17 @@ public class MultiplayerMenuFacade {
                 }
                 return;
             }
+
+            try {
+                //threadInput.printBuffer();
+                if (System.in.available() > 0) {
+                    choice = threadInput.getBuffer().toString();
+                }
+            } catch (Exception e){
+                view.systemError();
+                System.exit(1);
+            }
+
             if(choice == null) {
                 checkInput = false;
                 try {
@@ -218,7 +236,7 @@ public class MultiplayerMenuFacade {
             else if (choice.equals("1")){
                 choice = null;
                 waitStart.interrupt();
-                getInput.interrupt();
+                //getInput.interrupt();
                 client.send("LEAVE_ROOM:" + roomCode);
                 try {
                     client.recv();

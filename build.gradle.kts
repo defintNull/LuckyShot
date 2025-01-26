@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-crypto:5.8.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
     implementation("org.java-websocket:Java-WebSocket:1.6.0")
+    implementation("com.github.kwhat:jnativehook:2.2.2")
 }
 
 tasks.test {

@@ -85,15 +85,4 @@ public abstract class View {
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }
-
-    public String getUserInputThread() throws Exception{
-        setCursorPos(35, 3);
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        while (!br.ready()) {
-            sb.append((char)br.read());
-            Thread.sleep(200);
-        }
-        return sb.toString();
-    }
 }
