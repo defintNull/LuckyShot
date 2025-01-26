@@ -42,14 +42,6 @@ public class ThreadInput extends View implements NativeKeyListener {
                 System.out.print(" ");
                 setCursorPos(35, 3 + buffer.size());
             }
-
-
-
-
-//            setCursorPos(36 + c, 2);
-//            System.out.println(buffer);
-//            c += 1;
-
         }
 
         if(e.getKeyCode() == NativeKeyEvent.VC_ENTER) {
