@@ -57,7 +57,7 @@ public class MultiplayerGameView extends GameView {
                 Method method = Class.forName(ConsumableInterface.getConsumableClassList().get(i).getName()).getMethod("getInstance");
                 Consumable c = (Consumable)method.invoke(null);
                 for(Map.Entry<String, String> entry : stateMap.entrySet()) {
-                    if(c.getClass().getSimpleName().equals("player_" + opponentPlayer + "_" + String.valueOf(entry.getKey()))) {
+                    if(("player_" + opponentPlayer + "_" + c.getClass().getSimpleName()).equals(String.valueOf(entry.getKey()))) {
                         System.out.print(letters.charAt(i) + ". " + c.toString() + ": x" + String.valueOf(entry.getValue()));
                         cNumber++;
                     }
@@ -119,7 +119,7 @@ public class MultiplayerGameView extends GameView {
                 Method method = Class.forName(ConsumableInterface.getConsumableClassList().get(i).getName()).getMethod("getInstance");
                 Consumable c = (Consumable)method.invoke(null);
                 for(Map.Entry<String, String> entry : stateMap.entrySet()) {
-                    if(c.getClass().getSimpleName().equals("player_" + playerNumber + "_" + String.valueOf(entry.getKey()))) {
+                    if(("player_" + playerNumber + "_" + c.getClass().getSimpleName()).equals(String.valueOf(entry.getKey()))) {
                         System.out.print(letters.charAt(i) + ". " + c.toString() + ": x" + String.valueOf(entry.getValue()));
                         cNumber++;
                     }
@@ -157,6 +157,18 @@ public class MultiplayerGameView extends GameView {
         lastAction.add(activation);
     }
 
+    public void showStateEffectEffect(String effect) {
+        lastAction.add(effect);
+    }
+
+    public void showConsumableActivation(String string) {
+        lastAction.add(string + " used!");
+    }
+
+    public void showConsumableEffect(String effect) {
+        lastAction.add(effect);
+    }
+
     public void printLastAction() {
         setCursorPos(4, 52);
 
@@ -180,5 +192,62 @@ public class MultiplayerGameView extends GameView {
         }
 
         lastAction.clear();
+    }
+
+    public void showWinner(String winner) {
+        lastAction.add("The game is over...");
+        lastAction.add("The winner is: " + winner + "!");
+    }
+
+    public void showFinalXp(String xp) {
+        lastAction.add("You gained " + xp + " xp!");
+    }
+
+    public void showLevelAndXp(String user, String level, String xp) {
+        lastAction.add(user + ":  Level:" + level + "      XP:" + xp);
+    }
+
+    public void showHandcuffedState(boolean state) {
+        if(state) {
+            lastAction.add("You are handcuffed, you lose your turn!");
+        } else {
+            lastAction.add("The other player has been freed.");
+        }
+    }
+
+    public void showPowerupActivation(String powerup) {
+        lastAction.add("A " + powerup.toLowerCase() + " has been used!");
+    }
+
+    public void showPowerupEffect(Powerup powerup) {
+        lastAction.add(powerup.toString() + ": " + powerup.getEffect());
+    }
+
+    public void showConsumablesDrawn() {
+        lastAction.add("Consumables drawn...");
+    }
+
+    public void addLastAction(String s) {
+        lastAction.add(s);
+    }
+
+    public void showGhostGunDamage() {
+        lastAction.add("The damage was doubled!");
+    }
+
+    public void showShootingTarget(String target) {
+        if(target.equals("1")) {
+            lastAction.addFirst("The opponent shot himself!");
+        } else {
+            lastAction.addFirst("The opponent shoots you!");
+        }
+    }
+
+    public void showShootingResult(String bulletType) {
+        if(bulletType.equals("0")) {
+            lastAction.addFirst("The bullet was fake...");
+        } else if(bulletType.equals("1")) {
+            lastAction.addFirst("The bullet was live!");
+        }
     }
 }

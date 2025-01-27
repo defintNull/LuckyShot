@@ -479,7 +479,7 @@ public class SinglePlayerGameFacade {
     }
 
     public void drawConsumables() {
-        singlePlayerGameView.addLastAction("Consumables drawn...");
+        singlePlayerGameView.showConsumablesDrawn();
         int maxConsumablesNumber = 8;
         Random rand = new Random();
         int r = rand.nextInt(2, 6);

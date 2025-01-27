@@ -22,6 +22,12 @@ public class GameView extends View{
         System.out.print("╠" + "═".repeat(98) + "╣");
     }
 
+    public void refresh(HashMap<String, String> stateMap) {
+        clearScreen();
+        drawTable();
+        showGameState(stateMap);
+    }
+
     public void showGame(HashMap<String, String> stateMap) {
         clearScreen();
 

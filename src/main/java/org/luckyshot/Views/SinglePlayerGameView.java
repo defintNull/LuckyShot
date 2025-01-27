@@ -212,4 +212,8 @@ public class SinglePlayerGameView extends GameView{
     public void showEnergyDrinkChoise() {
         lastAction.add("Choose the consumable to steal.");
     }
+
+    public void showConsumablesDrawn() {
+        lastAction.add("Consumables drawn...");
+    }
 }

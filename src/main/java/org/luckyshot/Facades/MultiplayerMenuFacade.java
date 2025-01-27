@@ -228,7 +228,7 @@ public class MultiplayerMenuFacade {
                     try {
                         Thread.sleep(50);
                     } catch (Exception e) {
-
+                        break;
                     }
                 }
             }
