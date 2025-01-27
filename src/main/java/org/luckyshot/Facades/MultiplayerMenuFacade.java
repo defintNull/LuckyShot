@@ -299,11 +299,12 @@ public class MultiplayerMenuFacade {
                     }
                 } catch (Exception e) {
                     view.systemError();
+                    e.printStackTrace();
                     System.exit(1);
                 }
 
             } else {
-                view.showRoomMenu(false, usernames, input);
+                view.showRoomMenu(gameStarted, usernames, input);
                 view.showInvalidChoice(14);
                 checkInput = false;
                 inputFlag = true;

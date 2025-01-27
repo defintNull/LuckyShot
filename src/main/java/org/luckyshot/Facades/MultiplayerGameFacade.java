@@ -136,7 +136,7 @@ public class MultiplayerGameFacade {
                         Consumable consumable = null;
                         try {
                             for (int i = 0; i < ConsumableInterface.getConsumableClassList().size(); i++) {
-                                if (ConsumableInterface.getConsumableClassList().get(i).getSimpleName().equals(param.get(3))) {
+                                if (ConsumableInterface.getConsumableClassList().get(i).getSimpleName().equals(param.get(2))) {
                                     Method method = Class.forName(ConsumableInterface.getConsumableClassList().get(i).getName()).getMethod("getInstance");
                                     consumable = (Consumable) method.invoke(null);
                                     break;
