@@ -68,5 +68,18 @@ public class MultiplayerMenuView extends View {
 
         setCursorPos(5, 2);
         System.out.print("Room closed. Back to menu.");
+
+        setCursorPos(7, 2);
+        System.out.print("Press enter to continue...");
+    }
+
+    public void showWaitingStartGame() {
+        setCursorPos(15, 10);
+        System.out.println("Waiting other players...");
+    }
+
+    public void showReadyGame() {
+        setCursorPos(35, 3);
+        System.out.println("Select 2 to continue...");
     }
 }

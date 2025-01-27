@@ -2,6 +2,7 @@ package org.luckyshot.Models.Enums;
 
 public enum MessageEnum {
     OK("OK"),
+    READY("READY"),
     ERROR("ERROR"),
     INPUT("INPUT"),
     ADD_ACTION("ADD_ACTION"),

@@ -4,21 +4,26 @@ import org.luckyshot.Facades.Services.Client;
 import org.luckyshot.Models.Enums.MessageEnum;
 import org.luckyshot.Models.User;
 import org.luckyshot.Views.MultiplayerMenuView;
-import org.luckyshot.Views.ThreadInput;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class MultiplayerMenuFacade {
     private static MultiplayerMenuFacade instance;
     private final MultiplayerMenuView view;
-    private static boolean ready;
     private User user;
     private String roomCode;
+    private final int MAX_ROOM_PLAYERS = 2;
+
     private boolean roomClosed = false;
     private boolean gameStarted = false;
-    private final int MAX_ROOM_PLAYERS = 2;
+    private static boolean ready;
     private String choice = null;
+    private boolean inputFlag = false;
+    private boolean readyStart = false;
+
+    //Thread state
+    private boolean state1 = false;
+    private boolean state2 = false;
 
     private MultiplayerMenuFacade() {
         view = new MultiplayerMenuView();
@@ -69,19 +74,31 @@ public class MultiplayerMenuFacade {
             view.systemError();
             System.exit(1);
         }
+        ready = false;
+        readyStart = false;
         Thread waitPlayer = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (state1) {
                 try {
-                    ArrayList<String> usernames = client.recv();
-                    ready = usernames.size() == MAX_ROOM_PLAYERS;
-                    usernames.replaceAll(s -> s.split(":")[1]);
-                    view.showRoomMenu(ready, usernames, roomCode);
+                    ArrayList<String> message = client.recv();
+                    String command = message.getFirst().split(":")[0];
+                    if(command.equals(MessageEnum.OK.getMessage())) {
+                        ready = message.size() == MAX_ROOM_PLAYERS;
+                        message.replaceAll(s -> s.split(":")[1]);
+                        view.showRoomMenu(ready, message, roomCode);
+                    } else {
+                        view.systemError();
+                        System.exit(1);
+                    }
                 } catch (Exception e) {
                     break;
                 }
             }
         });
+
+        //Starting thread
+        state1 = true;
         waitPlayer.start();
+
         ArrayList<String> usernames = new ArrayList<>();
         usernames.add(user.getUsername());
         view.showRoomMenu(ready, usernames, roomCode);
@@ -92,7 +109,11 @@ public class MultiplayerMenuFacade {
             checkInput = true;
             choice = view.getUserInput();
             if (choice.equals("1")) {
+
+                //Stop Thread
+                state1 = false;
                 waitPlayer.interrupt();
+
                 client.send("LEAVE_ROOM:" + roomCode);
                 try {
                     client.recv();
@@ -102,10 +123,30 @@ public class MultiplayerMenuFacade {
                 }
                 break;
             } else if (choice.equals("2") && ready) {
+                //Stop Thread
+                state1 = false;
                 waitPlayer.interrupt();
+
                 client.send("START_GAME:" + roomCode);
-                startMultiplayerGame();
-                break;
+
+                //Qualcosa di attesa
+                view.showWaitingStartGame();
+
+                try {
+                    ArrayList<String> message = client.recv();
+                    String param = message.getFirst().split(":")[1];
+                    if(param.equals("GAME_STARTED")){
+                        //START GAME
+                        startMultiplayerGame();
+                    } else {
+                        view.systemError();
+                        System.exit(1);
+                    }
+                } catch (Exception e) {
+                    view.systemError();
+                    System.exit(1);
+                }
+
             } else {
                 view.showMenu();
                 view.showInvalidChoice(14);
@@ -148,11 +189,8 @@ public class MultiplayerMenuFacade {
         }
         view.showRoomMenu(false, usernames, input);
 
-        roomClosed = false;
-        gameStarted = false;
-
         Thread waitStart = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (state1) {
                 try {
                     ArrayList<String> m = client.recv();
                     if(m.size() >= 2) {
@@ -162,8 +200,11 @@ public class MultiplayerMenuFacade {
                         String value = m.getFirst().split(":")[1];
                         if(value.equals("ROOM_CLOSED")) {
                             roomClosed = true;
-                        } else if(value.equals("GAME_STARTED")) {
+                            view.showRoomClosed();
+                        } else if(value.equals("READY")) {
                             gameStarted = true;
+                            view.showRoomMenu(true, usernames, roomCode);
+                            view.showReadyGame();
                         }
                         break;
                     }
@@ -172,47 +213,38 @@ public class MultiplayerMenuFacade {
                 }
             }
         });
+
+        //Start Thread
+        state1 = true;
         waitStart.start();
 
-        boolean checkInput;
+        Thread threadInput = new Thread(() -> {
+            while(state2) {
+                if(inputFlag) {
+                    choice = null;
+                    choice = view.getUserInput();
+                    inputFlag = false;
+                } else {
+                    try {
+                        Thread.sleep(50);
+                    } catch (Exception e) {
 
-        ThreadInput threadInput = ThreadInput.getInstance();
+                    }
+                }
+            }
+        });
+
+        //Start Thread
+        state2 = true;
         threadInput.start();
 
+        boolean checkInput = true;
+        inputFlag = true;
+        choice = null;
+        roomClosed = false;
+        gameStarted = false;
         do {
             checkInput = true;
-
-            if(gameStarted) {
-                waitStart.interrupt();
-                startMultiplayerGame();
-                return;
-            }
-            if(roomClosed) {
-                waitStart.interrupt();
-                view.showRoomClosed();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    view.systemError();
-                }
-                return;
-            }
-
-            try {
-                if (System.in.available() > 0) {
-                    String s = "";
-                    ArrayList<Character> chars = new ArrayList<>(threadInput.getBuffer());
-                    for(int i = 0; i < chars.size(); i++) {
-                        s += chars.get(i);
-                    }
-                    choice = new String(s);
-                    view.getUserInput();
-                }
-            } catch (Exception e){
-                view.systemError();
-                System.exit(1);
-            }
-
             if(choice == null) {
                 checkInput = false;
                 try {
@@ -221,22 +253,60 @@ public class MultiplayerMenuFacade {
                 catch (InterruptedException e) {
                     view.systemError();
                 }
+            } else if(roomClosed) {
+                //Stopping threads
+                state1 = false;
+                waitStart.interrupt();
+                state2 = false;
+                threadInput.interrupt();
+
+                return;
             }
             else if (choice.equals("1")){
-                choice = null;
+                //Stopping threads
+                state1 = false;
                 waitStart.interrupt();
-                //getInput.interrupt();
+                state2 = false;
+                threadInput.interrupt();
+
                 client.send("LEAVE_ROOM:" + roomCode);
                 try {
                     client.recv();
+                    return;
                 } catch (Exception e) {
                     view.systemError();
                     System.exit(1);
                 }
+            } else if(choice.equals("2") && gameStarted) {
+                //Comincia il gioco
+
+                //Stopping threads
+                state1 = false;
+                waitStart.interrupt();
+                state2 = false;
+                threadInput.interrupt();
+
+                client.send("READY:" + roomCode);
+                try {
+                    ArrayList<String> response = client.recv();
+                    String command = response.getFirst().split(":")[0];
+                    String param = response.getFirst().split(":")[1];
+                    if(command.equals(MessageEnum.OK.getMessage()) && param.equals("GAME_STARTED")) {
+                        startMultiplayerGame();
+                    } else {
+                        view.systemError();
+                        System.exit(1);
+                    }
+                } catch (Exception e) {
+                    view.systemError();
+                    System.exit(1);
+                }
+
             } else {
                 view.showRoomMenu(false, usernames, input);
                 view.showInvalidChoice(14);
                 checkInput = false;
+                inputFlag = true;
                 choice = null;
             }
         } while (!checkInput);
