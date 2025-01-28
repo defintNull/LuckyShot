@@ -48,11 +48,5 @@ public class MainMenuView extends View{
 
     public void quitGame() {
         System.out.println("Goodbye, hope to see you again!");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-
-        }
-        clearScreen();
     }
 }

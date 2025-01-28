@@ -225,6 +225,11 @@ public class MultiplayerGameFacade {
                 else if (command.equals(MessageEnum.END.getMessage())) {
                     if(params.equals("OK")) {
                         client.send("GAME_END:" + roomCode);
+                    } else if(params.equals("WIN_BY_DEFAULT")) {
+                        view.refresh(gameState);
+                        view.printLastAction(false);
+                        view.showWinner("you");
+                        view.printLastAction(true);
                     }
                     gameEnded = true;
                     break;

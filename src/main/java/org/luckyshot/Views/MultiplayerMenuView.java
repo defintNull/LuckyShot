@@ -74,12 +74,14 @@ public class MultiplayerMenuView extends View {
     }
 
     public void showWaitingStartGame() {
-        setCursorPos(15, 10);
-        System.out.println("Waiting other players...");
+        setCursorPos(15, 2);
+        System.out.print("Waiting other players...");
+        setCursorPos(35, 4);
     }
 
     public void showReadyGame() {
+        setCursorPos(15, 2);
+        System.out.print("Select 2 to continue...");
         setCursorPos(35, 3);
-        System.out.println("Select 2 to continue...");
     }
 }

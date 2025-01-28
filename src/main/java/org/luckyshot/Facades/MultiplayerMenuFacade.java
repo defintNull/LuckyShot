@@ -293,7 +293,11 @@ public class MultiplayerMenuFacade {
                     String param = response.getFirst().split(":")[1];
                     if(command.equals(MessageEnum.OK.getMessage()) && param.equals("GAME_STARTED")) {
                         startMultiplayerGame();
-                    } else {
+                    } else if(command.equals(MessageEnum.OK.getMessage()) && param.equals("ROOM_CLOSED")) {
+                        roomClosed = true;
+                        view.showRoomClosed();
+                    }
+                    else {
                         view.systemError();
                         System.exit(1);
                     }

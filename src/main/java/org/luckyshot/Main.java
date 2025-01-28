@@ -11,8 +11,7 @@ public class Main {
         try {
             loginFacade.start();
         } catch (Exception e) {
-            LoginView loginView = new LoginView();
-            loginView.clearScreen();
+
         }
     }
 }

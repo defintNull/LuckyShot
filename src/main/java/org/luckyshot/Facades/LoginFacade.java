@@ -51,7 +51,8 @@ public class LoginFacade {
 
     public void loginMenu() {
         MainMenuView mainMenuView = new MainMenuView();
-        while(true) {
+        boolean quitting = false;
+        while(!quitting) {
             mainMenuView.showLoading();
             mainMenuView.showLoginMenu();
 
@@ -65,6 +66,7 @@ public class LoginFacade {
                     this.register();
                 } else if (choice.equals("3")) {
                     try {
+                        quitting = true;
                         this.quitGame();
                     } catch (Exception e) {
                         System.exit(0);
@@ -76,6 +78,13 @@ public class LoginFacade {
                 }
             } while (!checkInput);
         }
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException e){
+            mainMenuView.systemError();
+            System.exit(1);
+        }
+        System.exit(0);
     }
 
     private void quitGame() throws InterruptedException {

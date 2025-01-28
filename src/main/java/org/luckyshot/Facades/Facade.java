@@ -32,7 +32,8 @@ public class Facade {
 
     public void menu() {
         MainMenuView mainMenuView = new MainMenuView();
-        while(true) {
+        boolean quitting = false;
+        while(!quitting) {
             HashMap<String, String> map = new HashMap<>();
             map.put("username", user.getUsername());
             map.put("level", Integer.toString(user.getLevel()));
@@ -57,6 +58,7 @@ public class Facade {
                 } else if (choice.equals("5")) {
                     try {
                         success = true;
+                        quitting = true;
                         this.quitGame();
                     } catch (Exception e) {
                         System.out.println("Error while quitting the game.");
@@ -79,6 +81,13 @@ public class Facade {
                 break;
             }
         }
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException e){
+            mainMenuView.systemError();
+            System.exit(1);
+        }
+        System.exit(0);
     }
 
     private void startSinglePlayerMatch() {
