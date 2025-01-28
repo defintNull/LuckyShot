@@ -25,6 +25,7 @@ public class MultiplayerGameFacade {
     boolean gameEnded = false;
     private String roomCode;
     private String username;
+    private HashMap<String, String> gameState = new HashMap<>();
 
     public MultiplayerGameFacade(String roomCode, String username) {
         view = new MultiplayerGameView(username);
@@ -176,12 +177,10 @@ public class MultiplayerGameFacade {
                 }
                 else if (command.equals(MessageEnum.SHOW_GAME_STATE.getMessage())) {
                     ObjectConverter objectConverter = new ObjectConverter();
-                    HashMap<String, String> gameState = objectConverter.jsonToObj(params, HashMap.class);
+                    gameState = objectConverter.jsonToObj(params, HashMap.class);
                     view.showGame(gameState);
                 }
                 else if (command.equals(MessageEnum.REFRESH.getMessage())) {
-                    ObjectConverter objectConverter = new ObjectConverter();
-                    HashMap<String, String> gameState = objectConverter.jsonToObj(params, HashMap.class);
                     view.refresh(gameState);
                 }
                 else if (command.equals(MessageEnum.ADD_ERROR.getMessage())) {
