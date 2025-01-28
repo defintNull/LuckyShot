@@ -82,7 +82,7 @@ public class MultiplayerGameFacade {
                             view.showWinner("not you");
                         }
                         else {
-                            view.showWinner("noone of you");
+                            view.showWinner("none of you");
                         }
                     }
                     else if(param.get(0).equals("XP")) {

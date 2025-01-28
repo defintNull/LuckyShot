@@ -26,11 +26,11 @@ public class SinglePlayerGameView extends GameView{
             System.out.print(ANSI_RED + "♥" + ANSI_RESET);
         }
         if(stateMap.get("isBotPoisoned").equals("true")) {
-            System.out.print(" A");
+            System.out.print(" P");
         }
 
         if(stateMap.get("isBotHandcuffed").equals("true")) {
-            System.out.print(" M");
+            System.out.print(" H");
         }
 
         // Showing bot consumables
@@ -53,13 +53,13 @@ public class SinglePlayerGameView extends GameView{
             System.out.print(ANSI_RED + "♥" + ANSI_RESET);
         }
         if(stateMap.get("isHumanPoisoned").equals("true")) {
-            System.out.print(" A");
+            System.out.print(" P");
         }
         if(stateMap.get("isHumanShielded").equals("true")) {
             System.out.print(" S");
         }
         if(stateMap.get("isHumanHandcuffed").equals("true")) {
-            System.out.print(" M");
+            System.out.print(" H");
         }
         // SPAZIO VA FATTO PROPORZIONALE AL NUMERO DI CIFRE
         setCursorPos(22, 20);

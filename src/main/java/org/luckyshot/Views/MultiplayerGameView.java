@@ -4,6 +4,8 @@ import org.luckyshot.Models.Consumables.Consumable;
 import org.luckyshot.Models.Consumables.ConsumableInterface;
 import org.luckyshot.Models.Powerups.Powerup;
 import org.luckyshot.Models.Powerups.PowerupInterface;
+import org.luckyshot.Models.StateEffects.StateEffect;
+import org.luckyshot.Models.StateEffects.StateEffectInterface;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -30,7 +32,20 @@ public class MultiplayerGameView extends GameView {
         System.out.print("Round " + String.valueOf(stateMap.get("roundNumber")));
 
         setCursorPos(2, 40);
-        System.out.print("State effect: " + String.valueOf(stateMap.get("stateEffect")));
+
+        StateEffect s = null;
+        for (int i = 0; i < StateEffectInterface.getStateEffectClassList().size(); i++) {
+            if ((StateEffectInterface.getStateEffectClassList().get(i).getSimpleName()).equals(stateMap.get("stateEffect"))) {
+                try {
+                    Method method = Class.forName(StateEffectInterface.getStateEffectClassList().get(i).getName()).getMethod("getInstance");
+                    s = (StateEffect) method.invoke(null);
+                } catch (Exception e) {
+                    systemError();
+                    System.exit(1);
+                }
+            }
+        }
+        System.out.print("State effect: " + (s.toString()));
 
         // Showing player 2 lives and state (shield, poison)
         setCursorPos(4, 2);
@@ -40,11 +55,13 @@ public class MultiplayerGameView extends GameView {
             System.out.print(ANSI_RED + "♥" + ANSI_RESET);
         }
         if(String.valueOf(stateMap.get("player_" + opponentPlayer + "_isPoisoned")).equals("true")) {
-            System.out.print(" A");
+            System.out.print(" P");
         }
-
+        if(String.valueOf(stateMap.get("player_" + opponentPlayer + "_isShieldActive")).equals("true")) {
+            System.out.print(" S");
+        }
         if(String.valueOf(stateMap.get("player_" + opponentPlayer + "_isHandcuffed")).equals("true")) {
-            System.out.print(" M");
+            System.out.print(" H");
         }
 
         // Showing player 2 consumables
@@ -95,13 +112,13 @@ public class MultiplayerGameView extends GameView {
             System.out.print(ANSI_RED + "♥" + ANSI_RESET);
         }
         if(String.valueOf(stateMap.get("player_" + playerNumber + "_isPoisoned")).equals("true")) {
-            System.out.print(" A");
+            System.out.print(" P");
         }
-        if(String.valueOf(stateMap.get("player_" + playerNumber + "_isShielded")).equals("true")) {
+        if(String.valueOf(stateMap.get("player_" + playerNumber + "_isShieldActive")).equals("true")) {
             System.out.print(" S");
         }
         if(String.valueOf(stateMap.get("player_" + playerNumber + "_isHandcuffed")).equals("true")) {
-            System.out.print(" M");
+            System.out.print(" H");
         }
 
         setCursorPos(22, 20);
@@ -167,6 +184,13 @@ public class MultiplayerGameView extends GameView {
 
     public void showConsumableEffect(String effect) {
         lastAction.add(effect);
+    }
+
+    public void showGame(HashMap<String, String> stateMap) {
+        clearScreen();
+
+        drawTable();
+        showGameState(stateMap);
     }
 
     public void printLastAction(boolean endGameScreen) {

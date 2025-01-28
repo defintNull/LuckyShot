@@ -29,6 +29,6 @@ public class Bomb extends Powerup{
     }
 
     public String getEffect() {
-        return "Every player lose a life!";
+        return "Every player loses a life!";
     }
 }

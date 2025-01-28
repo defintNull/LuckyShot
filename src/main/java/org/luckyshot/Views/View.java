@@ -40,7 +40,7 @@ public abstract class View {
         System.out.print("╚"+ "═".repeat(98) + "╝");
     }
 
-    protected void clearScreen() {
+    public void clearScreen() {
         try {
             final String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("windows"))
@@ -72,6 +72,12 @@ public abstract class View {
 
     public void systemError() {
         System.out.println(ANSI_RED + "!!! SYSTEM ERROR !!!" + ANSI_RESET);
+        try{
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println(ANSI_RED + "Error while sleeping" + ANSI_RESET);
+        }
+        clearScreen();
     }
 
     public void setCursorPos(int row, int column) {

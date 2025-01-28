@@ -56,6 +56,7 @@ public class Facade {
                     success = this.showStats();
                 } else if (choice.equals("5")) {
                     try {
+                        success = true;
                         this.quitGame();
                     } catch (Exception e) {
                         System.out.println("Error while quitting the game.");
