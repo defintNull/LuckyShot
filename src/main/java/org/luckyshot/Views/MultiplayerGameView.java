@@ -169,16 +169,19 @@ public class MultiplayerGameView extends GameView {
         lastAction.add(effect);
     }
 
-    public void printLastAction() {
+    public void printLastAction(boolean endGameScreen) {
         setCursorPos(4, 52);
 
-        if(stateMap.get("player_" + playerNumber + "_turn") != null) {
-            if (stateMap.get("player_" + playerNumber + "_turn").equals("1")) {
-                customPrint("It's your turn.", "fast", 4, 52);
-            } else {
-                customPrint("It's your opponent's turn.", "fast", 4, 52);
+        if(!endGameScreen) {
+            if(stateMap.get("player_" + playerNumber + "_turn") != null) {
+                if (stateMap.get("player_" + playerNumber + "_turn").equals("1")) {
+                    customPrint("It's your turn.", "fast", 4, 52);
+                } else {
+                    customPrint("It's your opponent's turn.", "fast", 4, 52);
+                }
             }
         }
+
 
         if(!lastAction.isEmpty()) {
             for(int i=0; i<lastAction.size(); i++) {
@@ -207,11 +210,20 @@ public class MultiplayerGameView extends GameView {
         lastAction.add(user + ":  Level:" + level + "      XP:" + xp);
     }
 
-    public void showHandcuffedState(boolean state) {
-        if(state) {
-            lastAction.add("You are handcuffed, you lose your turn!");
-        } else {
-            lastAction.add("The other player has been freed.");
+    public void showHandcuffedState(boolean state, boolean turn) {
+        if(turn) {
+            if (state) {
+                lastAction.add("You are handcuffed, you lose your turn!");
+            } else {
+                lastAction.add("The other player has been freed.");
+            }
+        }
+        else {
+            if (state) {
+                lastAction.add("The other player is handcuffed.");
+            } else {
+                lastAction.add("You are free!");
+            }
         }
     }
 

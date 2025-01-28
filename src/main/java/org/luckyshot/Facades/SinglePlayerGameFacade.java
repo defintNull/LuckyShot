@@ -225,15 +225,15 @@ public class SinglePlayerGameFacade {
         while(!changeTurn) {
             showGameState();
 
-            if(!singlePlayerGame.getRound().getTurn().getCurrentPlayer().isHandcuffed()) {
+            // Se la pistola è vuota, assegno i consumabili e la ricarico
+            if(gun.isEmpty()) {
+                drawConsumables();
+                showGameState();
+                loadGun();
+                showGameState();
+            }
 
-                // Se la pistola è vuota, assegno i consumabili e la ricarico
-                if(gun.isEmpty()) {
-                    drawConsumables();
-                    showGameState();
-                    loadGun();
-                    showGameState();
-                }
+            if(!singlePlayerGame.getRound().getTurn().getCurrentPlayer().isHandcuffed()) {
 
                 String[] userInput = getPlayerInput().split(" ");
                 while(userInput.length != 2) {

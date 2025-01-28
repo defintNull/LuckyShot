@@ -26,6 +26,7 @@ public class MultiplayerGameFacade {
     private String roomCode;
     private String username;
     private HashMap<String, String> gameState = new HashMap<>();
+    boolean endGameScreen = false;
 
     public MultiplayerGameFacade(String roomCode, String username) {
         view = new MultiplayerGameView(username);
@@ -73,6 +74,7 @@ public class MultiplayerGameFacade {
                         }
                     }
                     else if(param.get(0).equals("WIN")) {
+                        endGameScreen = true;
                         if(param.get(1).equals("1")) {
                             view.showWinner(username);
                         }
@@ -91,10 +93,10 @@ public class MultiplayerGameFacade {
                     }
                     else if(param.get(0).equals("HANDCUFFS")) {
                         if(param.get(2).equals("1")) {
-                            view.showHandcuffedState(true);
+                            view.showHandcuffedState(true, Boolean.parseBoolean(param.get(3)));
                         }
                         else if(param.get(2).equals("0")) {
-                            view.showHandcuffedState(false);
+                            view.showHandcuffedState(false, Boolean.parseBoolean(param.get(3)));
                         }
                     }
                     else if(param.get(0).equals("POISONED")) {
@@ -172,7 +174,7 @@ public class MultiplayerGameFacade {
                 }
                 else if(command.equals(MessageEnum.SHOW.getMessage())) {
                     if(params.equals("ACTIONS")) {
-                        view.printLastAction();
+                        view.printLastAction(endGameScreen);
                     }
                 }
                 else if (command.equals(MessageEnum.SHOW_GAME_STATE.getMessage())) {
@@ -206,6 +208,12 @@ public class MultiplayerGameFacade {
                 }
                 else if (command.equals(MessageEnum.SHOW_ERROR.getMessage())) {
                     view.printLastErrorAction();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        view.systemError();
+                        System.exit(1);
+                    }
                 }
                 else if (command.equals(MessageEnum.SHOW_BULLETS.getMessage())) {
                     ArrayList<String> bullets = new ArrayList<>();
@@ -218,9 +226,14 @@ public class MultiplayerGameFacade {
                     if(params.equals("OK")) {
                         client.send("GAME_END:" + roomCode);
                     }
+                    gameEnded = true;
+                    break;
                 }
                 else if (command.equals(MessageEnum.INPUT.getMessage())) {
                     String input = view.getUserInput();
+                    if(input.isEmpty() || input.equals("\n")) {
+                        input = "NULL,NULL";
+                    }
                     if(params.equals("ACTION")) {
                         ArrayList<String> actions = new ArrayList<>(Arrays.asList(input.trim().split(" ")));
                         actions.set(0, actions.getFirst().toUpperCase());
@@ -233,7 +246,7 @@ public class MultiplayerGameFacade {
                 }
                 client.send("ACK:" + roomCode);
             }
-
         }
+
     }
 }

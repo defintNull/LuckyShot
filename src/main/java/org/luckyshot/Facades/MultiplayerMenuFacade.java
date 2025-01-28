@@ -140,7 +140,7 @@ public class MultiplayerMenuFacade {
                         startMultiplayerGame();
                     } else {
                         view.systemError();
-                        System.exit(1);
+                        break;
                     }
                 } catch (Exception e) {
                     view.systemError();
